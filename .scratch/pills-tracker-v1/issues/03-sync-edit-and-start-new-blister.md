@@ -6,10 +6,10 @@
 
 **Status:** ready-for-agent
 
-- [ ] Domain: SyncPosition use case sets a Position Present or Empty on the Current Blister and touches nothing else
-- [ ] Domain: StartNewBlister use case refuses with `blisterNotEmpty` when any Position is Present; otherwise marks the Current Blister Retired (keeping its final grid) and creates a new Current Blister with all Positions Present
-- [ ] Tapping any Position opens an action sheet; there is no edit-mode toggle
-- [ ] Start New Blister button is visible only when the grid is empty and requires confirmation
-- [ ] Retired Blisters persist in Data and are not shown in the UI
-- [ ] Domain tests with fake repositories: SyncPosition both directions; StartNewBlister refusal and success including the Retired Blister keeping its state
-- [ ] If a use case throws despite the UI guard, a plain alert is shown
+- [x] Domain: SyncPosition use case sets a Position Present or Empty on the Current Blister and touches nothing else
+- [x] Domain: StartNewBlister use case refuses with `blisterNotEmpty` when any Position is Present; otherwise marks the Current Blister Retired (keeping its final grid) and creates a new Current Blister with all Positions Present
+- [x] Tapping any Position opens an action sheet; there is no edit-mode toggle
+- [x] Start New Blister button is visible only when the grid is empty and requires confirmation
+- [x] Retired Blisters persist in Data and are not shown in the UI
+- [x] Domain tests with fake repositories: SyncPosition both directions; StartNewBlister refusal and success including the Retired Blister keeping its state
+- [x] If a use case throws despite the UI guard, a plain alert is shown

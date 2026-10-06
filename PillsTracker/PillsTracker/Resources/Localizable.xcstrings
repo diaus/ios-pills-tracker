@@ -81,12 +81,82 @@
         }
       }
     },
+    "blister.position.markPresent": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mark as present"
+          }
+        }
+      }
+    },
+    "blister.position.removeWithoutPrescription": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove without prescription"
+          }
+        }
+      }
+    },
+    "blister.position.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Position"
+          }
+        }
+      }
+    },
     "blister.prescription": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Prescription"
+          }
+        }
+      }
+    },
+    "blister.startNew": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start New Blister"
+          }
+        }
+      }
+    },
+    "blister.startNew.confirm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start New Blister"
+          }
+        }
+      }
+    },
+    "blister.startNew.message": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The empty blister is kept for history and replaced by a full one."
+          }
+        }
+      }
+    },
+    "blister.startNew.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start a new blister?"
           }
         }
       }
@@ -131,6 +201,16 @@
         }
       }
     },
+    "error.blisterNotEmpty": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Empty every position before starting a new blister."
+          }
+        }
+      }
+    },
     "error.emptyName": {
       "localizations": {
         "en": {
@@ -171,12 +251,32 @@
         }
       }
     },
+    "error.noCurrentBlister": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This pill type has no current blister."
+          }
+        }
+      }
+    },
     "error.noPrescription": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "This pill type has no prescription."
+          }
+        }
+      }
+    },
+    "error.pillTypeNotFound": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This pill type no longer exists."
           }
         }
       }
