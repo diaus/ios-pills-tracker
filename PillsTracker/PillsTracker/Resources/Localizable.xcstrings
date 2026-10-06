@@ -81,6 +81,16 @@
         }
       }
     },
+    "blister.prescription": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prescription"
+          }
+        }
+      }
+    },
     "common.cancel": {
       "localizations": {
         "en": {
@@ -131,6 +141,16 @@
         }
       }
     },
+    "error.emptySlots": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pick at least one slot."
+          }
+        }
+      }
+    },
     "error.invalidColumns": {
       "localizations": {
         "en": {
@@ -147,6 +167,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Rows must be between 1 and 10."
+          }
+        }
+      }
+    },
+    "error.noPrescription": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This pill type has no prescription."
+          }
+        }
+      }
+    },
+    "home.active": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Today"
           }
         }
       }
@@ -187,6 +227,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "No pill types yet"
+          }
+        }
+      }
+    },
+    "home.noPrescriptions.body": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open a pill type from the list below and add a prescription from its blister screen."
+          }
+        }
+      }
+    },
+    "home.noPrescriptions.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No prescriptions yet"
+          }
+        }
+      }
+    },
+    "home.paused": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paused"
           }
         }
       }
@@ -237,6 +307,186 @@
           "stringUnit": {
             "state": "translated",
             "value": "Present"
+          }
+        }
+      }
+    },
+    "prescription.delete": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete Prescription"
+          }
+        }
+      }
+    },
+    "prescription.delete.confirm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete"
+          }
+        }
+      }
+    },
+    "prescription.delete.confirm.message": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The pill type and its blisters are kept."
+          }
+        }
+      }
+    },
+    "prescription.delete.confirm.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete this prescription?"
+          }
+        }
+      }
+    },
+    "prescription.pause": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pause"
+          }
+        }
+      }
+    },
+    "prescription.resume": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resume"
+          }
+        }
+      }
+    },
+    "prescription.slots": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slots"
+          }
+        }
+      }
+    },
+    "prescription.slots.footer": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pick when one pill is taken each day. At least one slot is required."
+          }
+        }
+      }
+    },
+    "prescription.state": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Status"
+          }
+        }
+      }
+    },
+    "prescription.state.active": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Active"
+          }
+        }
+      }
+    },
+    "prescription.state.paused": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paused"
+          }
+        }
+      }
+    },
+    "prescription.title.edit": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prescription"
+          }
+        }
+      }
+    },
+    "prescription.title.new": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New Prescription"
+          }
+        }
+      }
+    },
+    "slot.day": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Day"
+          }
+        }
+      }
+    },
+    "slot.evening": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Evening"
+          }
+        }
+      }
+    },
+    "slot.morning": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Morning"
+          }
+        }
+      }
+    },
+    "slotChip.notPrescribed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not prescribed"
+          }
+        }
+      }
+    },
+    "slotChip.open": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open"
           }
         }
       }

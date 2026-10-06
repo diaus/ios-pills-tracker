@@ -1,3 +1,4 @@
+import Domain
 import FactoryKit
 import SwiftUI
 
@@ -17,8 +18,40 @@ struct HomeView: View {
                     )
                 } else if model.hasLoaded {
                     List {
-                        NavigationLink(value: AppRoute.pillTypes) {
-                            Label("home.allPillTypes \(model.pillTypeCount)", systemImage: "list.bullet")
+                        if !model.activePrescriptions.isEmpty {
+                            Section("home.active") {
+                                ForEach(model.activePrescriptions) { aggregate in
+                                    NavigationLink(value: AppRoute.blister(pillTypeID: aggregate.id)) {
+                                        PrescriptionCardView(aggregate: aggregate)
+                                    }
+                                }
+                            }
+                        }
+
+                        if !model.pausedPrescriptions.isEmpty {
+                            Section("home.paused") {
+                                ForEach(model.pausedPrescriptions) { aggregate in
+                                    NavigationLink(value: AppRoute.blister(pillTypeID: aggregate.id)) {
+                                        pausedRow(aggregate)
+                                    }
+                                }
+                            }
+                        }
+
+                        if model.hasNoPrescriptions {
+                            Section {
+                                ContentUnavailableView(
+                                    "home.noPrescriptions.title",
+                                    systemImage: "calendar.badge.clock",
+                                    description: Text("home.noPrescriptions.body")
+                                )
+                            }
+                        }
+
+                        Section {
+                            NavigationLink(value: AppRoute.pillTypes) {
+                                Label("home.allPillTypes \(model.pillTypeCount)", systemImage: "list.bullet")
+                            }
                         }
                     }
                 }
@@ -53,6 +86,19 @@ struct HomeView: View {
         }
         .task { await model.load() }
         .task { await model.observeChanges() }
+    }
+
+    private func pausedRow(_ aggregate: PillTypeAggregate) -> some View {
+        HStack {
+            Text(aggregate.pillType.name)
+            Spacer()
+            Button("prescription.resume") {
+                Task { await model.resumePrescription(pillTypeID: aggregate.id) }
+            }
+            .buttonStyle(.bordered)
+            .buttonBorderShape(.capsule)
+            .controlSize(.small)
+        }
     }
 }
 
