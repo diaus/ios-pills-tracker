@@ -31,7 +31,7 @@ struct PrescriptionCardView: View {
             }
             Spacer(minLength: 0)
             if let blister = aggregate.currentBlister {
-                BlisterGridView(shape: aggregate.pillType.shape, presentPositions: blister.presentPositions, cellSpacing: 3)
+                BlisterGridView(shape: blister.shape, presentPositions: blister.presentPositions, cellSpacing: 3)
                     .frame(width: 84)
                     .allowsHitTesting(false)
                     .accessibilityHidden(true)

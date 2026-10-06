@@ -22,7 +22,7 @@ struct DeletePillTypeCascadeTests {
     private func seed(_ pillTypes: PillTypeRepositoryLive, _ intakes: IntakeRepositoryLive, name: String) async throws -> PillTypeAggregate {
         var aggregate = try PillTypeAggregate.new(name: name, rows: 1, columns: 2, createdAt: Date(timeIntervalSince1970: 1_000))
         try aggregate.setPrescriptionSlots([.morning, .evening])
-        let retired = Blister(pillTypeID: aggregate.id, state: .retired, presentPositions: [])
+        let retired = Blister(pillTypeID: aggregate.id, shape: aggregate.pillType.shape, state: .retired, presentPositions: [])
         aggregate.blisters.insert(retired, at: 0)
         try await pillTypes.create(aggregate)
         let currentID = try #require(aggregate.currentBlister?.id)
@@ -65,7 +65,11 @@ struct DeletePillTypeCascadeTests {
         try await pillTypes.delete(id: doomed.id)
 
         #expect(try counts(in: container) == Counts(pillTypes: 1, blisters: 2, prescriptions: 1, intakes: 2))
-        #expect(try await pillTypes.fetch(id: kept.id) == kept)
+        // Blisters come back in no guaranteed order (an unordered to-many relationship), so compare them as a Set.
+        let fetched = try #require(try await pillTypes.fetch(id: kept.id))
+        #expect(fetched.pillType == kept.pillType)
+        #expect(fetched.prescription == kept.prescription)
+        #expect(Set(fetched.blisters) == Set(kept.blisters))
         #expect(try await intakes.fetch(day: today, pillTypeID: kept.id).count == 1)
     }
 

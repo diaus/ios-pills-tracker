@@ -18,4 +18,9 @@ public struct GridShape: Hashable, Sendable, Codable {
     }
 
     public var positionCount: Int { rows * columns }
+
+    /// Whether `position` lies inside the grid.
+    public func contains(_ position: Position) -> Bool {
+        (0..<rows).contains(position.row) && (0..<columns).contains(position.column)
+    }
 }

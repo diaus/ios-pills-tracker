@@ -18,15 +18,11 @@ extension PillTypeModel {
 
     /// Fails only if the stored row violates Domain invariants, which the repository never writes.
     func toDomain() throws -> PillTypeAggregate {
-        let pillType = try PillType(
-            id: id,
-            name: name,
-            shape: GridShape(rows: rows, columns: columns),
-            createdAt: createdAt
-        )
+        let shape = try GridShape(rows: rows, columns: columns)
+        let pillType = try PillType(id: id, name: name, shape: shape, createdAt: createdAt)
         return PillTypeAggregate(
             pillType: pillType,
-            blisters: blisters.map { $0.toDomain(pillTypeID: id) },
+            blisters: try blisters.map { try $0.toDomain(pillTypeID: id, pillTypeShape: shape) },
             prescription: try prescription?.toDomain(pillTypeID: id)
         )
     }
@@ -89,18 +85,27 @@ extension PrescriptionModel {
 
 extension BlisterModel {
     convenience init(_ blister: Blister) {
-        self.init(id: blister.id, state: blister.state.rawValue, presentPositions: blister.presentPositions)
+        self.init(
+            id: blister.id,
+            rows: blister.shape.rows,
+            columns: blister.shape.columns,
+            state: blister.state.rawValue,
+            presentPositions: blister.presentPositions
+        )
     }
 
-    func toDomain(pillTypeID: UUID) -> Blister {
+    /// `pillTypeShape` stands in for rows written before Blisters carried their own shape (rows == 0).
+    func toDomain(pillTypeID: UUID, pillTypeShape: GridShape) throws -> Blister {
         Blister(
             id: id,
             pillTypeID: pillTypeID,
+            shape: rows == 0 ? pillTypeShape : try GridShape(rows: rows, columns: columns),
             state: BlisterState(rawValue: state) ?? .retired,
             presentPositions: presentPositions
         )
     }
 
+    /// The shape is fixed at creation; only state and Present Positions change.
     func apply(_ blister: Blister) {
         state = blister.state.rawValue
         presentPositions = blister.presentPositions
