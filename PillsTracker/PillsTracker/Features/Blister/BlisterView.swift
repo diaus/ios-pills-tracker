@@ -6,6 +6,7 @@ struct BlisterView: View {
     @State private var model: BlisterViewModel
     @State private var isEditingPrescription = false
     @State private var tappedPosition: TappedPosition?
+    @State private var undoCandidate: Intake?
 
     init(pillTypeID: UUID) {
         _model = State(initialValue: Container.shared.blisterViewModel(pillTypeID))
@@ -16,6 +17,9 @@ struct BlisterView: View {
             if let pillType = model.pillType, let blister = model.currentBlister {
                 ScrollView {
                     VStack(spacing: 16) {
+                        if model.showsSlotChips {
+                            slotChips
+                        }
                         BlisterGridView(shape: pillType.shape, presentPositions: blister.presentPositions) { position in
                             tappedPosition = TappedPosition(position: position, isPresent: blister.isPresent(position))
                         }
@@ -47,8 +51,28 @@ struct BlisterView: View {
         .sheet(isPresented: $isEditingPrescription) {
             PrescriptionSheet(pillTypeID: model.pillTypeID)
         }
-        .positionActionSheet(for: $tappedPosition) { position, isPresent in
-            Task { await model.setPosition(position, isPresent: isPresent) }
+        .positionActionSheet(
+            for: $tappedPosition,
+            openSlots: model.openSlots,
+            onConsume: { position, slot in
+                Task { await model.consume(position, slot: slot) }
+            },
+            onSync: { position, isPresent in
+                Task { await model.setPosition(position, isPresent: isPresent) }
+            }
+        )
+        .confirmationDialog(
+            "blister.undo.title",
+            isPresented: Binding(get: { undoCandidate != nil }, set: { if !$0 { undoCandidate = nil } }),
+            titleVisibility: .visible,
+            presenting: undoCandidate
+        ) { intake in
+            Button("blister.undo.confirm", role: .destructive) {
+                Task { await model.undo(intake) }
+            }
+            Button("common.cancel", role: .cancel) {}
+        } message: { _ in
+            Text("blister.undo.message")
         }
         .alert("common.error", isPresented: Binding(
             get: { model.errorMessage != nil },
@@ -60,5 +84,26 @@ struct BlisterView: View {
         }
         .task { await model.load() }
         .task { await model.observeChanges() }
+        .recomputesToday { Task { await model.refreshToday() } }
+    }
+
+    /// Today's chips. A Done chip whose Intake can be undone (today, Current Blister) opens the Undo confirmation.
+    private var slotChips: some View {
+        HStack(spacing: 8) {
+            ForEach(Slot.allCases, id: \.self) { slot in
+                let state = model.chipState(for: slot)
+                if let intake = model.undoableIntake(for: slot) {
+                    Button {
+                        undoCandidate = intake
+                    } label: {
+                        SlotChipView(slot: slot, state: state)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityHint(Text("blister.undo.hint"))
+                } else {
+                    SlotChipView(slot: slot, state: state)
+                }
+            }
+        }
     }
 }

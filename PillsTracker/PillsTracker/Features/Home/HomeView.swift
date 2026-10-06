@@ -20,9 +20,9 @@ struct HomeView: View {
                     List {
                         if !model.activePrescriptions.isEmpty {
                             Section("home.active") {
-                                ForEach(model.activePrescriptions) { aggregate in
-                                    NavigationLink(value: AppRoute.blister(pillTypeID: aggregate.id)) {
-                                        PrescriptionCardView(aggregate: aggregate)
+                                ForEach(model.activePrescriptions) { progress in
+                                    NavigationLink(value: AppRoute.blister(pillTypeID: progress.id)) {
+                                        PrescriptionCardView(progress: progress)
                                     }
                                 }
                             }
@@ -86,6 +86,7 @@ struct HomeView: View {
         }
         .task { await model.load() }
         .task { await model.observeChanges() }
+        .recomputesToday { Task { await model.refreshToday() } }
     }
 
     private func pausedRow(_ aggregate: PillTypeAggregate) -> some View {

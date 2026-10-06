@@ -9,10 +9,13 @@ struct TappedPosition: Identifiable, Hashable {
     var id: Position { position }
 }
 
-/// Action sheet shown after tapping a Position: an Empty one can be marked Present,
-/// a Present one can be removed without a Prescription. Both are Sync Edits.
+/// Action sheet shown after tapping a Position. A Present one lists today's Open Slots to Consume for,
+/// plus "remove without prescription" (a Sync Edit); with no Open Slot only the Sync Edit remains.
+/// An Empty one can only be marked Present (a Sync Edit); Consume from Empty is refused in Domain.
 private struct PositionActionSheet: ViewModifier {
     @Binding var tapped: TappedPosition?
+    let openSlots: [Slot]
+    let onConsume: (Position, Slot) -> Void
     let onSync: (Position, _ isPresent: Bool) -> Void
 
     func body(content: Content) -> some View {
@@ -23,6 +26,11 @@ private struct PositionActionSheet: ViewModifier {
             presenting: tapped
         ) { tapped in
             if tapped.isPresent {
+                ForEach(openSlots, id: \.self) { slot in
+                    Button(slot.consumeTitle) {
+                        onConsume(tapped.position, slot)
+                    }
+                }
                 Button("blister.position.removeWithoutPrescription", role: .destructive) {
                     onSync(tapped.position, false)
                 }
@@ -39,8 +47,10 @@ private struct PositionActionSheet: ViewModifier {
 extension View {
     func positionActionSheet(
         for tapped: Binding<TappedPosition?>,
+        openSlots: [Slot],
+        onConsume: @escaping (Position, Slot) -> Void,
         onSync: @escaping (Position, _ isPresent: Bool) -> Void
     ) -> some View {
-        modifier(PositionActionSheet(tapped: tapped, onSync: onSync))
+        modifier(PositionActionSheet(tapped: tapped, openSlots: openSlots, onConsume: onConsume, onSync: onSync))
     }
 }

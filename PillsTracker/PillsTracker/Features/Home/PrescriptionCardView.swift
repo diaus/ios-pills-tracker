@@ -1,9 +1,12 @@
 import Domain
 import SwiftUI
 
-/// Home card for one Active Prescription: Pill Type name, mini Current Blister grid and the three Slot chips.
+/// Home card for one Active Prescription: Pill Type name, today's Slot chips (Done / Open / not prescribed),
+/// a Completed state when nothing is Open, a low-stock warning, and the mini Current Blister grid.
 struct PrescriptionCardView: View {
-    let aggregate: PillTypeAggregate
+    let progress: PillTypeProgress
+
+    private var aggregate: PillTypeAggregate { progress.aggregate }
 
     var body: some View {
         HStack(alignment: .top, spacing: 16) {
@@ -12,8 +15,18 @@ struct PrescriptionCardView: View {
                     .font(.headline)
                 HStack(spacing: 6) {
                     ForEach(Slot.allCases, id: \.self) { slot in
-                        SlotChipView(slot: slot, state: chipState(for: slot))
+                        SlotChipView(slot: slot, state: progress.chipState(for: slot))
                     }
+                }
+                if progress.isCompleted {
+                    Label("home.completed", systemImage: "checkmark.circle.fill")
+                        .font(.footnote)
+                        .foregroundStyle(.green)
+                }
+                if progress.isLowStock {
+                    Label("home.lowStock", systemImage: "exclamationmark.triangle.fill")
+                        .font(.footnote)
+                        .foregroundStyle(.orange)
                 }
             }
             Spacer(minLength: 0)
@@ -25,9 +38,5 @@ struct PrescriptionCardView: View {
             }
         }
         .padding(.vertical, 6)
-    }
-
-    private func chipState(for slot: Slot) -> SlotChipState {
-        aggregate.prescription?.contains(slot) == true ? .open : .notPrescribed
     }
 }

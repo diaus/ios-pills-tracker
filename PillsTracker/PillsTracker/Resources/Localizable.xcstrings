@@ -101,6 +101,36 @@
         }
       }
     },
+    "blister.position.take.day": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Take for Day"
+          }
+        }
+      }
+    },
+    "blister.position.take.evening": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Take for Evening"
+          }
+        }
+      }
+    },
+    "blister.position.take.morning": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Take for Morning"
+          }
+        }
+      }
+    },
     "blister.position.title": {
       "localizations": {
         "en": {
@@ -157,6 +187,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Start a new blister?"
+          }
+        }
+      }
+    },
+    "blister.undo.confirm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Undo"
+          }
+        }
+      }
+    },
+    "blister.undo.hint": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Undo this intake"
+          }
+        }
+      }
+    },
+    "blister.undo.message": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The pill goes back to the position it was taken from."
+          }
+        }
+      }
+    },
+    "blister.undo.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Undo this intake?"
           }
         }
       }
@@ -251,6 +321,16 @@
         }
       }
     },
+    "error.noActivePrescription": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add an active prescription before taking a pill."
+          }
+        }
+      }
+    },
     "error.noCurrentBlister": {
       "localizations": {
         "en": {
@@ -277,6 +357,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "This pill type no longer exists."
+          }
+        }
+      }
+    },
+    "error.positionEmpty": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "There is no pill at this position."
+          }
+        }
+      }
+    },
+    "error.slotNotOpen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This slot is not open today."
+          }
+        }
+      }
+    },
+    "error.undoNotAllowed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Only today's intakes from the current blister can be undone."
           }
         }
       }
@@ -311,6 +421,16 @@
         }
       }
     },
+    "home.completed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All taken today"
+          }
+        }
+      }
+    },
     "home.empty.body": {
       "localizations": {
         "en": {
@@ -327,6 +447,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "No pill types yet"
+          }
+        }
+      }
+    },
+    "home.lowStock": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fewer pills left than doses open today"
           }
         }
       }
@@ -567,6 +697,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Morning"
+          }
+        }
+      }
+    },
+    "slotChip.done": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Done"
           }
         }
       }
