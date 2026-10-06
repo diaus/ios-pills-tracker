@@ -54,8 +54,3 @@ public actor PillTypeRepositoryLive: PillTypeRepository {
         notifier.notify()
     }
 }
-
-/// Errors specific to the persistence layer.
-public enum DataError: Error, Equatable, Sendable {
-    case notFound
-}

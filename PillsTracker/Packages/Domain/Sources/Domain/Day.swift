@@ -15,8 +15,11 @@ public struct Day: Hashable, Comparable, Sendable, Codable {
 
     /// The calendar day `date` falls on in `calendar` (including its time zone).
     public init(date: Date, calendar: Calendar) {
-        let components = calendar.dateComponents([.year, .month, .day], from: date)
-        self.init(year: components.year ?? 0, month: components.month ?? 0, day: components.day ?? 0)
+        self.init(
+            year: calendar.component(.year, from: date),
+            month: calendar.component(.month, from: date),
+            day: calendar.component(.day, from: date)
+        )
     }
 
     public static func < (lhs: Day, rhs: Day) -> Bool {
