@@ -60,3 +60,6 @@ fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
+
+# graft's local graph cache — regenerable, not committed (run `graft build`).
+/graft/
