@@ -7,4 +7,10 @@ struct PillsModelContainerTests {
         let container = try PillsModelContainer.make(inMemory: true)
         #expect(container.schema.version == PillsSchemaV1.versionIdentifier)
     }
+
+    @Test func schemaV1ContainsPillTypeAndBlister() {
+        let names = PillsSchemaV1.models.map { String(describing: $0) }
+        #expect(names.contains("PillTypeModel"))
+        #expect(names.contains("BlisterModel"))
+    }
 }

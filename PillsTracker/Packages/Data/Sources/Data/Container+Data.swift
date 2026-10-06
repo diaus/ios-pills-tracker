@@ -1,3 +1,4 @@
+import Domain
 import FactoryKit
 import SwiftData
 
@@ -12,5 +13,15 @@ public extension Container {
             }
         }
         .singleton
+    }
+
+    /// Shared change broadcaster every repository notifies after a write.
+    var dataChangeNotifier: Factory<DataChangeNotifier> {
+        self { DataChangeNotifier() }.singleton
+    }
+
+    var pillTypeRepository: Factory<any PillTypeRepository> {
+        self { PillTypeRepositoryLive(modelContainer: self.modelContainer(), notifier: self.dataChangeNotifier()) }
+            .singleton
     }
 }
