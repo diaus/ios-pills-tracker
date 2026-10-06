@@ -83,14 +83,7 @@ struct PrescriptionSheet: View {
             } message: {
                 Text("prescription.delete.confirm.message")
             }
-            .alert("common.error", isPresented: Binding(
-                get: { model.errorMessage != nil },
-                set: { if !$0 { model.errorMessage = nil } }
-            )) {
-                Button("common.ok") {}
-            } message: {
-                Text(model.errorMessage ?? "")
-            }
+            .errorAlert(message: $model.errorMessage)
             .task { await model.load() }
         }
     }

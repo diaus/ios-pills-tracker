@@ -3,6 +3,7 @@ import Domain
 import FactoryKit
 import Foundation
 import Observation
+import SwiftUI
 
 /// Drives the Home screen: Active Prescription cards with today's progress, the Paused section
 /// and the Pill Types link. Owns "today" and recomputes it when the view asks (scene active, clock change).
@@ -17,7 +18,7 @@ final class HomeViewModel {
     private(set) var progress: [PillTypeProgress] = []
     private(set) var today = TodayTracker.today()
     private(set) var hasLoaded = false
-    var errorMessage: String?
+    var errorMessage: LocalizedStringKey?
 
     var pillTypeCount: Int { pillTypes.count }
 
@@ -42,7 +43,7 @@ final class HomeViewModel {
             pillTypes = try await repository.fetchAll()
             progress = try await dailyProgress(day: today)
         } catch {
-            errorMessage = error.localizedDescription
+            errorMessage = error.userMessage
         }
         hasLoaded = true
     }
@@ -69,7 +70,7 @@ final class HomeViewModel {
             try aggregate.resumePrescription()
             try await repository.update(aggregate)
         } catch {
-            errorMessage = error.localizedDescription
+            errorMessage = error.userMessage
         }
     }
 }

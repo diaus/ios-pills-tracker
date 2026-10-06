@@ -46,14 +46,7 @@ struct AddPillTypeSheet: View {
                     .disabled(model.isSaving)
                 }
             }
-            .alert("common.error", isPresented: Binding(
-                get: { model.saveErrorMessage != nil },
-                set: { if !$0 { model.saveErrorMessage = nil } }
-            )) {
-                Button("common.ok") {}
-            } message: {
-                Text(model.saveErrorMessage ?? "")
-            }
+            .errorAlert(message: $model.errorMessage)
         }
     }
 

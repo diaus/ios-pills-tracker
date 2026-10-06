@@ -17,7 +17,7 @@ final class AddPillTypeViewModel {
     private(set) var nameError: LocalizedStringKey?
     private(set) var rowsError: LocalizedStringKey?
     private(set) var columnsError: LocalizedStringKey?
-    var saveErrorMessage: String?
+    var errorMessage: LocalizedStringKey?
     private(set) var isSaving = false
 
     /// Validates, persists and returns true on success so the sheet can dismiss.
@@ -37,7 +37,7 @@ final class AddPillTypeViewModel {
             try await repository.create(aggregate)
             return true
         } catch {
-            saveErrorMessage = error.localizedDescription
+            errorMessage = error.userMessage
             return false
         }
     }
@@ -53,7 +53,7 @@ final class AddPillTypeViewModel {
         case .emptyName: nameError = error.message
         case .invalidRows: rowsError = error.message
         case .invalidColumns: columnsError = error.message
-        default: saveErrorMessage = error.localizedDescription
+        default: errorMessage = error.userMessage
         }
     }
 }

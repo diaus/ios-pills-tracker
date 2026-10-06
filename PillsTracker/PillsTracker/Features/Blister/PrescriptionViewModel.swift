@@ -16,7 +16,7 @@ final class PrescriptionViewModel {
     private(set) var hasLoaded = false
     var selectedSlots: Set<Slot> = []
     private(set) var slotsError: LocalizedStringKey?
-    var errorMessage: String?
+    var errorMessage: LocalizedStringKey?
     private(set) var isSaving = false
 
     init(pillTypeID: UUID) {
@@ -32,7 +32,7 @@ final class PrescriptionViewModel {
             aggregate = try await repository.fetch(id: pillTypeID)
             selectedSlots = aggregate?.prescription?.slots ?? []
         } catch {
-            errorMessage = error.localizedDescription
+            errorMessage = error.userMessage
         }
         hasLoaded = true
     }
@@ -81,7 +81,7 @@ final class PrescriptionViewModel {
             aggregate = updated
             return true
         } catch {
-            errorMessage = error.localizedDescription
+            errorMessage = error.userMessage
             return false
         }
     }
@@ -89,7 +89,7 @@ final class PrescriptionViewModel {
     private func show(_ error: DomainError) {
         switch error {
         case .emptySlots: slotsError = error.message
-        default: errorMessage = String(localized: "common.error")
+        default: errorMessage = error.message
         }
     }
 }

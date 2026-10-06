@@ -19,7 +19,7 @@ final class PillTypeViewModel {
     var columns = GridShape.allowedRange.lowerBound
     private(set) var nameError: LocalizedStringKey?
     private(set) var shapeError: LocalizedStringKey?
-    var errorMessage: String?
+    var errorMessage: LocalizedStringKey?
     private(set) var isSaving = false
 
     init(pillTypeID: UUID) {
@@ -41,7 +41,7 @@ final class PillTypeViewModel {
                 columns = pillType.shape.columns
             }
         } catch {
-            errorMessage = error.localizedDescription
+            errorMessage = error.userMessage
         }
         hasLoaded = true
     }
@@ -76,7 +76,7 @@ final class PillTypeViewModel {
             try await write()
             return true
         } catch {
-            errorMessage = error.localizedDescription
+            errorMessage = error.userMessage
             return false
         }
     }
@@ -85,7 +85,7 @@ final class PillTypeViewModel {
         switch error {
         case .emptyName: nameError = error.message
         case .invalidRows, .invalidColumns, .currentBlisterNotEmpty: shapeError = error.message
-        default: errorMessage = String(localized: "common.error")
+        default: errorMessage = error.message
         }
     }
 }
