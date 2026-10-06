@@ -3,9 +3,11 @@ import SwiftUI
 
 struct HomeView: View {
     @State private var model = Container.shared.homeViewModel()
+    @State private var path: [AppRoute] = []
+    @State private var isAddingPillType = false
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             Group {
                 if model.isEmpty {
                     ContentUnavailableView(
@@ -13,17 +15,44 @@ struct HomeView: View {
                         systemImage: "pills",
                         description: Text("home.empty.body")
                     )
+                } else if model.hasLoaded {
+                    List {
+                        NavigationLink(value: AppRoute.pillTypes) {
+                            Label("home.allPillTypes \(model.pillTypeCount)", systemImage: "list.bullet")
+                        }
+                    }
                 }
             }
             .navigationTitle("home.title")
+            .navigationDestination(for: AppRoute.self) { route in
+                switch route {
+                case .pillTypes:
+                    PillTypesListView()
+                case .blister(let pillTypeID):
+                    BlisterView(pillTypeID: pillTypeID)
+                }
+            }
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button("home.addPillType", systemImage: "plus") {
-                        // Adding a Pill Type arrives in a later ticket.
+                        isAddingPillType = true
                     }
                 }
             }
         }
+        .sheet(isPresented: $isAddingPillType) {
+            AddPillTypeSheet()
+        }
+        .alert("common.error", isPresented: Binding(
+            get: { model.errorMessage != nil },
+            set: { if !$0 { model.errorMessage = nil } }
+        )) {
+            Button("common.ok") {}
+        } message: {
+            Text(model.errorMessage ?? "")
+        }
+        .task { await model.load() }
+        .task { await model.observeChanges() }
     }
 }
 
