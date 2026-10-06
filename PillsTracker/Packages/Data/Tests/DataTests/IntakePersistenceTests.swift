@@ -25,14 +25,15 @@ struct IntakePersistenceTests {
         let (pillTypes, intakes) = try makeRepositories()
         let aggregate = try makeAggregate()
         try await pillTypes.create(aggregate)
-        // An instant late on the 5th UTC; the stored Day is the one the user experienced, not derived from it.
+        // 2026-10-05 23:30 UTC, which is already the 6th east of UTC: the stored Day is the one the user
+        // experienced, never derived from the instant (ADR 0001).
         let intake = Intake(
             pillTypeID: aggregate.id,
             blisterID: try #require(aggregate.currentBlister?.id),
             position: Position(row: 0, column: 1),
             slot: .evening,
             day: today,
-            instant: Date(timeIntervalSince1970: 1_791_000_000)
+            instant: Date(timeIntervalSince1970: 1_791_243_000)
         )
 
         try await intakes.create(intake)

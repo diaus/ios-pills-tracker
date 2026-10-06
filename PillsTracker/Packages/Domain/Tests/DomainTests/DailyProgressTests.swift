@@ -102,6 +102,28 @@ struct DailyProgressTests {
         #expect(!progress.isCompleted)
     }
 
+    /// Story 21: Intakes are keyed on the Pill Type, so a Slot consumed before the Prescription was
+    /// removed and set again the same Day is still Done.
+    @Test func aSlotConsumedBeforeThePrescriptionWasRemovedAndSetAgainTheSameDayStaysDone() async throws {
+        var aggregate = try makeAggregate(slots: [.morning, .evening])
+        let pillTypes = FakePillTypeRepository([aggregate])
+        let intakes = FakeIntakeRepository()
+        try await Consume(pillTypes: pillTypes, intakes: intakes)(
+            pillTypeID: aggregate.id, position: Position(row: 0, column: 0), slot: .morning, day: today, instant: instant
+        )
+
+        aggregate = try #require(await pillTypes.fetch(id: aggregate.id))
+        aggregate.removePrescription()
+        try await pillTypes.update(aggregate)
+        try aggregate.setPrescriptionSlots([.morning, .evening])
+        try await pillTypes.update(aggregate)
+
+        let sut = DailyProgress(pillTypes: pillTypes, intakes: intakes)
+        let progress = try #require(try await sut(day: today).first)
+        #expect(progress.isDone(.morning))
+        #expect(progress.openSlots == [.evening])
+    }
+
     @Test func aPausedPrescriptionIsReportedPausedSoHomeCanLeaveItOut() async throws {
         var aggregate = try makeAggregate(slots: [.morning])
         try aggregate.pausePrescription()
