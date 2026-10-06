@@ -5,9 +5,9 @@ import SwiftData
 
 /// SwiftData-backed `PillTypeRepository`. All model access happens on this actor.
 @ModelActor
-public actor PillTypeRepositoryLive: PillTypeRepository {
+public actor PillTypeRepositoryLive: PillTypeRepository, SwiftDataRepository {
     /// Defaults to the shared notifier so the macro-synthesised `init(modelContainer:)` stays usable.
-    private var notifier = Container.shared.dataChangeNotifier()
+    var notifier = Container.shared.dataChangeNotifier()
 
     public init(modelContainer: ModelContainer, notifier: DataChangeNotifier) {
         self.modelContainer = modelContainer
@@ -44,13 +44,6 @@ public actor PillTypeRepositoryLive: PillTypeRepository {
     }
 
     private func model(for id: UUID) throws -> PillTypeModel? {
-        var descriptor = FetchDescriptor<PillTypeModel>(predicate: #Predicate { $0.id == id })
-        descriptor.fetchLimit = 1
-        return try modelContext.fetch(descriptor).first
-    }
-
-    private func saveAndNotify() throws {
-        try modelContext.save()
-        notifier.notify()
+        try first(matching: #Predicate<PillTypeModel> { $0.id == id })
     }
 }
