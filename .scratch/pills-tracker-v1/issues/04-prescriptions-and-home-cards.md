@@ -6,10 +6,10 @@
 
 **Status:** ready-for-agent
 
-- [ ] Domain: Prescription (id, pill type id, non-empty set of Slots, Active/Paused) owned by the Pill Type aggregate; Slot enum Morning, Day, Evening; empty Slot set rejected in Domain
-- [ ] Data: Prescription model related to Pill Type; deleting a Prescription leaves the Pill Type and its Blisters intact
-- [ ] Blister screen toolbar "Prescription" entry: create when none exists; otherwise edit Slots, pause, resume, delete
-- [ ] Home replaces the empty state with cards for Active Prescriptions, ordered by Pill Type creation date; each card shows name, a mini rendering of the Current Blister grid, and three chips (Open or not prescribed; Done comes in ticket 05)
-- [ ] Home shows a Paused section listing Paused Prescriptions; tapping a card or a Paused row opens the Blister screen
-- [ ] Home still links to the Pill Types list; Home shows the empty state only when no Pill Types exist
-- [ ] Data tests: Prescription round-trips with its Pill Type; deleting a Prescription keeps the Pill Type
+- [x] Domain: Prescription (id, pill type id, non-empty set of Slots, Active/Paused) owned by the Pill Type aggregate; Slot enum Morning, Day, Evening; empty Slot set rejected in Domain
+- [x] Data: Prescription model related to Pill Type; deleting a Prescription leaves the Pill Type and its Blisters intact
+- [x] Blister screen toolbar "Prescription" entry: create when none exists; otherwise edit Slots, pause, resume, delete
+- [x] Home replaces the empty state with cards for Active Prescriptions, ordered by Pill Type creation date; each card shows name, a mini rendering of the Current Blister grid, and three chips (Open or not prescribed; Done comes in ticket 05)
+- [x] Home shows a Paused section listing Paused Prescriptions; tapping a card or a Paused row opens the Blister screen
+- [x] Home still links to the Pill Types list; Home shows the empty state only when no Pill Types exist
+- [x] Data tests: Prescription round-trips with its Pill Type; deleting a Prescription keeps the Pill Type
