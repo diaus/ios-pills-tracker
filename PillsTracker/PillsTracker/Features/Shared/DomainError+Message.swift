@@ -10,6 +10,7 @@ extension DomainError {
         case .invalidColumns: "error.invalidColumns"
         case .emptySlots: "error.emptySlots"
         case .noPrescription: "error.noPrescription"
+        case .currentBlisterNotEmpty: "error.currentBlisterNotEmpty"
         }
     }
 }

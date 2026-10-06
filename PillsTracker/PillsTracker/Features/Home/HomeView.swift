@@ -62,7 +62,7 @@ struct HomeView: View {
                 case .pillTypes:
                     PillTypesListView()
                 case .blister(let pillTypeID):
-                    BlisterView(pillTypeID: pillTypeID)
+                    BlisterView(pillTypeID: pillTypeID) { path.removeAll() }
                 }
             }
             .toolbar {

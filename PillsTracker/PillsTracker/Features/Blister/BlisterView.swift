@@ -5,11 +5,15 @@ import SwiftUI
 struct BlisterView: View {
     @State private var model: BlisterViewModel
     @State private var isEditingPrescription = false
+    @State private var isEditingPillType = false
+    /// Called after the Pill Type was deleted so the owner of the navigation path can return to Home.
+    private let onPillTypeDeleted: @MainActor () -> Void
     @State private var tappedPosition: TappedPosition?
     @State private var undoCandidate: Intake?
 
-    init(pillTypeID: UUID) {
+    init(pillTypeID: UUID, onPillTypeDeleted: @escaping @MainActor () -> Void) {
         _model = State(initialValue: Container.shared.blisterViewModel(pillTypeID))
+        self.onPillTypeDeleted = onPillTypeDeleted
     }
 
     var body: some View {
@@ -41,15 +45,22 @@ struct BlisterView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .primaryAction) {
+            ToolbarItemGroup(placement: .primaryAction) {
                 Button("blister.prescription", systemImage: "calendar.badge.clock") {
                     isEditingPrescription = true
+                }
+                .disabled(model.pillType == nil)
+                Button("blister.pillType", systemImage: "pills") {
+                    isEditingPillType = true
                 }
                 .disabled(model.pillType == nil)
             }
         }
         .sheet(isPresented: $isEditingPrescription) {
             PrescriptionSheet(pillTypeID: model.pillTypeID)
+        }
+        .sheet(isPresented: $isEditingPillType) {
+            PillTypeSheet(pillTypeID: model.pillTypeID, onDeleted: onPillTypeDeleted)
         }
         .positionActionSheet(
             for: $tappedPosition,
