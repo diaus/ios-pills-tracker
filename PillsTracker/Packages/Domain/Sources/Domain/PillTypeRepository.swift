@@ -11,5 +11,5 @@ public protocol PillTypeRepository: Sendable {
     func delete(id: UUID) async throws
 
     /// Fires after every write to any repository in the Data layer.
-    var changes: AsyncStream<Void> { get }
+    var changes: AsyncStream<Void> { get async }
 }
