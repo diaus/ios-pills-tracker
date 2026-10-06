@@ -6,7 +6,7 @@ public enum PillsSchemaV1: VersionedSchema {
     public static let versionIdentifier = Schema.Version(1, 0, 0)
 
     public static var models: [any PersistentModel.Type] {
-        [PillTypeModel.self, BlisterModel.self, PrescriptionModel.self]
+        [PillTypeModel.self, BlisterModel.self, PrescriptionModel.self, IntakeModel.self]
     }
 }
 
@@ -14,3 +14,4 @@ public enum PillsSchemaV1: VersionedSchema {
 public typealias PillTypeModel = PillsSchemaV1.PillTypeModel
 public typealias BlisterModel = PillsSchemaV1.BlisterModel
 public typealias PrescriptionModel = PillsSchemaV1.PrescriptionModel
+public typealias IntakeModel = PillsSchemaV1.IntakeModel
