@@ -28,7 +28,7 @@ public actor IntakeRepositoryLive: IntakeRepository {
             predicate = #Predicate { $0.dayYear == year && $0.dayMonth == month && $0.dayDay == dayOfMonth }
         }
         let descriptor = FetchDescriptor<IntakeModel>(predicate: predicate, sortBy: [SortDescriptor(\.instant, order: .forward)])
-        return try modelContext.fetch(descriptor).map { $0.toDomain() }
+        return try modelContext.fetch(descriptor).map { try $0.toDomain() }
     }
 
     public func fetch(id: UUID) throws -> Intake? {

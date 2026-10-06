@@ -2,6 +2,25 @@ import Domain
 import Foundation
 
 // Mapping between SwiftData models and Domain values. Models never leave the Data actor.
+// Reading a row that no longer satisfies a Domain invariant throws `DataError.corruptRecord`
+// instead of guessing a value.
+
+extension DataError {
+    /// Runs a Domain constructor over stored fields; a Domain error means the row is corrupt.
+    static func record<T>(_ build: () throws(DomainError) -> T) throws(DataError) -> T {
+        do {
+            return try build()
+        } catch {
+            throw .corruptRecord
+        }
+    }
+
+    /// Decodes a stored raw value; an unknown one means the row is corrupt.
+    static func rawValue<T: RawRepresentable>(_ raw: T.RawValue) throws(DataError) -> T {
+        guard let value = T(rawValue: raw) else { throw .corruptRecord }
+        return value
+    }
+}
 
 extension PillTypeModel {
     convenience init(_ aggregate: PillTypeAggregate) {
@@ -16,13 +35,14 @@ extension PillTypeModel {
         prescription = aggregate.prescription.map(PrescriptionModel.init)
     }
 
-    /// Fails only if the stored row violates Domain invariants, which the repository never writes.
-    func toDomain() throws -> PillTypeAggregate {
-        let shape = try GridShape(rows: rows, columns: columns)
-        let pillType = try PillType(id: id, name: name, shape: shape, createdAt: createdAt)
+    func toDomain() throws(DataError) -> PillTypeAggregate {
+        let shape = try DataError.record { () throws(DomainError) in try GridShape(rows: rows, columns: columns) }
+        let pillType = try DataError.record { () throws(DomainError) in
+            try PillType(id: id, name: name, shape: shape, createdAt: createdAt)
+        }
         return PillTypeAggregate(
             pillType: pillType,
-            blisters: try blisters.map { try $0.toDomain(pillTypeID: id, pillTypeShape: shape) },
+            blisters: try blisters.map { (model) throws(DataError) in try model.toDomain(pillTypeID: id, pillTypeShape: shape) },
             prescription: try prescription?.toDomain(pillTypeID: id)
         )
     }
@@ -68,13 +88,11 @@ extension PrescriptionModel {
         self.init(id: prescription.id, slots: prescription.slots, state: prescription.state.rawValue)
     }
 
-    func toDomain(pillTypeID: UUID) throws -> Prescription {
-        try Prescription(
-            id: id,
-            pillTypeID: pillTypeID,
-            slots: slots,
-            state: PrescriptionState(rawValue: state) ?? .paused
-        )
+    func toDomain(pillTypeID: UUID) throws(DataError) -> Prescription {
+        let state: PrescriptionState = try DataError.rawValue(state)
+        return try DataError.record { () throws(DomainError) in
+            try Prescription(id: id, pillTypeID: pillTypeID, slots: slots, state: state)
+        }
     }
 
     func apply(_ prescription: Prescription) {
@@ -95,12 +113,15 @@ extension BlisterModel {
     }
 
     /// `pillTypeShape` stands in for rows written before Blisters carried their own shape (rows == 0).
-    func toDomain(pillTypeID: UUID, pillTypeShape: GridShape) throws -> Blister {
-        Blister(
+    func toDomain(pillTypeID: UUID, pillTypeShape: GridShape) throws(DataError) -> Blister {
+        let shape = rows == 0
+            ? pillTypeShape
+            : try DataError.record { () throws(DomainError) in try GridShape(rows: rows, columns: columns) }
+        return Blister(
             id: id,
             pillTypeID: pillTypeID,
-            shape: rows == 0 ? pillTypeShape : try GridShape(rows: rows, columns: columns),
-            state: BlisterState(rawValue: state) ?? .retired,
+            shape: shape,
+            state: try DataError.rawValue(state),
             presentPositions: presentPositions
         )
     }
@@ -127,13 +148,13 @@ extension IntakeModel {
         )
     }
 
-    func toDomain() -> Intake {
+    func toDomain() throws(DataError) -> Intake {
         Intake(
             id: id,
             pillTypeID: pillTypeID,
             blisterID: blisterID,
             position: position,
-            slot: Slot(rawValue: slot) ?? .day,
+            slot: try DataError.rawValue(slot),
             day: Day(year: dayYear, month: dayMonth, day: dayDay),
             instant: instant
         )
