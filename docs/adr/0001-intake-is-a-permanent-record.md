@@ -1,0 +1,19 @@
+---
+status: accepted
+---
+
+# Intake is a permanent record keyed on Pill Type
+
+v1 shows no history, but "taken today / left today" still needs a record of each Consume. We decided that an Intake is a permanent row (never purged, never deleted by Start New Blister) that references the Pill Type (not the Prescription), the Blister and Position it came from, the Slot, the local calendar Day stored explicitly, and the UTC instant. Use cases take `Day` as an explicit parameter instead of reading a clock.
+
+## Considered Options
+
+- **Per-day scratch state on the Prescription, reset at midnight.** Rejected: throws away data v2 history needs, and ties progress to the Prescription so deleting/re-creating one mid-day would lose today's Done Slots.
+- **Recompute Day from the timestamp at read time.** Rejected: a timezone change would move past Intakes to a different Day; the Day the user experienced is the truth.
+- **Clock injection (`DateProvider`) in use cases.** Rejected as over-engineering: passing `Day` in makes editing past days trivial later and keeps tests deterministic without a fake clock.
+
+## Consequences
+
+- Blisters are kept as Retired records after replacement so old Intakes stay resolvable; Undo is limited to today's Intakes on the Current Blister.
+- Deleting a Prescription leaves Intakes untouched; deleting a Pill Type cascades them.
+- The view model, not the Domain, decides what "today" is and re-evaluates it on scene-active and significant-time-change.
