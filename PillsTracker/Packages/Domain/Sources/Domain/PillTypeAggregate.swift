@@ -28,6 +28,20 @@ public struct PillTypeAggregate: Identifiable, Hashable, Sendable {
         return PillTypeAggregate(pillType: pillType, blisters: [.fresh(pillTypeID: pillType.id, shape: shape)])
     }
 
+    // MARK: Pill Type
+
+    /// Renames the Pill Type; the trimmed name must be non-empty.
+    public mutating func rename(_ name: String) throws(DomainError) {
+        try pillType.rename(name)
+    }
+
+    /// Changes the grid shape used by the next Start New Blister. Allowed only while the Current Blister
+    /// is empty (or absent); the empty Current Blister itself is left untouched.
+    public mutating func changeShape(_ shape: GridShape) throws(DomainError) {
+        if let current = currentBlister, !current.isEmpty { throw .currentBlisterNotEmpty }
+        pillType.shape = shape
+    }
+
     // MARK: Prescription
 
     /// Creates an Active Prescription with `slots`, or edits the Slots of the existing one

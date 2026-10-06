@@ -11,4 +11,6 @@ public enum DomainError: Error, Equatable, Sendable {
     case emptySlots
     /// Pause or resume was requested for a Pill Type without a Prescription.
     case noPrescription
+    /// A grid shape change was asked while a Position of the Current Blister is still Present.
+    case currentBlisterNotEmpty
 }
