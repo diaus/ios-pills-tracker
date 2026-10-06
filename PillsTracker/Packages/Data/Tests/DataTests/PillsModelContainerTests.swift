@@ -8,9 +8,10 @@ struct PillsModelContainerTests {
         #expect(container.schema.version == PillsSchemaV1.versionIdentifier)
     }
 
-    @Test func schemaV1ContainsPillTypeAndBlister() {
+    @Test func schemaV1ContainsPillTypeBlisterAndPrescription() {
         let names = PillsSchemaV1.models.map { String(describing: $0) }
         #expect(names.contains("PillTypeModel"))
         #expect(names.contains("BlisterModel"))
+        #expect(names.contains("PrescriptionModel"))
     }
 }

@@ -13,6 +13,7 @@ extension PillTypeModel {
             createdAt: aggregate.pillType.createdAt
         )
         blisters = aggregate.blisters.map(BlisterModel.init)
+        prescription = aggregate.prescription.map(PrescriptionModel.init)
     }
 
     /// Fails only if the stored row violates Domain invariants, which the repository never writes.
@@ -23,10 +24,14 @@ extension PillTypeModel {
             shape: GridShape(rows: rows, columns: columns),
             createdAt: createdAt
         )
-        return PillTypeAggregate(pillType: pillType, blisters: blisters.map { $0.toDomain(pillTypeID: id) })
+        return PillTypeAggregate(
+            pillType: pillType,
+            blisters: blisters.map { $0.toDomain(pillTypeID: id) },
+            prescription: try prescription?.toDomain(pillTypeID: id)
+        )
     }
 
-    /// Overwrites the stored Pill Type and its Blisters with `aggregate`.
+    /// Overwrites the stored Pill Type, its Blisters and its Prescription with `aggregate`.
     func apply(_ aggregate: PillTypeAggregate) {
         name = aggregate.pillType.name
         rows = aggregate.pillType.shape.rows
@@ -47,6 +52,38 @@ extension PillTypeModel {
             orphan.modelContext?.delete(orphan)
         }
         blisters = updated
+
+        switch (prescription, aggregate.prescription) {
+        case (let model?, let value?):
+            model.apply(value)
+        case (nil, let value?):
+            prescription = PrescriptionModel(value)
+        case (let model?, nil):
+            prescription = nil
+            model.modelContext?.delete(model)
+        case (nil, nil):
+            break
+        }
+    }
+}
+
+extension PrescriptionModel {
+    convenience init(_ prescription: Prescription) {
+        self.init(id: prescription.id, slots: prescription.slots, state: prescription.state.rawValue)
+    }
+
+    func toDomain(pillTypeID: UUID) throws -> Prescription {
+        try Prescription(
+            id: id,
+            pillTypeID: pillTypeID,
+            slots: slots,
+            state: PrescriptionState(rawValue: state) ?? .paused
+        )
+    }
+
+    func apply(_ prescription: Prescription) {
+        slots = prescription.slots
+        state = prescription.state.rawValue
     }
 }
 
