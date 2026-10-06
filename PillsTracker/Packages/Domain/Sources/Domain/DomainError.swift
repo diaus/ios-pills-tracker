@@ -7,4 +7,8 @@ public enum DomainError: Error, Equatable, Sendable {
     case invalidRows
     /// Grid columns were outside 1…10.
     case invalidColumns
+    /// A Prescription was given no Slots.
+    case emptySlots
+    /// Pause or resume was requested for a Pill Type without a Prescription.
+    case noPrescription
 }
