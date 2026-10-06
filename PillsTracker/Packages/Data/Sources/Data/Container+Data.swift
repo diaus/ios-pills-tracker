@@ -24,4 +24,9 @@ public extension Container {
         self { PillTypeRepositoryLive(modelContainer: self.modelContainer(), notifier: self.dataChangeNotifier()) }
             .singleton
     }
+
+    var intakeRepository: Factory<any IntakeRepository> {
+        self { IntakeRepositoryLive(modelContainer: self.modelContainer(), notifier: self.dataChangeNotifier()) }
+            .singleton
+    }
 }

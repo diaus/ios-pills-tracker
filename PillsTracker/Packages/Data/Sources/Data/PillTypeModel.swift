@@ -2,7 +2,7 @@ import Foundation
 import SwiftData
 
 extension PillsSchemaV1 {
-    /// Persisted Pill Type. Owns its Blisters and optional Prescription; deleting it cascades to them.
+    /// Persisted Pill Type. Owns its Blisters, optional Prescription and Intakes; deleting it cascades to them.
     @Model
     public final class PillTypeModel {
         @Attribute(.unique) public var id: UUID
@@ -16,6 +16,10 @@ extension PillsSchemaV1 {
 
         @Relationship(deleteRule: .cascade, inverse: \PrescriptionModel.pillType)
         public var prescription: PrescriptionModel?
+
+        /// Permanent Intake records; untouched by Blister and Prescription changes, deleted with the Pill Type.
+        @Relationship(deleteRule: .cascade, inverse: \IntakeModel.pillType)
+        public var intakes: [IntakeModel] = []
 
         public init(id: UUID, name: String, rows: Int, columns: Int, createdAt: Date) {
             self.id = id
