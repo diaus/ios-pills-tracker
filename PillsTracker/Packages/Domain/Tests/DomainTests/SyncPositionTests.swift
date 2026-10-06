@@ -51,6 +51,18 @@ struct SyncPositionTests {
         #expect(stored.currentBlister?.isPresent(position) == false)
     }
 
+    @Test func createsNoIntakeAndLeavesExistingOnesUntouched() async throws {
+        let aggregate = try makeAggregate()
+        let intake = Intake(pillTypeID: aggregate.id, blisterID: aggregate.blisters[0].id, position: Position(row: 0, column: 0), slot: .morning, day: Day(year: 2026, month: 10, day: 6), instant: Date(timeIntervalSince1970: 1_791_243_000))
+        let intakes = FakeIntakeRepository([intake])
+        let sut = SyncPosition(repository: FakePillTypeRepository([aggregate]))
+
+        try await sut(pillTypeID: aggregate.id, position: position, isPresent: false)
+        try await sut(pillTypeID: aggregate.id, position: Position(row: 0, column: 0), isPresent: true)
+
+        #expect(await intakes.all == [intake])
+    }
+
     @Test func throwsForUnknownPillType() async throws {
         let repository = FakePillTypeRepository()
         let sut = SyncPosition(repository: repository)

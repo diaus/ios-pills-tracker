@@ -59,6 +59,18 @@ struct StartNewBlisterTests {
         #expect(stored.blisters.count == 3)
     }
 
+    @Test func leavesTheIntakesOfTheRetiredBlisterUntouched() async throws {
+        var aggregate = try makeAggregate()
+        aggregate.blisters[0].presentPositions = []
+        let intake = Intake(pillTypeID: aggregate.id, blisterID: aggregate.blisters[0].id, position: Position(row: 0, column: 0), slot: .morning, day: Day(year: 2026, month: 10, day: 6), instant: Date(timeIntervalSince1970: 1_791_243_000))
+        let intakes = FakeIntakeRepository([intake])
+        let sut = StartNewBlister(repository: FakePillTypeRepository([aggregate]))
+
+        try await sut(pillTypeID: aggregate.id)
+
+        #expect(await intakes.all == [intake])
+    }
+
     @Test func throwsForUnknownPillType() async throws {
         let sut = StartNewBlister(repository: FakePillTypeRepository())
         await #expect(throws: UseCaseError.pillTypeNotFound) {
