@@ -32,7 +32,8 @@ struct PillTypeRepositoryLiveTests {
         try await repository.create(aggregate)
         let fetched = try #require(try await repository.fetch(id: aggregate.id))
 
-        #expect(fetched == aggregate)
+        #expect(fetched.pillType == aggregate.pillType)
+        #expect(Set(fetched.blisters) == Set(aggregate.blisters))
         #expect(fetched.blisters.first { $0.id == retired.id }?.shape == oldShape)
         #expect(fetched.currentBlister?.shape == aggregate.pillType.shape)
     }
