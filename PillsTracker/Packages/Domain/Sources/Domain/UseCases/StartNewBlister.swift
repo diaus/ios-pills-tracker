@@ -2,7 +2,8 @@ import Foundation
 
 /// Start New Blister: retires the Current Blister (allowed only when every Position is Empty)
 /// and replaces it with a fresh one where every Position is Present.
-/// The Retired Blister keeps its final grid so its Intakes stay meaningful.
+/// The Retired Blister keeps its final grid and shape so its Intakes stay meaningful; the fresh one
+/// takes the Pill Type's shape as it is now.
 public struct StartNewBlister: Sendable {
     private let repository: any PillTypeRepository
 

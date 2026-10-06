@@ -391,6 +391,16 @@
         }
       }
     },
+    "error.positionOutOfBounds": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This position is not part of the current blister."
+          }
+        }
+      }
+    },
     "error.slotNotOpen": {
       "localizations": {
         "en": {

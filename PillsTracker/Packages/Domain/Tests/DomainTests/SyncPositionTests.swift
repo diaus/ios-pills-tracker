@@ -39,7 +39,7 @@ struct SyncPositionTests {
 
     @Test func leavesRetiredBlistersAlone() async throws {
         var aggregate = try makeAggregate()
-        let retired = Blister(pillTypeID: aggregate.id, state: .retired, presentPositions: [position])
+        let retired = Blister(pillTypeID: aggregate.id, shape: aggregate.pillType.shape, state: .retired, presentPositions: [position])
         aggregate.blisters.insert(retired, at: 0)
         let repository = FakePillTypeRepository([aggregate])
         let sut = SyncPosition(repository: repository)
@@ -49,6 +49,18 @@ struct SyncPositionTests {
         let stored = try #require(await repository.fetch(id: aggregate.id))
         #expect(stored.blisters.first { $0.id == retired.id } == retired)
         #expect(stored.currentBlister?.isPresent(position) == false)
+    }
+
+    @Test(arguments: [Position(row: 1, column: 0), Position(row: 0, column: 3), Position(row: -1, column: 0)])
+    func refusesAPositionOutsideTheCurrentBlistersShape(outside: Position) async throws {
+        let aggregate = try makeAggregate()
+        let repository = FakePillTypeRepository([aggregate])
+        let sut = SyncPosition(repository: repository)
+
+        await #expect(throws: UseCaseError.positionOutOfBounds) {
+            try await sut(pillTypeID: aggregate.id, position: outside, isPresent: true)
+        }
+        #expect(await repository.fetch(id: aggregate.id) == aggregate)
     }
 
     @Test func createsNoIntakeAndLeavesExistingOnesUntouched() async throws {

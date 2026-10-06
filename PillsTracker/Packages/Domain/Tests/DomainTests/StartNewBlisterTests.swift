@@ -45,7 +45,7 @@ struct StartNewBlisterTests {
 
     @Test func retiredBlisterKeepsItsFinalGridWhenAnotherIsRetiredLater() async throws {
         var aggregate = try makeAggregate()
-        let earlier = Blister(pillTypeID: aggregate.id, state: .retired, presentPositions: [Position(row: 0, column: 0)])
+        let earlier = Blister(pillTypeID: aggregate.id, shape: aggregate.pillType.shape, state: .retired, presentPositions: [Position(row: 0, column: 0)])
         aggregate.blisters.insert(earlier, at: 0)
         aggregate.blisters[1].presentPositions = []
         let repository = FakePillTypeRepository([aggregate])

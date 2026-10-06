@@ -19,6 +19,7 @@ public struct Consume: Sendable {
         guard let prescription = aggregate.prescription, prescription.state == .active else {
             throw UseCaseError.noActivePrescription
         }
+        guard aggregate.blisters[index].contains(position) else { throw UseCaseError.positionOutOfBounds }
         guard aggregate.blisters[index].isPresent(position) else { throw UseCaseError.positionEmpty }
 
         let doneSlots = Set(try await intakes.fetch(day: day, pillTypeID: pillTypeID).map(\.slot))

@@ -49,12 +49,16 @@ struct EditPillTypeTests {
         var aggregate = try makeAggregate()
         aggregate.blisters[0].presentPositions = []
         let emptyCurrent = aggregate.blisters[0]
-        try aggregate.changeShape(GridShape(rows: 3, columns: 4))
+        let oldShape = try GridShape(rows: 2, columns: 2)
+        let newShape = try GridShape(rows: 3, columns: 4)
+        try aggregate.changeShape(newShape)
         let repository = FakePillTypeRepository([aggregate])
 
-        // The empty Current Blister is untouched by the shape change.
+        // The empty Current Blister is untouched by the shape change and keeps its own 2×2 geometry.
         let stored = try #require(await repository.fetch(id: aggregate.id))
         #expect(stored.currentBlister == emptyCurrent)
+        #expect(stored.currentBlister?.shape == oldShape)
+        #expect(stored.pillType.shape == newShape)
 
         try await StartNewBlister(repository: repository)(pillTypeID: aggregate.id)
 
@@ -62,9 +66,10 @@ struct EditPillTypeTests {
         let retired = try #require(after.blisters.first { $0.id == emptyCurrent.id })
         #expect(retired.state == .retired)
         #expect(retired.presentPositions.isEmpty)
+        #expect(retired.shape == oldShape)
         let fresh = try #require(after.currentBlister)
         #expect(fresh.presentPositions.count == 12)
-        let newShape = try GridShape(rows: 3, columns: 4)
+        #expect(fresh.shape == newShape)
         #expect(fresh.presentPositions == Set(newShape.allPositions))
     }
 }

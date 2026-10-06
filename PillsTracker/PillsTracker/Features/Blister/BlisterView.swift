@@ -24,7 +24,7 @@ struct BlisterView: View {
                         if model.showsSlotChips {
                             slotChips
                         }
-                        BlisterGridView(shape: pillType.shape, presentPositions: blister.presentPositions) { position in
+                        BlisterGridView(shape: blister.shape, presentPositions: blister.presentPositions) { position in
                             tappedPosition = TappedPosition(position: position, isPresent: blister.isPresent(position))
                         }
                         Text("blister.pillsLeft \(model.presentCount)")

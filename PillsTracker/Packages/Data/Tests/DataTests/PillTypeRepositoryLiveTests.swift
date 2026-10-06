@@ -1,4 +1,5 @@
 import Foundation
+import SwiftData
 import Testing
 import Domain
 @testable import Data
@@ -19,6 +20,39 @@ struct PillTypeRepositoryLiveTests {
         let fetched = try #require(try await repository.fetch(id: aggregate.id))
 
         #expect(fetched == aggregate)
+    }
+
+    @Test func eachBlisterKeepsItsOwnShape() async throws {
+        let (repository, _) = try makeRepository()
+        var aggregate = try PillTypeAggregate.new(name: "Aspirin", rows: 2, columns: 5, createdAt: Date(timeIntervalSince1970: 1_000))
+        let oldShape = try GridShape(rows: 1, columns: 3)
+        let retired = Blister(pillTypeID: aggregate.id, shape: oldShape, state: .retired, presentPositions: [])
+        aggregate.blisters.insert(retired, at: 0)
+
+        try await repository.create(aggregate)
+        let fetched = try #require(try await repository.fetch(id: aggregate.id))
+
+        #expect(fetched == aggregate)
+        #expect(fetched.blisters.first { $0.id == retired.id }?.shape == oldShape)
+        #expect(fetched.currentBlister?.shape == aggregate.pillType.shape)
+    }
+
+    /// Blisters written before they carried a shape have rows and columns 0; they take the Pill Type's shape.
+    @Test func aBlisterStoredWithoutAShapeTakesThePillTypesShape() async throws {
+        let container = try PillsModelContainer.make(inMemory: true)
+        let repository = PillTypeRepositoryLive(modelContainer: container, notifier: DataChangeNotifier())
+        let pillTypeID = UUID()
+        let blisterID = UUID()
+        let context = ModelContext(container)
+        let pillType = PillTypeModel(id: pillTypeID, name: "Aspirin", rows: 2, columns: 5, createdAt: Date(timeIntervalSince1970: 1_000))
+        context.insert(pillType)
+        pillType.blisters = [BlisterModel(id: blisterID, rows: 0, columns: 0, state: "current", presentPositions: [])]
+        try context.save()
+
+        let fetched = try #require(try await repository.fetch(id: pillTypeID))
+
+        #expect(fetched.currentBlister?.id == blisterID)
+        #expect(fetched.currentBlister?.shape == (try GridShape(rows: 2, columns: 5)))
     }
 
     @Test func fetchAllReturnsCreationDateOrder() async throws {

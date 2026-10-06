@@ -6,6 +6,8 @@ public enum UseCaseError: Error, Equatable, Sendable {
     case noCurrentBlister
     /// Start New Blister was asked while a Position of the Current Blister is still Present.
     case blisterNotEmpty
+    /// Consume or Sync Edit was asked for a Position outside the Current Blister's grid.
+    case positionOutOfBounds
     /// Consume was asked for a Position that is already Empty.
     case positionEmpty
     /// Consume was asked for a Slot that is not Open on that Day (not prescribed, or already Done).

@@ -51,6 +51,17 @@ struct ConsumeTests {
         #expect(await intakes.all.isEmpty)
     }
 
+    @Test func refusesAPositionOutsideTheCurrentBlistersShape() async throws {
+        let aggregate = try makeAggregate()
+        let (sut, pillTypes, intakes) = makeSUT(aggregate)
+
+        await #expect(throws: UseCaseError.positionOutOfBounds) {
+            try await sut(pillTypeID: aggregate.id, position: Position(row: 1, column: 0), slot: .morning, day: today, instant: instant)
+        }
+        #expect(await pillTypes.fetch(id: aggregate.id) == aggregate)
+        #expect(await intakes.all.isEmpty)
+    }
+
     @Test func refusesASlotThatIsNotPrescribed() async throws {
         let aggregate = try makeAggregate(slots: [.morning])
         let (sut, _, intakes) = makeSUT(aggregate)
