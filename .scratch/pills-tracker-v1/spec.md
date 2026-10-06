@@ -1,6 +1,6 @@
 # Pills Tracker v1
 
-Status: ready-for-agent
+Status: implemented on feat/pills-tracker-v1 (awaiting merge to main)
 
 ## Problem Statement
 

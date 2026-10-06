@@ -4,7 +4,7 @@
 
 **Blocked by:** 02 Add a Pill Type and see its Current Blister
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 - [x] Domain: Prescription (id, pill type id, non-empty set of Slots, Active/Paused) owned by the Pill Type aggregate; Slot enum Morning, Day, Evening; empty Slot set rejected in Domain
 - [x] Data: Prescription model related to Pill Type; deleting a Prescription leaves the Pill Type and its Blisters intact
@@ -13,3 +13,7 @@
 - [x] Home shows a Paused section listing Paused Prescriptions; tapping a card or a Paused row opens the Blister screen
 - [x] Home still links to the Pill Types list; Home shows the empty state only when no Pill Types exist
 - [x] Data tests: Prescription round-trips with its Pill Type; deleting a Prescription keeps the Pill Type
+
+## Comments
+
+- 2026-10-06: Implemented on branch `feat/pills-tracker-v1` (commits f8dca62..70f5069). All acceptance boxes ticked; code review findings fixed in commits b85c251..70f5069. Verified: app build zero warnings, app tests 3, Domain tests 62, Data tests 31, all passing.
