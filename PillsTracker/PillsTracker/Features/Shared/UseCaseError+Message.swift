@@ -8,6 +8,10 @@ extension UseCaseError {
         case .pillTypeNotFound: "error.pillTypeNotFound"
         case .noCurrentBlister: "error.noCurrentBlister"
         case .blisterNotEmpty: "error.blisterNotEmpty"
+        case .positionEmpty: "error.positionEmpty"
+        case .slotNotOpen: "error.slotNotOpen"
+        case .noActivePrescription: "error.noActivePrescription"
+        case .undoNotAllowed: "error.undoNotAllowed"
         }
     }
 }

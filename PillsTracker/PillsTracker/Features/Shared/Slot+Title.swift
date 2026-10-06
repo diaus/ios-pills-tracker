@@ -10,4 +10,13 @@ extension Slot {
         case .evening: "slot.evening"
         }
     }
+
+    /// Action label for consuming a pill for this Slot (String Catalog key).
+    var consumeTitle: LocalizedStringKey {
+        switch self {
+        case .morning: "blister.position.take.morning"
+        case .day: "blister.position.take.day"
+        case .evening: "blister.position.take.evening"
+        }
+    }
 }
