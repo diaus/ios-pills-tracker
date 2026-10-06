@@ -4,7 +4,7 @@
 
 **Blocked by:** 01 Project scaffold
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 - [x] Domain: Pill Type (id, name, rows, columns, creation timestamp) and Blister (id, pill type id, Current/Retired, set of Present Positions) value types; Position is zero-based (row, column); rows and columns validated to 1…10 and name validated non-empty in Domain
 - [x] Domain: PillTypeRepository protocol (fetch all, fetch by id, create, update, delete) treating Pill Type as the aggregate root for its Blisters
@@ -16,3 +16,7 @@
 - [x] Blister screen renders the grid with Present and Empty Positions visually distinct (read-only in this ticket)
 - [x] Data tests with an in-memory ModelContainer: Pill Type with its Blister round-trips; fetch all returns creation-date order
 - [x] View models are `@MainActor @Observable` and registered via Factory in the app target
+
+## Comments
+
+- 2026-10-06: Implemented on branch `feat/pills-tracker-v1` (commits f8dca62..70f5069). All acceptance boxes ticked; code review findings fixed in commits b85c251..70f5069. Verified: app build zero warnings, app tests 3, Domain tests 62, Data tests 31, all passing.

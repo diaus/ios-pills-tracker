@@ -4,7 +4,7 @@
 
 **Blocked by:** 02 Add a Pill Type and see its Current Blister
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 - [x] Domain: SyncPosition use case sets a Position Present or Empty on the Current Blister and touches nothing else
 - [x] Domain: StartNewBlister use case refuses with `blisterNotEmpty` when any Position is Present; otherwise marks the Current Blister Retired (keeping its final grid) and creates a new Current Blister with all Positions Present
@@ -13,3 +13,7 @@
 - [x] Retired Blisters persist in Data and are not shown in the UI
 - [x] Domain tests with fake repositories: SyncPosition both directions; StartNewBlister refusal and success including the Retired Blister keeping its state
 - [x] If a use case throws despite the UI guard, a plain alert is shown
+
+## Comments
+
+- 2026-10-06: Implemented on branch `feat/pills-tracker-v1` (commits f8dca62..70f5069). All acceptance boxes ticked; code review findings fixed in commits b85c251..70f5069. Verified: app build zero warnings, app tests 3, Domain tests 62, Data tests 31, all passing.

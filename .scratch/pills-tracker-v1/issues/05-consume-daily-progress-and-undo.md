@@ -4,7 +4,7 @@
 
 **Blocked by:** 03 Sync Edit and Start New Blister, 04 Prescriptions and Home cards
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 - [x] Domain: Day value type (year, month, day; Comparable, Hashable, Sendable; constructible from Date and Calendar); use cases take Day as a parameter and never read a clock (ADR 0001)
 - [x] Domain: Intake (id, pill type id, blister id, position, slot, day, instant); IntakeRepository protocol (fetch for a Day optionally per Pill Type, create, delete)
@@ -18,3 +18,7 @@
 - [x] View models compute "today" themselves and recompute on scene-active and the significant-time-change notification; Home reloads via the change stream after Consume or Undo
 - [x] Domain tests: Consume happy path and each error; Undo allowed vs refused (other Day, Retired Blister); DailyProgress covering Done/Open, Completed, low-stock, Slot removed mid-day drops out, Slot added is Open, Paused excluded, Pill Type without Prescription excluded
 - [x] Data tests: Intake round-trips with explicit Day; Intakes remain after a Blister is Retired
+
+## Comments
+
+- 2026-10-06: Implemented on branch `feat/pills-tracker-v1` (commits f8dca62..70f5069). All acceptance boxes ticked; code review findings fixed in commits b85c251..70f5069. Verified: app build zero warnings, app tests 3, Domain tests 62, Data tests 31, all passing.

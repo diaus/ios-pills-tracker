@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 - [x] Two local Swift packages, Domain and Data, exist and are linked into the app target; Data depends on Domain; the app depends on both
 - [x] Only Data imports SwiftData; Domain has no framework dependencies
@@ -16,3 +16,7 @@
 - [x] A String Catalog exists and the empty-state text comes from it
 - [x] Home shows an empty state ("no pill types yet") with a "+" button that is not yet functional
 - [x] GLOSSARY.md vocabulary is used for all new type names
+
+## Comments
+
+- 2026-10-06: Implemented on branch `feat/pills-tracker-v1` (commits f8dca62..70f5069). All acceptance boxes ticked; code review findings fixed in commits b85c251..70f5069. Verified: app build zero warnings, app tests 3, Domain tests 62, Data tests 31, all passing.
