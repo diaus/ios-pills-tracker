@@ -17,8 +17,7 @@ public struct Undo: Sendable {
             throw UseCaseError.undoNotAllowed
         }
         guard var aggregate = try await pillTypes.fetch(id: intake.pillTypeID) else { throw UseCaseError.pillTypeNotFound }
-        guard let index = aggregate.blisters.firstIndex(where: { $0.id == intake.blisterID }),
-              aggregate.blisters[index].state == .current else {
+        guard let index = try? aggregate.currentBlisterIndex(), aggregate.blisters[index].id == intake.blisterID else {
             throw UseCaseError.undoNotAllowed
         }
 
