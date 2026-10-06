@@ -71,6 +71,16 @@
         }
       }
     },
+    "blister.pillType": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pill Type"
+          }
+        }
+      }
+    },
     "blister.pillsLeft %lld": {
       "localizations": {
         "en": {
@@ -277,6 +287,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Empty every position before starting a new blister."
+          }
+        }
+      }
+    },
+    "error.currentBlisterNotEmpty": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Empty every position of the current blister before changing the shape."
           }
         }
       }
@@ -497,6 +517,76 @@
           "stringUnit": {
             "state": "translated",
             "value": "Pills"
+          }
+        }
+      }
+    },
+    "pillType.delete": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete Pill Type"
+          }
+        }
+      }
+    },
+    "pillType.delete.confirm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete"
+          }
+        }
+      }
+    },
+    "pillType.delete.confirm.message": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Its prescription, blisters and intake history are deleted too. This cannot be undone."
+          }
+        }
+      }
+    },
+    "pillType.delete.confirm.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete this pill type?"
+          }
+        }
+      }
+    },
+    "pillType.shape.footer": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rows and columns of one blister strip, each between 1 and 10. A new shape applies to the next blister you start."
+          }
+        }
+      }
+    },
+    "pillType.shape.locked": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The shape can change only while the current blister is empty. Empty every position first."
+          }
+        }
+      }
+    },
+    "pillType.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pill Type"
           }
         }
       }
