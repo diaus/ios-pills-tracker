@@ -3,6 +3,7 @@ import Domain
 import FactoryKit
 import Foundation
 import Observation
+import SwiftUI
 
 /// Lists every Pill Type ordered by creation date.
 @MainActor @Observable
@@ -10,13 +11,13 @@ final class PillTypesListViewModel {
     @ObservationIgnored @Injected(\.pillTypeRepository) private var repository
 
     private(set) var pillTypes: [PillTypeAggregate] = []
-    var errorMessage: String?
+    var errorMessage: LocalizedStringKey?
 
     func load() async {
         do {
             pillTypes = try await repository.fetchAll()
         } catch {
-            errorMessage = error.localizedDescription
+            errorMessage = error.userMessage
         }
     }
 

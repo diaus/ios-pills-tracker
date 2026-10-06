@@ -22,6 +22,7 @@ struct PillTypesListView: View {
             }
         }
         .navigationTitle("pillTypes.title")
+        .errorAlert(message: $model.errorMessage)
         .task { await model.load() }
         .task { await model.observeChanges() }
     }

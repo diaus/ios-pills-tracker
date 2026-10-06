@@ -261,6 +261,16 @@
         }
       }
     },
+    "common.error.unknown": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Something went wrong. Please try again."
+          }
+        }
+      }
+    },
     "common.ok": {
       "localizations": {
         "en": {
@@ -287,6 +297,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Empty every position before starting a new blister."
+          }
+        }
+      }
+    },
+    "error.corruptRecord": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stored data could not be read."
           }
         }
       }
@@ -367,6 +387,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "This pill type has no prescription."
+          }
+        }
+      }
+    },
+    "error.notFound": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This item no longer exists."
           }
         }
       }
