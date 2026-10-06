@@ -11,7 +11,7 @@ struct TappedPosition: Identifiable, Hashable {
 
 /// Action sheet shown after tapping a Position. A Present one lists today's Open Slots to Consume for,
 /// plus "remove without prescription" (a Sync Edit); with no Open Slot only the Sync Edit remains.
-/// An Empty one can only be marked Present (a Sync Edit); Consume from Empty is refused in Domain.
+/// An Empty one can only be set Present (a Sync Edit); Consume from Empty is refused in Domain.
 private struct PositionActionSheet: ViewModifier {
     @Binding var tapped: TappedPosition?
     let openSlots: [Slot]
@@ -35,7 +35,7 @@ private struct PositionActionSheet: ViewModifier {
                     onSync(tapped.position, false)
                 }
             } else {
-                Button("blister.position.markPresent") {
+                Button("blister.position.setPresent") {
                     onSync(tapped.position, true)
                 }
             }

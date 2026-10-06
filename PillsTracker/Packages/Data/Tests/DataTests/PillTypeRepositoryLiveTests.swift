@@ -38,8 +38,8 @@ struct PillTypeRepositoryLiveTests {
         #expect(fetched.currentBlister?.shape == aggregate.pillType.shape)
     }
 
-    /// Blisters written before they carried a shape have rows and columns 0; they take the Pill Type's shape.
-    @Test func aBlisterStoredWithoutAShapeTakesThePillTypesShape() async throws {
+    /// Blisters written before they carried a shape have rows and columns 0; they use the Pill Type's shape.
+    @Test func aBlisterStoredWithoutAShapeUsesThePillTypesShape() async throws {
         let container = try PillsModelContainer.make(inMemory: true)
         let repository = PillTypeRepositoryLive(modelContainer: container, notifier: DataChangeNotifier())
         let pillTypeID = UUID()

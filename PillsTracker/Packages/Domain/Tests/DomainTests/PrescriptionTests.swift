@@ -63,7 +63,7 @@ struct PillTypeAggregatePrescriptionTests {
         #expect(aggregate.prescription == nil)
     }
 
-    @Test func pauseAndResumeToggleThePrescriptionState() throws {
+    @Test func pauseThenResumeRestoresActiveState() throws {
         var aggregate = try makeAggregate()
         try aggregate.setPrescriptionSlots([.morning])
 

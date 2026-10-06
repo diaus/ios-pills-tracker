@@ -9,7 +9,7 @@ struct SyncPositionTests {
         try PillTypeAggregate.new(name: "Aspirin", rows: 1, columns: 3, createdAt: Date(timeIntervalSince1970: 0))
     }
 
-    @Test func marksAPresentPositionEmptyAndTouchesNothingElse() async throws {
+    @Test func setsAPresentPositionEmptyAndTouchesNothingElse() async throws {
         let aggregate = try makeAggregate()
         let repository = FakePillTypeRepository([aggregate])
         let sut = SyncPosition(repository: repository)
@@ -25,7 +25,7 @@ struct SyncPositionTests {
         #expect(stored.blisters.count == 1)
     }
 
-    @Test func marksAnEmptyPositionPresent() async throws {
+    @Test func setsAnEmptyPositionPresent() async throws {
         var aggregate = try makeAggregate()
         aggregate.blisters[0].presentPositions = []
         let repository = FakePillTypeRepository([aggregate])
