@@ -11,9 +11,7 @@ public struct SyncPosition: Sendable {
 
     public func callAsFunction(pillTypeID: UUID, position: Position, isPresent: Bool) async throws {
         guard var aggregate = try await repository.fetch(id: pillTypeID) else { throw UseCaseError.pillTypeNotFound }
-        guard let index = aggregate.blisters.firstIndex(where: { $0.state == .current }) else {
-            throw UseCaseError.noCurrentBlister
-        }
+        let index = try aggregate.currentBlisterIndex()
         if isPresent {
             aggregate.blisters[index].presentPositions.insert(position)
         } else {

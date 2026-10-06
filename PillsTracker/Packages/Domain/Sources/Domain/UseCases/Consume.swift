@@ -15,9 +15,7 @@ public struct Consume: Sendable {
     @discardableResult
     public func callAsFunction(pillTypeID: UUID, position: Position, slot: Slot, day: Day, instant: Date) async throws -> Intake {
         guard var aggregate = try await pillTypes.fetch(id: pillTypeID) else { throw UseCaseError.pillTypeNotFound }
-        guard let index = aggregate.blisters.firstIndex(where: { $0.state == .current }) else {
-            throw UseCaseError.noCurrentBlister
-        }
+        let index = try aggregate.currentBlisterIndex()
         guard let prescription = aggregate.prescription, prescription.state == .active else {
             throw UseCaseError.noActivePrescription
         }

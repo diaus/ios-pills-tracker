@@ -12,9 +12,7 @@ public struct StartNewBlister: Sendable {
 
     public func callAsFunction(pillTypeID: UUID) async throws {
         guard var aggregate = try await repository.fetch(id: pillTypeID) else { throw UseCaseError.pillTypeNotFound }
-        guard let index = aggregate.blisters.firstIndex(where: { $0.state == .current }) else {
-            throw UseCaseError.noCurrentBlister
-        }
+        let index = try aggregate.currentBlisterIndex()
         guard aggregate.blisters[index].isEmpty else { throw UseCaseError.blisterNotEmpty }
 
         aggregate.blisters[index].state = .retired
