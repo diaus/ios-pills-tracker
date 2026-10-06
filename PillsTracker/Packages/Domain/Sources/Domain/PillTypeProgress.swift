@@ -37,7 +37,7 @@ public struct PillTypeProgress: Identifiable, Hashable, Sendable {
     /// Completed: no Slot is Open on the Day.
     public var isCompleted: Bool { openSlots.isEmpty }
 
-    /// Fewer Present pills than Open Slots: the user needs a new strip before the Day is over.
+    /// Fewer Present pills than Open Slots: the user needs a new Blister before the Day is over.
     public var isLowStock: Bool { presentCount < openSlots.count }
 
     public func intake(for slot: Slot) -> Intake? {

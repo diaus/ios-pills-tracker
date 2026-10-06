@@ -1,4 +1,4 @@
-/// One cell of a Blister's grid, addressed zero-based by row and column.
+/// One place in a Blister's grid, addressed zero-based by row and column.
 /// Nothing user-facing shows these indices.
 public struct Position: Hashable, Sendable, Codable {
     public var row: Int

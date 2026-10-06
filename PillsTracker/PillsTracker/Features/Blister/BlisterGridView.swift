@@ -1,23 +1,23 @@
 import Domain
 import SwiftUI
 
-/// The grid mirroring a physical strip. Present and Empty Positions are visually distinct.
-/// Reusable at small sizes (Home mini grid) by passing a smaller `cellSpacing` and no tap handler.
+/// The grid mirroring the Blister. Present and Empty Positions are visually distinct.
+/// Reusable at small sizes (Home mini grid) by passing a smaller `positionSpacing` and no tap handler.
 struct BlisterGridView: View {
     let shape: GridShape
     let presentPositions: Set<Position>
-    var cellSpacing: CGFloat = 8
+    var positionSpacing: CGFloat = 8
     var onTap: ((Position) -> Void)? = nil
 
     private var columns: [GridItem] {
-        Array(repeating: GridItem(.flexible(), spacing: cellSpacing), count: shape.columns)
+        Array(repeating: GridItem(.flexible(), spacing: positionSpacing), count: shape.columns)
     }
 
     var body: some View {
-        LazyVGrid(columns: columns, spacing: cellSpacing) {
+        LazyVGrid(columns: columns, spacing: positionSpacing) {
             ForEach(shape.allPositions, id: \.self) { position in
                 let isPresent = presentPositions.contains(position)
-                PositionCell(isPresent: isPresent)
+                PositionTile(isPresent: isPresent)
                     .aspectRatio(1, contentMode: .fit)
                     .contentShape(Rectangle())
                     .onTapGesture { onTap?(position) }
@@ -27,7 +27,7 @@ struct BlisterGridView: View {
     }
 }
 
-private struct PositionCell: View {
+private struct PositionTile: View {
     let isPresent: Bool
 
     var body: some View {

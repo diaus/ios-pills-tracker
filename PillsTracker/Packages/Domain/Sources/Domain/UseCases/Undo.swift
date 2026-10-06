@@ -2,7 +2,7 @@ import Foundation
 
 /// Undo: reverts an Intake made on `day` from the Current Blister. The Position becomes Present
 /// again and the Intake is removed. Intakes from another Day or a Retired Blister cannot be undone,
-/// because the user can no longer verify them against the strip.
+/// because the user can no longer verify them against the Blister in hand.
 public struct Undo: Sendable {
     private let pillTypes: any PillTypeRepository
     private let intakes: any IntakeRepository

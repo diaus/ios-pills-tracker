@@ -91,12 +91,32 @@
         }
       }
     },
-    "blister.position.markPresent": {
+    "blister.position.consume.day": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Mark as present"
+            "value": "Consume for Day"
+          }
+        }
+      }
+    },
+    "blister.position.consume.evening": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Consume for Evening"
+          }
+        }
+      }
+    },
+    "blister.position.consume.morning": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Consume for Morning"
           }
         }
       }
@@ -111,32 +131,12 @@
         }
       }
     },
-    "blister.position.take.day": {
+    "blister.position.setPresent": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Take for Day"
-          }
-        }
-      }
-    },
-    "blister.position.take.evening": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Take for Evening"
-          }
-        }
-      }
-    },
-    "blister.position.take.morning": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Take for Morning"
+            "value": "Set as present"
           }
         }
       }
