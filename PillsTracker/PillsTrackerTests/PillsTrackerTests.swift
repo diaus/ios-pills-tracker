@@ -1,19 +1,10 @@
-//
-//  PillsTrackerTests.swift
-//  PillsTrackerTests
-//
-//  Created by Andrew Shapoval on 29/09/2026.
-//
-
+import Foundation
 import Testing
 @testable import PillsTracker
 
-struct PillsTrackerTests {
-
-    @Test func example() async throws {
-        // Write your test here and use APIs like `#expect(...)` to check expected conditions.
-        // Swift Testing Documentation
-        // https://developer.apple.com/documentation/testing
+struct StringCatalogTests {
+    @Test func homeEmptyStateTextComesFromTheStringCatalog() {
+        let title = String(localized: "home.empty.title", bundle: .main)
+        #expect(title == "No pill types yet")
     }
-
 }
