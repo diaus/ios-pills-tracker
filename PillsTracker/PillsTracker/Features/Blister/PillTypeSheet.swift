@@ -1,4 +1,3 @@
-import Domain
 import FactoryKit
 import SwiftUI
 
@@ -19,26 +18,17 @@ struct PillTypeSheet: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section {
-                    TextField("addPillType.name", text: $model.name)
-                        .textInputAutocapitalization(.words)
-                    fieldError(model.nameError)
-                }
-
-                Section {
-                    Stepper(value: $model.rows, in: GridShape.allowedRange) {
-                        LabeledContent("addPillType.rows", value: model.rows, format: .number)
-                    }
-                    Stepper(value: $model.columns, in: GridShape.allowedRange) {
-                        LabeledContent("addPillType.columns", value: model.columns, format: .number)
-                    }
-                    fieldError(model.shapeError)
-                } header: {
-                    Text("addPillType.shape")
-                } footer: {
-                    Text(model.isShapeLocked ? "pillType.shape.locked" : "pillType.shape.footer")
-                }
-                .disabled(model.isShapeLocked)
+                PillTypeFormFields(
+                    name: $model.name,
+                    rows: $model.rows,
+                    columns: $model.columns,
+                    nameError: model.nameError,
+                    rowsError: model.rowsError,
+                    columnsError: model.columnsError,
+                    shapeError: model.shapeError,
+                    shapeFooter: model.isShapeLocked ? "pillType.shape.locked" : "pillType.shape.footer",
+                    isShapeLocked: model.isShapeLocked
+                )
 
                 Section {
                     Button("pillType.delete", role: .destructive) {
@@ -77,15 +67,6 @@ struct PillTypeSheet: View {
             }
             .errorAlert(message: $model.errorMessage)
             .task { await model.load() }
-        }
-    }
-
-    @ViewBuilder
-    private func fieldError(_ message: LocalizedStringKey?) -> some View {
-        if let message {
-            Text(message)
-                .font(.footnote)
-                .foregroundStyle(.red)
         }
     }
 }

@@ -18,6 +18,8 @@ final class PillTypeViewModel {
     var rows = GridShape.allowedRange.lowerBound
     var columns = GridShape.allowedRange.lowerBound
     private(set) var nameError: LocalizedStringKey?
+    private(set) var rowsError: LocalizedStringKey?
+    private(set) var columnsError: LocalizedStringKey?
     private(set) var shapeError: LocalizedStringKey?
     var errorMessage: LocalizedStringKey?
     private(set) var isSaving = false
@@ -49,6 +51,8 @@ final class PillTypeViewModel {
     /// Applies the rename and, when it changed, the new shape. Returns true on success so the sheet can dismiss.
     func save() async -> Bool {
         nameError = nil
+        rowsError = nil
+        columnsError = nil
         shapeError = nil
         guard var updated = aggregate else { return false }
         do {
@@ -84,7 +88,9 @@ final class PillTypeViewModel {
     private func show(_ error: DomainError) {
         switch error {
         case .emptyName: nameError = error.message
-        case .invalidRows, .invalidColumns, .currentBlisterNotEmpty: shapeError = error.message
+        case .invalidRows: rowsError = error.message
+        case .invalidColumns: columnsError = error.message
+        case .currentBlisterNotEmpty: shapeError = error.message
         default: errorMessage = error.message
         }
     }
