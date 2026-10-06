@@ -53,6 +53,7 @@ final class AddPillTypeViewModel {
         case .emptyName: nameError = error.message
         case .invalidRows: rowsError = error.message
         case .invalidColumns: columnsError = error.message
+        default: saveErrorMessage = error.localizedDescription
         }
     }
 }

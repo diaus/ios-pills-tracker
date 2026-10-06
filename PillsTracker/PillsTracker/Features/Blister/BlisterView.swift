@@ -4,6 +4,7 @@ import SwiftUI
 
 struct BlisterView: View {
     @State private var model: BlisterViewModel
+    @State private var isEditingPrescription = false
 
     init(pillTypeID: UUID) {
         _model = State(initialValue: Container.shared.blisterViewModel(pillTypeID))
@@ -27,6 +28,17 @@ struct BlisterView: View {
             }
         }
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button("blister.prescription", systemImage: "calendar.badge.clock") {
+                    isEditingPrescription = true
+                }
+                .disabled(model.pillType == nil)
+            }
+        }
+        .sheet(isPresented: $isEditingPrescription) {
+            PrescriptionSheet(pillTypeID: model.pillTypeID)
+        }
         .task { await model.load() }
         .task { await model.observeChanges() }
     }

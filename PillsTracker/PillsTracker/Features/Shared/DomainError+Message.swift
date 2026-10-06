@@ -8,6 +8,8 @@ extension DomainError {
         case .emptyName: "error.emptyName"
         case .invalidRows: "error.invalidRows"
         case .invalidColumns: "error.invalidColumns"
+        case .emptySlots: "error.emptySlots"
+        case .noPrescription: "error.noPrescription"
         }
     }
 }
