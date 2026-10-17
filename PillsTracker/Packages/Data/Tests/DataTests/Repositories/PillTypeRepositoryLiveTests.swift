@@ -72,7 +72,7 @@ struct PillTypeRepositoryLiveTests {
         #expect(try await repository.fetch(id: UUID()) == nil)
     }
 
-    @Test func updateReplacesPillTypeAndBlisters() async throws {
+    @Test func updateStoresTheRenameTheRetiredBlisterAndTheNewOne() async throws {
         let (repository, _) = try makeRepository()
         var aggregate = try PillTypeAggregate.new(name: "Aspirin", rows: 1, columns: 2, createdAt: Date(timeIntervalSince1970: 1_000))
         try await repository.create(aggregate)
