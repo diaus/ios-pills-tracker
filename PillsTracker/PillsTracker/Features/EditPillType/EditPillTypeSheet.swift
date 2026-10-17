@@ -1,4 +1,3 @@
-import FactoryKit
 import SwiftUI
 
 /// Sheet opened from the Blister toolbar. Renames the Pill Type, changes its grid shape while the
@@ -11,7 +10,7 @@ struct EditPillTypeSheet: View {
     private let onDeleted: @MainActor () -> Void
 
     init(pillTypeID: UUID, onDeleted: @escaping @MainActor () -> Void) {
-        _model = State(initialValue: Container.shared.editPillTypeViewModel(pillTypeID))
+        _model = State(initialValue: EditPillTypeViewModel(pillTypeID: pillTypeID))
         self.onDeleted = onDeleted
     }
 

@@ -1,9 +1,8 @@
 import Domain
-import FactoryKit
 import SwiftUI
 
 struct PillTypesListView: View {
-    @State private var model = Container.shared.pillTypesListViewModel()
+    @State private var model = PillTypesListViewModel()
 
     var body: some View {
         List(model.pillTypes) { aggregate in
