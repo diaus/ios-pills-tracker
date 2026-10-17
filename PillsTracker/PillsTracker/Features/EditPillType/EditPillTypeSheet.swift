@@ -3,15 +3,15 @@ import SwiftUI
 
 /// Sheet opened from the Blister toolbar. Renames the Pill Type, changes its grid shape while the
 /// Current Blister is empty, or deletes it (with confirmation).
-struct PillTypeSheet: View {
+struct EditPillTypeSheet: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var model: PillTypeViewModel
+    @State private var model: EditPillTypeViewModel
     @State private var isConfirmingDelete = false
     /// Called after the Pill Type was deleted so the presenting screen can leave it.
     private let onDeleted: @MainActor () -> Void
 
     init(pillTypeID: UUID, onDeleted: @escaping @MainActor () -> Void) {
-        _model = State(initialValue: Container.shared.pillTypeViewModel(pillTypeID))
+        _model = State(initialValue: Container.shared.editPillTypeViewModel(pillTypeID))
         self.onDeleted = onDeleted
     }
 

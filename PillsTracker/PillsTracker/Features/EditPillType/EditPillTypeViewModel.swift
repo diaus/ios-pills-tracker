@@ -8,7 +8,7 @@ import SwiftUI
 /// Renames a Pill Type, changes its grid shape (only while the Current Blister is empty) or deletes it.
 /// Rules live in Domain (`PillTypeAggregate`); this only drives the form and persists.
 @MainActor @Observable
-final class PillTypeViewModel {
+final class EditPillTypeViewModel {
     @ObservationIgnored @Injected(\.pillTypeRepository) private var repository
 
     let pillTypeID: UUID
