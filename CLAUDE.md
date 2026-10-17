@@ -20,7 +20,7 @@ Build, test and run through the MobileBuildMCP tools (`build_sim`, `test_sim`, `
 
 SourceKit's "No such module 'Domain'/'Data'" diagnostics are index noise; `build_sim` is the source of truth.
 
-The deployment target is iOS 18: check runtime behaviour there by switching the simulator to iPhone 16 (iOS 18.5) for the session only, without `persist`.
+For any UI change, before reporting done, drive the running app with MobileBuildMCP's UI tools (`snapshot_ui`, `tap`, `type_text`) on the deployment target, iOS 18: switch the simulator to iPhone 16 (iOS 18.5) for the session only, without `persist`. Confirm each action from the snapshot it returns, since a tool's success status can't tell a dropped tap from a landed one. A check that couldn't run is reported as skipped, its acceptance box left unticked.
 
 ## Editing
 
