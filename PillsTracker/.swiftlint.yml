@@ -1,4 +1,5 @@
-# Only the localization rules for now: user-facing text must come from generated String Catalog symbols.
+# Only custom rules for now: localization (user-facing text comes from generated String Catalog symbols)
+# and domain language (GLOSSARY.md).
 only_rules:
   - custom_rules
 
@@ -12,7 +13,7 @@ custom_rules:
     excluded_match_kinds:
       - comment
       - doccomment
-    message: "Pass a generated String Catalog symbol, e.g. Text(.homeTitle); add the key to Localizable.xcstrings first. Use Text(verbatim:) for text that is never localized."
+    message: "Pass a generated String Catalog symbol, e.g. Text(.homeTitle); add the key first with scripts/xcstrings.py set. Use Text(verbatim:) for text that is never localized."
     severity: error
 
   # Keys typed as strings anywhere else, e.g. a switch returning LocalizedStringResource.
@@ -23,4 +24,25 @@ custom_rules:
     match_kinds:
       - string
     message: "Reference the generated String Catalog symbol (e.g. .homeTitle) instead of typing its key."
+    severity: error
+
+  # Errors reach the user only through Error.userMessage and errorAlert, which map them to catalog text.
+  localized_description:
+    name: "Localized Description"
+    regex: '\.localizedDescription\b'
+    excluded_match_kinds:
+      - comment
+      - doccomment
+    message: "Show errors through `error.userMessage` and `.errorAlert(message:)`; localizedDescription bypasses the String Catalog."
+    severity: error
+
+  # GLOSSARY.md "Avoid" terms, matched as whole camelCase segments of identifiers and generated catalog symbols.
+  # Only the terms with no common Swift/SwiftUI meaning: sheet, date, index, edit, Toggle and Bool.toggle() stay legal.
+  glossary_avoided_term:
+    name: "Glossary Avoided Term"
+    regex: '(?<![A-Za-z0-9_])(?:medication|medicine|drug|strip|cell|take|taken|consumption|dose|dosage|regimen|refill|mark|uncheck|pending|remaining|finished|archived)(?![a-z])|(?<![A-Za-z0-9_])toggle(?=[A-Z0-9_])|(?<![A-Z])(?:Medication|Medicine|Drug|Strip|Cell|Take|Taken|Consumption|Dose|Dosage|Regimen|Refill|Mark|Uncheck|Pending|Remaining|Finished|Archived)(?![a-z])|(?<=[a-z0-9])Toggle(?![a-z])'
+    match_kinds:
+      - identifier
+      - typeidentifier
+    message: "GLOSSARY.md lists this word under Avoid; use the glossary term (e.g. Consume, Sync Edit, Position, Open Slot, Retired Blister)."
     severity: error
