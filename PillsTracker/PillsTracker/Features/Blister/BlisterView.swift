@@ -60,7 +60,7 @@ struct BlisterView: View {
             PrescriptionSheet(pillTypeID: model.pillTypeID)
         }
         .sheet(isPresented: $isEditingPillType) {
-            PillTypeSheet(pillTypeID: model.pillTypeID, onDeleted: onPillTypeDeleted)
+            EditPillTypeSheet(pillTypeID: model.pillTypeID, onDeleted: onPillTypeDeleted)
         }
         .positionActionSheet(
             for: $tappedPosition,

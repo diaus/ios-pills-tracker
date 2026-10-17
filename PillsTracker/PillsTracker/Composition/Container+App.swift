@@ -19,8 +19,8 @@ extension Container {
         self { @MainActor pillTypeID in BlisterViewModel(pillTypeID: pillTypeID) }
     }
 
-    @MainActor var pillTypeViewModel: ParameterFactory<UUID, PillTypeViewModel> {
-        self { @MainActor pillTypeID in PillTypeViewModel(pillTypeID: pillTypeID) }
+    @MainActor var editPillTypeViewModel: ParameterFactory<UUID, EditPillTypeViewModel> {
+        self { @MainActor pillTypeID in EditPillTypeViewModel(pillTypeID: pillTypeID) }
     }
 
     @MainActor var prescriptionViewModel: ParameterFactory<UUID, PrescriptionViewModel> {
