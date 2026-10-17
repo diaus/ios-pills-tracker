@@ -1,5 +1,4 @@
 import Domain
-import FactoryKit
 import SwiftUI
 
 struct BlisterView: View {
@@ -12,7 +11,7 @@ struct BlisterView: View {
     @State private var undoCandidate: Intake?
 
     init(pillTypeID: UUID, onPillTypeDeleted: @escaping @MainActor () -> Void) {
-        _model = State(initialValue: Container.shared.blisterViewModel(pillTypeID))
+        _model = State(initialValue: BlisterViewModel(pillTypeID: pillTypeID))
         self.onPillTypeDeleted = onPillTypeDeleted
     }
 

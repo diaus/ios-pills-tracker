@@ -1,18 +1,20 @@
 import Domain
-import FactoryKit
 import Foundation
 import SwiftData
 
 /// SwiftData-backed `PillTypeRepository`. All model access happens on this actor, in one `ModelContext`,
 /// and every write is one save followed by one change notification.
-@ModelActor
-public actor PillTypeRepositoryLive: PillTypeRepository {
-    /// Defaults to the shared notifier so the macro-synthesised `init(modelContainer:)` stays usable.
-    var notifier = Container.shared.dataChangeNotifier()
+///
+/// The `ModelActor` conformance is written out rather than taken from `@ModelActor`, whose synthesised
+/// `init(modelContainer:)` would leave the notifier without a value.
+public actor PillTypeRepositoryLive: PillTypeRepository, ModelActor {
+    public nonisolated let modelContainer: ModelContainer
+    public nonisolated let modelExecutor: any ModelExecutor
+    private let notifier: DataChangeNotifier
 
     public init(modelContainer: ModelContainer, notifier: DataChangeNotifier) {
         self.modelContainer = modelContainer
-        self.modelExecutor = DefaultSerialModelExecutor(modelContext: ModelContext(modelContainer))
+        modelExecutor = DefaultSerialModelExecutor(modelContext: ModelContext(modelContainer))
         self.notifier = notifier
     }
 

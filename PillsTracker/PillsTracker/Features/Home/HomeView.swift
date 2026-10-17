@@ -1,9 +1,8 @@
 import Domain
-import FactoryKit
 import SwiftUI
 
 struct HomeView: View {
-    @State private var model = Container.shared.homeViewModel()
+    @State private var model = HomeViewModel()
     @State private var path: [AppRoute] = []
     @State private var isAddingPillType = false
 

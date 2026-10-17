@@ -1,5 +1,4 @@
 import Domain
-import FactoryKit
 import SwiftUI
 
 /// Sheet opened from the Blister toolbar. Creates a Prescription when the Pill Type has none;
@@ -10,7 +9,7 @@ struct PrescriptionSheet: View {
     @State private var isConfirmingDelete = false
 
     init(pillTypeID: UUID) {
-        _model = State(initialValue: Container.shared.prescriptionViewModel(pillTypeID))
+        _model = State(initialValue: PrescriptionViewModel(pillTypeID: pillTypeID))
     }
 
     var body: some View {
