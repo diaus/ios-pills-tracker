@@ -28,7 +28,7 @@ struct PillTypeAggregateTests {
     @Test func currentBlisterIgnoresRetiredOnes() throws {
         var aggregate = try PillTypeAggregate.new(name: "Aspirin", rows: 1, columns: 2, createdAt: Date(timeIntervalSince1970: 0))
         let retired = Blister(pillTypeID: aggregate.pillType.id, shape: aggregate.pillType.shape, state: .retired, presentPositions: [])
-        aggregate.blisters.insert(retired, at: 0)
+        aggregate = aggregate.inserting(retired)
         #expect(aggregate.currentBlister?.state == .current)
     }
 }

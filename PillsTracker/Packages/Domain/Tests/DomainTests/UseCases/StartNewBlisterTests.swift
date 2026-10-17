@@ -9,7 +9,7 @@ struct StartNewBlisterTests {
 
     @Test func refusesWhileAnyPositionIsPresent() async throws {
         var aggregate = try makeAggregate()
-        aggregate.blisters[0].presentPositions = [Position(row: 1, column: 1)]
+        try aggregate.syncCurrentBlister(present: [Position(row: 1, column: 1)])
         let repository = FakePillTypeRepository([aggregate])
         let sut = StartNewBlister(repository: repository)
 
@@ -21,8 +21,8 @@ struct StartNewBlisterTests {
 
     @Test func retiresTheEmptyCurrentBlisterAndStartsAFullOne() async throws {
         var aggregate = try makeAggregate()
-        aggregate.blisters[0].presentPositions = []
-        let oldBlister = aggregate.blisters[0]
+        try aggregate.syncCurrentBlister(present: [])
+        let oldBlister = try #require(aggregate.currentBlister)
         let repository = FakePillTypeRepository([aggregate])
         let sut = StartNewBlister(repository: repository)
 
@@ -46,8 +46,8 @@ struct StartNewBlisterTests {
     @Test func retiredBlisterKeepsItsFinalGridWhenAnotherIsRetiredLater() async throws {
         var aggregate = try makeAggregate()
         let earlier = Blister(pillTypeID: aggregate.id, shape: aggregate.pillType.shape, state: .retired, presentPositions: [Position(row: 0, column: 0)])
-        aggregate.blisters.insert(earlier, at: 0)
-        aggregate.blisters[1].presentPositions = []
+        aggregate = aggregate.inserting(earlier)
+        try aggregate.syncCurrentBlister(present: [])
         let repository = FakePillTypeRepository([aggregate])
         let sut = StartNewBlister(repository: repository)
 

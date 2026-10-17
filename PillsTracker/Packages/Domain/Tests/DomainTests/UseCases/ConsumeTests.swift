@@ -41,7 +41,7 @@ struct ConsumeTests {
 
     @Test func refusesAnEmptyPosition() async throws {
         var aggregate = try makeAggregate()
-        aggregate.blisters[0].presentPositions.remove(position)
+        try aggregate.syncPosition(position, isPresent: false)
         let (sut, pillTypes, intakes) = makeSUT(aggregate)
 
         await #expect(throws: UseCaseError.positionEmpty) {

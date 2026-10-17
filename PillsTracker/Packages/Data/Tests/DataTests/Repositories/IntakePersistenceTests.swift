@@ -93,7 +93,7 @@ struct IntakePersistenceTests {
             pillTypeID: aggregate.id, position: Position(row: 0, column: 0), slot: .morning, day: today, instant: Date(timeIntervalSince1970: 1_000)
         )
         aggregate = try #require(try await pillTypes.fetch(id: aggregate.id))
-        aggregate.blisters[0].presentPositions = []
+        try aggregate.syncCurrentBlister(present: [])
         try await pillTypes.update(aggregate)
 
         try await StartNewBlister(repository: pillTypes)(pillTypeID: aggregate.id)

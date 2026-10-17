@@ -11,8 +11,7 @@ struct UndoTests {
     private func makeConsumed(day: Day) throws -> (PillTypeAggregate, Intake) {
         var aggregate = try PillTypeAggregate.new(name: "Aspirin", rows: 1, columns: 3, createdAt: Date(timeIntervalSince1970: 0))
         try aggregate.setPrescriptionSlots([.morning])
-        aggregate.blisters[0].presentPositions.remove(position)
-        let intake = Intake(pillTypeID: aggregate.id, blisterID: aggregate.blisters[0].id, position: position, slot: .morning, day: day, instant: instant)
+        let intake = try aggregate.consume(position, slot: .morning, doneSlots: [], day: day, instant: instant)
         return (aggregate, intake)
     }
 
@@ -45,8 +44,8 @@ struct UndoTests {
 
     @Test func refusesAnIntakeFromARetiredBlister() async throws {
         var (aggregate, intake) = try makeConsumed(day: today)
-        aggregate.blisters[0].state = .retired
-        aggregate.blisters.append(.fresh(pillTypeID: aggregate.id, shape: aggregate.pillType.shape))
+        try aggregate.syncCurrentBlister(present: [])
+        try aggregate.startNewBlister()
         let pillTypes = FakePillTypeRepository([aggregate])
         let intakes = FakeIntakeRepository([intake])
         let sut = Undo(pillTypes: pillTypes, intakes: intakes)

@@ -27,7 +27,7 @@ struct SyncPositionTests {
 
     @Test func setsAnEmptyPositionPresent() async throws {
         var aggregate = try makeAggregate()
-        aggregate.blisters[0].presentPositions = []
+        try aggregate.syncCurrentBlister(present: [])
         let repository = FakePillTypeRepository([aggregate])
         let sut = SyncPosition(repository: repository)
 
@@ -40,7 +40,7 @@ struct SyncPositionTests {
     @Test func leavesRetiredBlistersAlone() async throws {
         var aggregate = try makeAggregate()
         let retired = Blister(pillTypeID: aggregate.id, shape: aggregate.pillType.shape, state: .retired, presentPositions: [position])
-        aggregate.blisters.insert(retired, at: 0)
+        aggregate = aggregate.inserting(retired)
         let repository = FakePillTypeRepository([aggregate])
         let sut = SyncPosition(repository: repository)
 
