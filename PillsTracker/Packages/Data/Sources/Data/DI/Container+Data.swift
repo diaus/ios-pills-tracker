@@ -1,6 +1,7 @@
 import Domain
 import FactoryKit
 import SwiftData
+import Utils
 
 public extension Container {
     /// The single on-disk `ModelContainer`.
@@ -16,8 +17,8 @@ public extension Container {
     }
 
     /// Change broadcaster the repository notifies after every write; screens observe it to reload.
-    var dataChangeNotifier: Factory<DataChangeNotifier> {
-        self { DataChangeNotifier() }.singleton
+    var dataChangeNotifier: Factory<ChangeNotifier> {
+        self { ChangeNotifier() }.singleton
     }
 
     var pillTypeRepository: Factory<any PillTypeRepository> {

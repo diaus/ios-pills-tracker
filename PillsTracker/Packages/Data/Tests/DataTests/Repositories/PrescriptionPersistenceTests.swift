@@ -2,10 +2,11 @@ import Foundation
 import Testing
 import Domain
 @testable import Data
+import Utils
 
 struct PrescriptionPersistenceTests {
     private func makeRepository() throws -> PillTypeRepositoryLive {
-        PillTypeRepositoryLive(modelContainer: try PillsModelContainer.make(inMemory: true), notifier: DataChangeNotifier())
+        PillTypeRepositoryLive(modelContainer: try PillsModelContainer.make(inMemory: true), notifier: ChangeNotifier())
     }
 
     private func makeAggregate(slots: Set<Slot>) throws -> PillTypeAggregate {

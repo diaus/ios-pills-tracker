@@ -4,6 +4,7 @@ import FactoryKit
 import Foundation
 import Observation
 import SwiftUI
+import Utils
 
 /// Today's progress of every Pill Type, loaded once for the whole app and kept current: it reloads
 /// after every write and when "today" changes. The one owner of "today" (ADR 0001): screens read the
@@ -31,6 +32,7 @@ final class DailyProgressModel {
 
     /// Loads, then reloads after every write until the calling task is cancelled.
     func run() async {
+        // Subscribed before the first load, so a write during it still triggers a reload.
         let changes = notifier.changes
         await load()
         for await _ in changes {

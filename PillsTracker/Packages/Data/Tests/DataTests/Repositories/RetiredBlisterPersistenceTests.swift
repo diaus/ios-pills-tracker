@@ -2,12 +2,13 @@ import Foundation
 import Testing
 import Domain
 @testable import Data
+import Utils
 
 /// Retired Blisters must survive in Data after Start New Blister, keeping their final grid.
 struct RetiredBlisterPersistenceTests {
     @Test func startNewBlisterKeepsTheRetiredBlisterWithItsFinalGrid() async throws {
         let container = try PillsModelContainer.make(inMemory: true)
-        let repository = PillTypeRepositoryLive(modelContainer: container, notifier: DataChangeNotifier())
+        let repository = PillTypeRepositoryLive(modelContainer: container, notifier: ChangeNotifier())
         var aggregate = try PillTypeAggregate.new(name: "Aspirin", rows: 1, columns: 2, createdAt: Date(timeIntervalSince1970: 1_000))
         try aggregate.syncCurrentBlister(present: [])
         let oldID = try #require(aggregate.currentBlister?.id)

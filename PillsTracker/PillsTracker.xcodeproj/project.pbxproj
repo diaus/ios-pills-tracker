@@ -10,6 +10,7 @@
 		AA00000000000000000000C1 /* Domain in Frameworks */ = {isa = PBXBuildFile; productRef = AA00000000000000000000B1 /* Domain */; };
 		AA00000000000000000000C2 /* Data in Frameworks */ = {isa = PBXBuildFile; productRef = AA00000000000000000000B2 /* Data */; };
 		AA00000000000000000000C3 /* FactoryKit in Frameworks */ = {isa = PBXBuildFile; productRef = AA00000000000000000000B3 /* FactoryKit */; };
+		AA00000000000000000000C4 /* Utils in Frameworks */ = {isa = PBXBuildFile; productRef = AA00000000000000000000B5 /* Utils */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +48,7 @@
 				AA00000000000000000000C1 /* Domain in Frameworks */,
 				AA00000000000000000000C2 /* Data in Frameworks */,
 				AA00000000000000000000C3 /* FactoryKit in Frameworks */,
+				AA00000000000000000000C4 /* Utils in Frameworks */,
 			);
 		};
 		4987D450306BC13C0079A444 /* Frameworks */ = {
@@ -99,6 +101,7 @@
 				AA00000000000000000000B1 /* Domain */,
 				AA00000000000000000000B2 /* Data */,
 				AA00000000000000000000B3 /* FactoryKit */,
+				AA00000000000000000000B5 /* Utils */,
 			);
 			productName = PillsTracker;
 			productReference = 4987D444306BC13A0079A444 /* PillsTracker.app */;
@@ -156,6 +159,7 @@
 			packageReferences = (
 				AA00000000000000000000A1 /* XCLocalSwiftPackageReference "Packages/Domain" */,
 				AA00000000000000000000A2 /* XCLocalSwiftPackageReference "Packages/Data" */,
+				AA00000000000000000000A5 /* XCLocalSwiftPackageReference "Packages/Utils" */,
 				AA00000000000000000000A3 /* XCRemoteSwiftPackageReference "Factory" */,
 				AA00000000000000000000A4 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */,
 			);
@@ -476,6 +480,10 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/Data;
 		};
+		AA00000000000000000000A5 /* XCLocalSwiftPackageReference "Packages/Utils" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/Utils;
+		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
@@ -515,6 +523,10 @@
 			isa = XCSwiftPackageProductDependency;
 			package = AA00000000000000000000A4 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */;
 			productName = "plugin:SwiftLintBuildToolPlugin";
+		};
+		AA00000000000000000000B5 /* Utils */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Utils;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

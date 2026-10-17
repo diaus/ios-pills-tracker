@@ -1,6 +1,7 @@
 import Domain
 import Foundation
 import SwiftData
+import Utils
 
 /// SwiftData-backed `PillTypeRepository`. All model access happens on this actor, in one `ModelContext`,
 /// and every write is one save followed by one change notification.
@@ -10,9 +11,9 @@ import SwiftData
 public actor PillTypeRepositoryLive: PillTypeRepository, ModelActor {
     public nonisolated let modelContainer: ModelContainer
     public nonisolated let modelExecutor: any ModelExecutor
-    private let notifier: DataChangeNotifier
+    private let notifier: ChangeNotifier
 
-    public init(modelContainer: ModelContainer, notifier: DataChangeNotifier) {
+    public init(modelContainer: ModelContainer, notifier: ChangeNotifier) {
         self.modelContainer = modelContainer
         modelExecutor = DefaultSerialModelExecutor(modelContext: ModelContext(modelContainer))
         self.notifier = notifier
