@@ -1,3 +1,4 @@
+import Domain
 import SwiftUI
 
 /// Sheet opened from the Blister toolbar. Renames the Pill Type, changes its grid shape while the
@@ -9,8 +10,8 @@ struct EditPillTypeSheet: View {
     /// Called after the Pill Type was deleted so the presenting screen can leave it.
     private let onDeleted: @MainActor () -> Void
 
-    init(pillTypeID: UUID, onDeleted: @escaping @MainActor () -> Void) {
-        _model = State(initialValue: EditPillTypeViewModel(pillTypeID: pillTypeID))
+    init(aggregate: PillTypeAggregate, onDeleted: @escaping @MainActor () -> Void) {
+        _model = State(initialValue: EditPillTypeViewModel(aggregate: aggregate))
         self.onDeleted = onDeleted
     }
 
@@ -45,7 +46,6 @@ struct EditPillTypeSheet: View {
                             if await model.save() { dismiss() }
                         }
                     }
-                    .disabled(!model.hasLoaded)
                 }
             }
             .confirmationDialog(.pillTypeDeleteConfirmTitle, isPresented: $isConfirmingDelete, titleVisibility: .visible) {
@@ -62,7 +62,6 @@ struct EditPillTypeSheet: View {
                 Text(.pillTypeDeleteConfirmMessage)
             }
             .errorAlert(message: $model.errorMessage)
-            .task { await model.load() }
         }
     }
 }

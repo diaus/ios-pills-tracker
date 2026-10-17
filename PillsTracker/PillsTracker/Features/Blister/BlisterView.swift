@@ -10,8 +10,8 @@ struct BlisterView: View {
     @State private var tappedPosition: TappedPosition?
     @State private var undoCandidate: Intake?
 
-    init(pillTypeID: UUID, onPillTypeDeleted: @escaping @MainActor () -> Void) {
-        _model = State(initialValue: BlisterViewModel(pillTypeID: pillTypeID))
+    init(pillTypeID: UUID, dailyProgress: DailyProgressModel, onPillTypeDeleted: @escaping @MainActor () -> Void) {
+        _model = State(initialValue: BlisterViewModel(pillTypeID: pillTypeID, dailyProgress: dailyProgress))
         self.onPillTypeDeleted = onPillTypeDeleted
     }
 
@@ -38,11 +38,15 @@ struct BlisterView: View {
                     .padding()
                 }
                 .navigationTitle(progress.pillType.name)
-            } else if model.hasLoaded {
-                ContentUnavailableView(.blisterNotFound, systemImage: "questionmark.circle")
             } else {
-                // The Group needs a view before the first load: its .task modifiers attach to its children.
-                ProgressView()
+                switch model.dailyProgress.state {
+                case .loading:
+                    ProgressView()
+                case .failed(let message):
+                    LoadFailedView(message: message)
+                case .loaded:
+                    ContentUnavailableView(.blisterNotFound, systemImage: "questionmark.circle")
+                }
             }
         }
         .navigationBarTitleDisplayMode(.inline)
@@ -59,10 +63,14 @@ struct BlisterView: View {
             }
         }
         .sheet(isPresented: $isEditingPrescription) {
-            PrescriptionSheet(pillTypeID: model.pillTypeID)
+            if let aggregate = model.progress?.aggregate {
+                PrescriptionSheet(aggregate: aggregate)
+            }
         }
         .sheet(isPresented: $isEditingPillType) {
-            EditPillTypeSheet(pillTypeID: model.pillTypeID, onDeleted: onPillTypeDeleted)
+            if let aggregate = model.progress?.aggregate {
+                EditPillTypeSheet(aggregate: aggregate, onDeleted: onPillTypeDeleted)
+            }
         }
         .positionActionSheet(
             for: $tappedPosition,
@@ -88,9 +96,6 @@ struct BlisterView: View {
             Text(.blisterUndoMessage)
         }
         .errorAlert(message: $model.errorMessage)
-        .task { await model.load() }
-        .task { await model.observeChanges() }
-        .recomputesToday { Task { await model.refreshToday() } }
     }
 
     /// Today's chips. A Done chip whose Intake can be undone (today, Current Blister) opens the Undo confirmation.

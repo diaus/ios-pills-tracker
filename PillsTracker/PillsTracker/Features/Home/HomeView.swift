@@ -2,20 +2,29 @@ import Domain
 import SwiftUI
 
 struct HomeView: View {
-    @State private var model = HomeViewModel()
+    @State private var model: HomeViewModel
     @State private var path: [AppRoute] = []
     @State private var isAddingPillType = false
+
+    init(dailyProgress: DailyProgressModel) {
+        _model = State(initialValue: HomeViewModel(dailyProgress: dailyProgress))
+    }
 
     var body: some View {
         NavigationStack(path: $path) {
             Group {
-                if model.isEmpty {
+                switch model.dailyProgress.state {
+                case .loading:
+                    ProgressView()
+                case .failed(let message):
+                    LoadFailedView(message: message)
+                case .loaded(let progress) where progress.isEmpty:
                     ContentUnavailableView(
                         .homeEmptyTitle,
                         systemImage: "pills",
                         description: Text(.homeEmptyBody)
                     )
-                } else if model.hasLoaded {
+                case .loaded:
                     List {
                         if !model.activePrescriptions.isEmpty {
                             Section(.homeActive) {
@@ -59,9 +68,9 @@ struct HomeView: View {
             .navigationDestination(for: AppRoute.self) { route in
                 switch route {
                 case .pillTypes:
-                    PillTypesListView()
+                    PillTypesListView(dailyProgress: model.dailyProgress)
                 case .blister(let pillTypeID):
-                    BlisterView(pillTypeID: pillTypeID) { path.removeAll() }
+                    BlisterView(pillTypeID: pillTypeID, dailyProgress: model.dailyProgress) { path.removeAll() }
                 }
             }
             .toolbar {
@@ -76,9 +85,6 @@ struct HomeView: View {
             AddPillTypeSheet()
         }
         .errorAlert(message: $model.errorMessage)
-        .task { await model.load() }
-        .task { await model.observeChanges() }
-        .recomputesToday { Task { await model.refreshToday() } }
     }
 
     private func pausedRow(_ aggregate: PillTypeAggregate) -> some View {
@@ -96,5 +102,5 @@ struct HomeView: View {
 }
 
 #Preview {
-    HomeView()
+    HomeView(dailyProgress: DailyProgressModel())
 }

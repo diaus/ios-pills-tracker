@@ -1,14 +1,4 @@
-import Domain
 import SwiftUI
-
-/// How view models decide what "today" is. Use cases never read a clock (ADR 0001), so the
-/// view model owns the Day and re-evaluates it when the scene becomes active or the clock changes.
-enum TodayTracker {
-    /// The local calendar Day right now.
-    static func today() -> Day {
-        Day(date: .now, calendar: .current)
-    }
-}
 
 /// Calls `onChange` when the scene becomes active and on the system significant-time-change
 /// notification (local midnight, time zone change, clock set), so a screen left open is not stale.

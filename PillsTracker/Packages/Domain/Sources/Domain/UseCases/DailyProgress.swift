@@ -16,11 +16,4 @@ public struct DailyProgress: Sendable {
         let dayIntakes = try await repository.intakes(on: day, pillTypeID: nil)
         return aggregates.map { PillTypeProgress(aggregate: $0, day: day, intakes: dayIntakes) }
     }
-
-    /// Progress of one Pill Type, or nil when it does not exist.
-    public func callAsFunction(pillTypeID: UUID, day: Day) async throws -> PillTypeProgress? {
-        guard let aggregate = try await repository.fetch(id: pillTypeID) else { return nil }
-        let dayIntakes = try await repository.intakes(on: day, pillTypeID: pillTypeID)
-        return PillTypeProgress(aggregate: aggregate, day: day, intakes: dayIntakes)
-    }
 }

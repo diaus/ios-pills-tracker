@@ -1,4 +1,3 @@
-import Data
 import Domain
 import FactoryKit
 import Foundation
@@ -6,59 +5,39 @@ import Observation
 import SwiftUI
 
 /// Shows one Pill Type's Current Blister with today's Slot chips, and lets the user Consume, Undo
-/// and keep the grid in sync with reality. Owns "today" (ADR 0001).
+/// and keep the grid in sync with reality. Reads the Pill Type and "today" from the app's Daily Progress,
+/// which reloads after each write.
 @MainActor @Observable
 final class BlisterViewModel {
-    @ObservationIgnored @Injected(\.dataChangeNotifier) private var notifier
     @ObservationIgnored @Injected(\.syncPosition) private var syncPosition
     @ObservationIgnored @Injected(\.startNewBlister) private var startNewBlister
     @ObservationIgnored @Injected(\.consume) private var consume
     @ObservationIgnored @Injected(\.undo) private var undo
-    @ObservationIgnored @Injected(\.dailyProgress) private var dailyProgress
 
     let pillTypeID: UUID
-    /// Today's read model of the Pill Type; nil until loaded or when the Pill Type no longer exists.
-    private(set) var progress: PillTypeProgress?
-    private(set) var today = TodayTracker.today()
-    private(set) var hasLoaded = false
+    let dailyProgress: DailyProgressModel
     var errorMessage: LocalizedStringResource?
 
-    init(pillTypeID: UUID) {
+    init(pillTypeID: UUID, dailyProgress: DailyProgressModel) {
         self.pillTypeID = pillTypeID
+        self.dailyProgress = dailyProgress
     }
 
-    func load() async {
-        do {
-            progress = try await dailyProgress(pillTypeID: pillTypeID, day: today)
-            // Only a successful load may show the empty or not-found state; a failed one keeps loading.
-            hasLoaded = true
-        } catch {
-            errorMessage = error.userMessage
-        }
-    }
-
-    /// Re-evaluates "today" and reloads when the Day rolled over.
-    func refreshToday() async {
-        let current = TodayTracker.today()
-        guard current != today else { return }
-        today = current
-        await load()
-    }
-
-    func observeChanges() async {
-        for await _ in notifier.changes {
-            await load()
-        }
+    /// Today's read model of the Pill Type; nil until loaded or when the Pill Type no longer exists.
+    var progress: PillTypeProgress? {
+        dailyProgress.progress?.first { $0.id == pillTypeID }
     }
 
     /// Consume: takes the pill at `position` for one of today's Open Slots.
     func consume(_ position: Position, slot: Slot) async {
-        await perform { try await consume(pillTypeID: pillTypeID, position: position, slot: slot, day: today, instant: .now) }
+        let day = dailyProgress.today
+        await perform { try await consume(pillTypeID: pillTypeID, position: position, slot: slot, day: day, instant: .now) }
     }
 
     /// Undo: reverts today's Intake for `slot` from the Current Blister.
     func undo(_ intake: Intake) async {
-        await perform { try await undo(intakeID: intake.id, day: today) }
+        let day = dailyProgress.today
+        await perform { try await undo(intakeID: intake.id, day: day) }
     }
 
     /// Sync Edit: sets `position` Present or Empty on the Current Blister.
@@ -73,7 +52,6 @@ final class BlisterViewModel {
     private func perform(_ action: () async throws -> Void) async {
         do {
             try await action()
-            await load()
         } catch {
             errorMessage = error.userMessage
         }

@@ -20,6 +20,10 @@ extension Container {
         self { Undo(repository: self.pillTypeRepository()) }
     }
 
+    nonisolated var updatePillType: Factory<UpdatePillType> {
+        self { UpdatePillType(repository: self.pillTypeRepository()) }
+    }
+
     nonisolated var dailyProgress: Factory<DailyProgress> {
         self { DailyProgress(repository: self.pillTypeRepository()) }
     }

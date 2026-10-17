@@ -8,8 +8,8 @@ struct PrescriptionSheet: View {
     @State private var model: PrescriptionViewModel
     @State private var isConfirmingDelete = false
 
-    init(pillTypeID: UUID) {
-        _model = State(initialValue: PrescriptionViewModel(pillTypeID: pillTypeID))
+    init(aggregate: PillTypeAggregate) {
+        _model = State(initialValue: PrescriptionViewModel(aggregate: aggregate))
     }
 
     var body: some View {
@@ -66,7 +66,6 @@ struct PrescriptionSheet: View {
                             if await model.save() { dismiss() }
                         }
                     }
-                    .disabled(!model.hasLoaded)
                 }
             }
             .confirmationDialog(.prescriptionDeleteConfirmTitle, isPresented: $isConfirmingDelete, titleVisibility: .visible) {
@@ -80,7 +79,6 @@ struct PrescriptionSheet: View {
                 Text(.prescriptionDeleteConfirmMessage)
             }
             .errorAlert(message: $model.errorMessage)
-            .task { await model.load() }
         }
     }
 }
