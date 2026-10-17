@@ -16,6 +16,14 @@ Single-context: one `GLOSSARY.md` and `docs/adr/` at the repo root. See `docs/ag
 
 Build, test and run through the MobileBuildMCP tools (`build_sim`, `test_sim`, `build_run_sim`). Empty session defaults: see `docs/agents/build-setup.md`.
 
-`test_sim` runs only the app target's tests. After changing anything under `PillsTracker/Packages/`, run every local package's tests on the Mac: `for p in PillsTracker/Packages/*/; do swift test --package-path "$p" || break; done`.
+`test_sim` runs only the app target's tests. Before reporting done, run `scripts/check.sh`: it lints the packages, checks the String Catalog format, and runs every local package's tests on the Mac.
+
+SourceKit's "No such module 'Domain'/'Data'" diagnostics are index noise; `build_sim` is the source of truth.
 
 The deployment target is iOS 18: check runtime behaviour there by switching the simulator to iPhone 16 (iOS 18.5) for the session only, without `persist`.
+
+## Editing
+
+Add or change String Catalog keys with `scripts/xcstrings.py`, which writes the file in Xcode's own format.
+
+Commit a fix once it's verified, so a later session doesn't mistake it for the user's work in progress.
