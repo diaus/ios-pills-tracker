@@ -47,7 +47,7 @@ public struct PillTypeAggregate: Identifiable, Hashable, Sendable {
 
     /// Consume: empties a Present `position` of the Current Blister for an Open `slot` and returns the
     /// Intake to record. `doneSlots` are the Slots already Done on `day`.
-    public mutating func consume(_ position: Position, slot: Slot, doneSlots: Set<Slot>, day: Day, instant: Date) throws(UseCaseError) -> Intake {
+    public mutating func consume(_ position: Position, slot: Slot, doneSlots: Set<Slot>, day: Day, instant: Date) throws(DomainError) -> Intake {
         try validateConsume(position: position, slot: slot, doneSlots: doneSlots)
         let index = try currentBlisterIndex()
         blisters[index].presentPositions.remove(position)
@@ -55,7 +55,7 @@ public struct PillTypeAggregate: Identifiable, Hashable, Sendable {
     }
 
     /// Undo: makes the Position of `intake` Present again on the Current Blister. The caller removes the Intake.
-    public mutating func undo(_ intake: Intake, on day: Day) throws(UseCaseError) {
+    public mutating func undo(_ intake: Intake, on day: Day) throws(DomainError) {
         try validateUndo(of: intake, on: day)
         let index = try currentBlisterIndex()
         blisters[index].presentPositions.insert(intake.position)
@@ -63,7 +63,7 @@ public struct PillTypeAggregate: Identifiable, Hashable, Sendable {
 
     /// Start New Blister: retires the empty Current Blister and adds a fresh one in the Pill Type's
     /// shape as it is now. The Retired Blister keeps its final grid and shape.
-    public mutating func startNewBlister() throws(UseCaseError) {
+    public mutating func startNewBlister() throws(DomainError) {
         try validateStartNewBlister()
         let index = try currentBlisterIndex()
         blisters[index].state = .retired
@@ -71,7 +71,7 @@ public struct PillTypeAggregate: Identifiable, Hashable, Sendable {
     }
 
     /// Sync Edit: sets one Position of the Current Blister Present or Empty. Retired Blisters stay as they are.
-    public mutating func syncPosition(_ position: Position, isPresent: Bool) throws(UseCaseError) {
+    public mutating func syncPosition(_ position: Position, isPresent: Bool) throws(DomainError) {
         let index = try currentBlisterIndex()
         guard blisters[index].contains(position) else { throw .positionOutOfBounds }
         if isPresent {

@@ -13,7 +13,7 @@ struct StartNewBlisterTests {
         let repository = FakePillTypeRepository([aggregate])
         let sut = StartNewBlister(repository: repository)
 
-        await #expect(throws: UseCaseError.blisterNotEmpty) {
+        await #expect(throws: DomainError.currentBlisterNotEmpty) {
             try await sut(pillTypeID: aggregate.id)
         }
         #expect(await repository.fetch(id: aggregate.id) == aggregate)
@@ -61,7 +61,7 @@ struct StartNewBlisterTests {
 
     @Test func throwsForUnknownPillType() async throws {
         let sut = StartNewBlister(repository: FakePillTypeRepository())
-        await #expect(throws: UseCaseError.pillTypeNotFound) {
+        await #expect(throws: DomainError.pillTypeNotFound) {
             try await sut(pillTypeID: UUID())
         }
     }

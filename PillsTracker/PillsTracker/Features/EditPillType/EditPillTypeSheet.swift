@@ -22,10 +22,7 @@ struct EditPillTypeSheet: View {
                     name: $model.name,
                     rows: $model.rows,
                     columns: $model.columns,
-                    nameError: model.nameError,
-                    rowsError: model.rowsError,
-                    columnsError: model.columnsError,
-                    shapeError: model.shapeError,
+                    error: model.validationError,
                     shapeFooter: model.isShapeLocked ? .pillTypeShapeLocked : .pillTypeShapeFooter,
                     isShapeLocked: model.isShapeLocked
                 )

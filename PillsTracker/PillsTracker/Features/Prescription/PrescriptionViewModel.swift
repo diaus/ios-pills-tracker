@@ -15,7 +15,8 @@ final class PrescriptionViewModel {
     private(set) var aggregate: PillTypeAggregate?
     private(set) var hasLoaded = false
     var selectedSlots: Set<Slot> = []
-    private(set) var slotsError: LocalizedStringResource?
+    /// The rule the change broke, shown under the Slots.
+    private(set) var validationError: DomainError?
     var errorMessage: LocalizedStringResource?
     private(set) var isSaving = false
 
@@ -39,7 +40,7 @@ final class PrescriptionViewModel {
 
     /// Creates the Prescription or replaces its Slots. Returns true on success so the sheet can dismiss.
     func save() async -> Bool {
-        slotsError = nil
+        validationError = nil
         let slots = selectedSlots
         return await mutate { aggregate throws(DomainError) in try aggregate.setPrescriptionSlots(slots) }
     }
@@ -62,7 +63,7 @@ final class PrescriptionViewModel {
         do {
             try change(&updated)
         } catch {
-            show(error)
+            validationError = error
             return false
         }
 
@@ -75,13 +76,6 @@ final class PrescriptionViewModel {
         } catch {
             errorMessage = error.userMessage
             return false
-        }
-    }
-
-    private func show(_ error: DomainError) {
-        switch error {
-        case .emptySlots: slotsError = error.message
-        default: errorMessage = error.message
         }
     }
 }

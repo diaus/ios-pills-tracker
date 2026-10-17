@@ -2,8 +2,8 @@ import Data
 import Domain
 import SwiftUI
 
-// The one place an error becomes alert text. Typed Domain, use case and Data errors carry codes
-// only; each maps to a String Catalog symbol here, and anything else is reported as unknown.
+// The one place an error becomes user-facing text. Typed Domain and Data errors carry codes only;
+// each maps to a String Catalog symbol here, and anything else is reported as unknown.
 
 extension DomainError {
     /// User-facing text for a Domain error code, from the String Catalog.
@@ -15,17 +15,8 @@ extension DomainError {
         case .emptySlots: .errorEmptySlots
         case .noPrescription: .errorNoPrescription
         case .currentBlisterNotEmpty: .errorCurrentBlisterNotEmpty
-        }
-    }
-}
-
-extension UseCaseError {
-    /// User-facing text for a use case error code, from the String Catalog.
-    var message: LocalizedStringResource {
-        switch self {
         case .pillTypeNotFound: .errorPillTypeNotFound
         case .noCurrentBlister: .errorNoCurrentBlister
-        case .blisterNotEmpty: .errorBlisterNotEmpty
         case .positionOutOfBounds: .errorPositionOutOfBounds
         case .positionEmpty: .errorPositionEmpty
         case .slotNotOpen: .errorSlotNotOpen
@@ -50,7 +41,6 @@ extension Error {
     var userMessage: LocalizedStringResource {
         switch self {
         case let error as DomainError: error.message
-        case let error as UseCaseError: error.message
         case let error as DataError: error.message
         default: .commonErrorUnknown
         }

@@ -16,21 +16,20 @@ final class AddPillTypeViewModel {
     /// Slots of the Prescription to create with the Pill Type; none means no Prescription.
     var selectedSlots: Set<Slot> = []
 
-    private(set) var nameError: LocalizedStringResource?
-    private(set) var rowsError: LocalizedStringResource?
-    private(set) var columnsError: LocalizedStringResource?
+    /// The rule the form broke; `PillTypeFormFields` shows it under its field.
+    private(set) var validationError: DomainError?
     var errorMessage: LocalizedStringResource?
     private(set) var isSaving = false
 
     /// Validates, persists and returns true on success so the sheet can dismiss.
     func save() async -> Bool {
-        clearErrors()
+        validationError = nil
         var aggregate: PillTypeAggregate
         do {
             aggregate = try PillTypeAggregate.new(name: name, rows: rows, columns: columns, createdAt: Date())
             if !selectedSlots.isEmpty { try aggregate.setPrescriptionSlots(selectedSlots) }
         } catch {
-            show(error)
+            validationError = error
             return false
         }
 
@@ -42,21 +41,6 @@ final class AddPillTypeViewModel {
         } catch {
             errorMessage = error.userMessage
             return false
-        }
-    }
-
-    private func clearErrors() {
-        nameError = nil
-        rowsError = nil
-        columnsError = nil
-    }
-
-    private func show(_ error: DomainError) {
-        switch error {
-        case .emptyName: nameError = error.message
-        case .invalidRows: rowsError = error.message
-        case .invalidColumns: columnsError = error.message
-        default: errorMessage = error.userMessage
         }
     }
 }

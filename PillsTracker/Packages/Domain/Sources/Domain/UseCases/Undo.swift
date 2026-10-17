@@ -13,8 +13,8 @@ public struct Undo: Sendable {
     }
 
     public func callAsFunction(intakeID: UUID, day: Day) async throws {
-        guard let intake = try await intakes.fetch(id: intakeID) else { throw UseCaseError.undoNotAllowed }
-        guard var aggregate = try await pillTypes.fetch(id: intake.pillTypeID) else { throw UseCaseError.pillTypeNotFound }
+        guard let intake = try await intakes.fetch(id: intakeID) else { throw DomainError.undoNotAllowed }
+        guard var aggregate = try await pillTypes.fetch(id: intake.pillTypeID) else { throw DomainError.pillTypeNotFound }
         try aggregate.undo(intake, on: day)
         try await pillTypes.update(aggregate)
         try await intakes.delete(id: intake.id)
