@@ -35,6 +35,14 @@ struct EditPillTypeTests {
         #expect(aggregate == before)
     }
 
+    @Test func changeShapeIsOfferedOnlyWhileTheCurrentBlisterIsEmpty() throws {
+        var aggregate = try makeAggregate()
+        #expect(!aggregate.canChangeShape)
+
+        try aggregate.syncCurrentBlister(present: [])
+        #expect(aggregate.canChangeShape)
+    }
+
     @Test func changeShapeIsAllowedWhenTheCurrentBlisterIsEmpty() throws {
         var aggregate = try makeAggregate()
         try aggregate.syncCurrentBlister(present: [])

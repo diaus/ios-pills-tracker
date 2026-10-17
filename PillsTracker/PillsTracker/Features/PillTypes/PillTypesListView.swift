@@ -1,28 +1,35 @@
 import Domain
 import SwiftUI
 
+/// Every Pill Type ordered by creation date, read from the app's Daily Progress.
 struct PillTypesListView: View {
-    @State private var model = PillTypesListViewModel()
+    let dailyProgress: DailyProgressModel
 
     var body: some View {
-        List(model.pillTypes) { aggregate in
-            NavigationLink(value: AppRoute.blister(pillTypeID: aggregate.id)) {
-                VStack(alignment: .leading) {
-                    Text(aggregate.pillType.name)
-                    Text(.pillTypesShape(rows: aggregate.pillType.shape.rows, columns: aggregate.pillType.shape.columns))
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
+        Group {
+            switch dailyProgress.state {
+            case .loading:
+                ProgressView()
+            case .failed(let message):
+                LoadFailedView(message: message)
+            case .loaded(let progress):
+                List(progress) { progress in
+                    NavigationLink(value: AppRoute.blister(pillTypeID: progress.id)) {
+                        VStack(alignment: .leading) {
+                            Text(progress.pillType.name)
+                            Text(.pillTypesShape(rows: progress.pillType.shape.rows, columns: progress.pillType.shape.columns))
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+                .overlay {
+                    if progress.isEmpty {
+                        ContentUnavailableView(.homeEmptyTitle, systemImage: "pills", description: Text(.homeEmptyBody))
+                    }
                 }
             }
         }
-        .overlay {
-            if model.pillTypes.isEmpty {
-                ContentUnavailableView(.homeEmptyTitle, systemImage: "pills", description: Text(.homeEmptyBody))
-            }
-        }
         .navigationTitle(.pillTypesTitle)
-        .errorAlert(message: $model.errorMessage)
-        .task { await model.load() }
-        .task { await model.observeChanges() }
     }
 }

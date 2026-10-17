@@ -16,4 +16,4 @@ v1 shows no history, but "taken today / left today" still needs a record of each
 
 - Blisters are kept as Retired records after replacement so old Intakes stay resolvable; Undo is limited to today's Intakes on the Current Blister.
 - Deleting a Prescription leaves Intakes untouched; deleting a Pill Type cascades them.
-- The view model, not the Domain, decides what "today" is and re-evaluates it on scene-active and significant-time-change.
+- One app-level model (`DailyProgressModel`), not the Domain, decides what "today" is and re-evaluates it on scene-active and significant-time-change; screens read the Day from it and pass it to the use cases.

@@ -1,4 +1,3 @@
-import Data
 import Domain
 import FactoryKit
 import Foundation
@@ -9,70 +8,54 @@ import SwiftUI
 /// Rules live in Domain (`PillTypeAggregate`); this only drives the form and persists.
 @MainActor @Observable
 final class PrescriptionViewModel {
-    @ObservationIgnored @Injected(\.pillTypeRepository) private var repository
+    @ObservationIgnored @Injected(\.updatePillType) private var updatePillType
 
-    let pillTypeID: UUID
-    private(set) var aggregate: PillTypeAggregate?
-    private(set) var hasLoaded = false
-    var selectedSlots: Set<Slot> = []
+    /// The Pill Type as last stored by this sheet.
+    private(set) var aggregate: PillTypeAggregate
+    var selectedSlots: Set<Slot>
     /// The rule the change broke, shown under the Slots.
     private(set) var validationError: DomainError?
     var errorMessage: LocalizedStringResource?
     private(set) var isSaving = false
 
-    init(pillTypeID: UUID) {
-        self.pillTypeID = pillTypeID
+    init(aggregate: PillTypeAggregate) {
+        self.aggregate = aggregate
+        selectedSlots = aggregate.prescription?.slots ?? []
     }
 
-    var prescription: Prescription? { aggregate?.prescription }
+    var prescription: Prescription? { aggregate.prescription }
     var hasPrescription: Bool { prescription != nil }
     var isPaused: Bool { prescription?.state == .paused }
 
-    func load() async {
-        do {
-            aggregate = try await repository.fetch(id: pillTypeID)
-            selectedSlots = aggregate?.prescription?.slots ?? []
-        } catch {
-            errorMessage = error.userMessage
-        }
-        hasLoaded = true
-    }
-
     /// Creates the Prescription or replaces its Slots. Returns true on success so the sheet can dismiss.
     func save() async -> Bool {
-        validationError = nil
         let slots = selectedSlots
-        return await mutate { aggregate throws(DomainError) in try aggregate.setPrescriptionSlots(slots) }
+        return await update { aggregate throws(DomainError) in try aggregate.setPrescriptionSlots(slots) }
     }
 
     func pause() async -> Bool {
-        await mutate { aggregate throws(DomainError) in try aggregate.pausePrescription() }
+        await update { aggregate throws(DomainError) in try aggregate.pausePrescription() }
     }
 
     func resume() async -> Bool {
-        await mutate { aggregate throws(DomainError) in try aggregate.resumePrescription() }
+        await update { aggregate throws(DomainError) in try aggregate.resumePrescription() }
     }
 
     /// Removes the Prescription; the Pill Type and its Blisters stay.
     func delete() async -> Bool {
-        await mutate { aggregate throws(DomainError) in aggregate.removePrescription() }
+        await update { aggregate throws(DomainError) in aggregate.removePrescription() }
     }
 
-    private func mutate(_ change: (inout PillTypeAggregate) throws(DomainError) -> Void) async -> Bool {
-        guard var updated = aggregate else { return false }
-        do {
-            try change(&updated)
-        } catch {
-            validationError = error
-            return false
-        }
-
+    private func update(_ change: @escaping @Sendable (inout PillTypeAggregate) throws(DomainError) -> Void) async -> Bool {
+        validationError = nil
         isSaving = true
         defer { isSaving = false }
         do {
-            try await repository.update(updated)
-            aggregate = updated
+            aggregate = try await updatePillType(pillTypeID: aggregate.id, change)
             return true
+        } catch let error as DomainError {
+            validationError = error
+            return false
         } catch {
             errorMessage = error.userMessage
             return false

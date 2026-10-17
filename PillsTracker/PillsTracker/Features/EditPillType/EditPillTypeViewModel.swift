@@ -9,63 +9,46 @@ import SwiftUI
 /// Rules live in Domain (`PillTypeAggregate`); this only drives the form and persists.
 @MainActor @Observable
 final class EditPillTypeViewModel {
+    @ObservationIgnored @Injected(\.updatePillType) private var updatePillType
     @ObservationIgnored @Injected(\.pillTypeRepository) private var repository
 
-    let pillTypeID: UUID
-    private(set) var aggregate: PillTypeAggregate?
-    private(set) var hasLoaded = false
-    var name = ""
-    var rows = GridShape.allowedRange.lowerBound
-    var columns = GridShape.allowedRange.lowerBound
+    /// The Pill Type as the sheet opened on; the form starts from it.
+    let aggregate: PillTypeAggregate
+    var name: String
+    var rows: Int
+    var columns: Int
     /// The rule the form broke; `PillTypeFormFields` shows it under its field.
     private(set) var validationError: DomainError?
     var errorMessage: LocalizedStringResource?
     private(set) var isSaving = false
 
-    init(pillTypeID: UUID) {
-        self.pillTypeID = pillTypeID
+    init(aggregate: PillTypeAggregate) {
+        self.aggregate = aggregate
+        name = aggregate.pillType.name
+        rows = aggregate.pillType.shape.rows
+        columns = aggregate.pillType.shape.columns
     }
 
-    /// The shape can change only while every Position of the Current Blister is Empty.
-    var isShapeLocked: Bool {
-        guard let current = aggregate?.currentBlister else { return false }
-        return !current.isEmpty
-    }
-
-    func load() async {
-        do {
-            aggregate = try await repository.fetch(id: pillTypeID)
-            if let pillType = aggregate?.pillType {
-                name = pillType.name
-                rows = pillType.shape.rows
-                columns = pillType.shape.columns
-            }
-        } catch {
-            errorMessage = error.userMessage
-        }
-        hasLoaded = true
-    }
+    var isShapeLocked: Bool { !aggregate.canChangeShape }
 
     /// Applies the rename and, when it changed, the new shape. Returns true on success so the sheet can dismiss.
     func save() async -> Bool {
         validationError = nil
-        guard var updated = aggregate else { return false }
-        do {
-            try updated.rename(name)
-            let shape = try GridShape(rows: rows, columns: columns)
-            if shape != updated.pillType.shape {
-                try updated.changeShape(shape)
+        let name = name, rows = rows, columns = columns
+        return await persist {
+            try await updatePillType(pillTypeID: aggregate.id) { aggregate throws(DomainError) in
+                try aggregate.rename(name)
+                let shape = try GridShape(rows: rows, columns: columns)
+                if shape != aggregate.pillType.shape {
+                    try aggregate.changeShape(shape)
+                }
             }
-        } catch {
-            validationError = error
-            return false
         }
-        return await persist { try await repository.update(updated) }
     }
 
     /// Deletes the Pill Type; the Data layer cascades its Prescription, Blisters and Intakes.
     func delete() async -> Bool {
-        await persist { try await repository.delete(id: pillTypeID) }
+        await persist { try await repository.delete(id: aggregate.id) }
     }
 
     private func persist(_ write: () async throws -> Void) async -> Bool {
@@ -74,6 +57,9 @@ final class EditPillTypeViewModel {
         do {
             try await write()
             return true
+        } catch let error as DomainError {
+            validationError = error
+            return false
         } catch {
             errorMessage = error.userMessage
             return false

@@ -39,7 +39,7 @@ public struct PillTypeAggregate: Identifiable, Hashable, Sendable {
     /// Changes the grid shape used by the next Start New Blister. Allowed only while the Current Blister
     /// is empty (or absent); the empty Current Blister itself is left untouched.
     public mutating func changeShape(_ shape: GridShape) throws(DomainError) {
-        if let current = currentBlister, !current.isEmpty { throw .currentBlisterNotEmpty }
+        try validateChangeShape()
         pillType.shape = shape
     }
 

@@ -16,12 +16,10 @@ public struct SlotProgress: Hashable, Sendable {
 
 /// Everything a screen needs about one Pill Type on a Day: the aggregate, its Prescription's Slots
 /// Done or Open for the Day, and the affordances (what can be consumed, undone or started) drawn from
-/// the same preconditions the use cases enforce. Built by `DailyProgress` for every Pill Type.
+/// the same preconditions the aggregate enforces. Built by `DailyProgress` for every Pill Type.
 public struct PillTypeProgress: Identifiable, Hashable, Sendable {
     public let aggregate: PillTypeAggregate
     public let day: Day
-    /// nil while the Pill Type has no Prescription.
-    public let prescriptionState: PrescriptionState?
     /// The Prescription's current Slots in Morning/Day/Evening order, Done or Open for the Day; empty without a Prescription.
     public let slots: [SlotProgress]
 
@@ -29,7 +27,6 @@ public struct PillTypeProgress: Identifiable, Hashable, Sendable {
     public init(aggregate: PillTypeAggregate, day: Day, intakes: [Intake]) {
         self.aggregate = aggregate
         self.day = day
-        prescriptionState = aggregate.prescription?.state
         let own = intakes.filter { $0.pillTypeID == aggregate.id && $0.day == day }
         slots = Slot.allCases
             .filter { aggregate.prescription?.contains($0) ?? false }
@@ -39,6 +36,8 @@ public struct PillTypeProgress: Identifiable, Hashable, Sendable {
     public var id: UUID { aggregate.id }
     public var pillType: PillType { aggregate.pillType }
     public var currentBlister: Blister? { aggregate.currentBlister }
+    /// nil while the Pill Type has no Prescription.
+    public var prescriptionState: PrescriptionState? { aggregate.prescription?.state }
     public var hasPrescription: Bool { prescriptionState != nil }
 
     /// Present pills on the Current Blister.

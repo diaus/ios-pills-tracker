@@ -1,12 +1,23 @@
 import Foundation
 
-/// The preconditions of Consume, Undo and Start New Blister, stated once. The aggregate's Blister
+/// The preconditions of Consume, Undo, Start New Blister and a shape change, stated once. The aggregate's Blister
 /// operations throw them; `PillTypeProgress` turns them into the affordances a screen shows.
 extension PillTypeAggregate {
     /// Index of the Current Blister in `blisters`, so a Blister operation can mutate it in place.
     func currentBlisterIndex() throws(DomainError) -> Int {
         guard let index = blisters.firstIndex(where: { $0.state == .current }) else { throw .noCurrentBlister }
         return index
+    }
+
+    // MARK: Change shape
+
+    /// A shape change needs the Current Blister (if any) to have every Position Empty.
+    public func validateChangeShape() throws(DomainError) {
+        if let currentBlister, !currentBlister.isEmpty { throw .currentBlisterNotEmpty }
+    }
+
+    public var canChangeShape: Bool {
+        (try? validateChangeShape()) != nil
     }
 
     // MARK: Start New Blister
