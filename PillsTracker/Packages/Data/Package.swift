@@ -3,7 +3,8 @@ import PackageDescription
 
 let package = Package(
     name: "Data",
-    platforms: [.iOS(.v18)],
+    // `.macOS` lets the tests run on the Mac with `swift test`; the app ships on iOS only.
+    platforms: [.iOS(.v18), .macOS(.v15)],
     products: [
         .library(name: "Data", targets: ["Data"]),
     ],
