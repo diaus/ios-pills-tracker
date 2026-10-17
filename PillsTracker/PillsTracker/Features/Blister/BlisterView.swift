@@ -41,6 +41,9 @@ struct BlisterView: View {
                 .navigationTitle(pillType.name)
             } else if model.hasLoaded {
                 ContentUnavailableView(.blisterNotFound, systemImage: "questionmark.circle")
+            } else {
+                // The Group needs a view before the first load: its .task modifiers attach to its children.
+                ProgressView()
             }
         }
         .navigationBarTitleDisplayMode(.inline)
