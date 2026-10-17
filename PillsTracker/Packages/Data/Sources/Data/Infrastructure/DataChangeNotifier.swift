@@ -1,7 +1,6 @@
 import Synchronization
 
-/// Broadcasts "something was written" to every subscriber. Shared by all repositories
-/// so view models can reload after any write.
+/// Broadcasts "something was written" to every subscriber, so screens can reload after any write.
 public final class DataChangeNotifier: Sendable {
     private struct Subscriber {
         var id: Int

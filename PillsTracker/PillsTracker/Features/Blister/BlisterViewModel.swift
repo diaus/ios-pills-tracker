@@ -9,7 +9,7 @@ import SwiftUI
 /// and keep the grid in sync with reality. Owns "today" (ADR 0001).
 @MainActor @Observable
 final class BlisterViewModel {
-    @ObservationIgnored @Injected(\.pillTypeRepository) private var repository
+    @ObservationIgnored @Injected(\.dataChangeNotifier) private var notifier
     @ObservationIgnored @Injected(\.syncPosition) private var syncPosition
     @ObservationIgnored @Injected(\.startNewBlister) private var startNewBlister
     @ObservationIgnored @Injected(\.consume) private var consume
@@ -46,7 +46,7 @@ final class BlisterViewModel {
     }
 
     func observeChanges() async {
-        for await _ in await repository.changes {
+        for await _ in notifier.changes {
             await load()
         }
     }

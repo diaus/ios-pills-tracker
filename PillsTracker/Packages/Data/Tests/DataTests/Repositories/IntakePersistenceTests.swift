@@ -6,13 +6,9 @@ import Domain
 struct IntakePersistenceTests {
     private let today = Day(year: 2026, month: 10, day: 6)
 
-    private func makeRepositories() throws -> (PillTypeRepositoryLive, IntakeRepositoryLive) {
-        let container = try PillsModelContainer.make(inMemory: true)
+    private func makeRepository() throws -> (PillTypeRepositoryLive, DataChangeNotifier) {
         let notifier = DataChangeNotifier()
-        return (
-            PillTypeRepositoryLive(modelContainer: container, notifier: notifier),
-            IntakeRepositoryLive(modelContainer: container, notifier: notifier)
-        )
+        return (PillTypeRepositoryLive(modelContainer: try PillsModelContainer.make(inMemory: true), notifier: notifier), notifier)
     }
 
     private func makeAggregate() throws -> PillTypeAggregate {
@@ -21,111 +17,106 @@ struct IntakePersistenceTests {
         return aggregate
     }
 
-    @Test func intakeRoundTripsWithItsExplicitDay() async throws {
-        let (pillTypes, intakes) = try makeRepositories()
-        let aggregate = try makeAggregate()
-        try await pillTypes.create(aggregate)
+    @Test func consumeStoresTheEmptyPositionAndTheIntakeWithItsExplicitDay() async throws {
+        let (repository, _) = try makeRepository()
+        var aggregate = try makeAggregate()
+        try await repository.create(aggregate)
         // 2026-10-05 23:30 UTC, which is already the 6th east of UTC: the stored Day is the one the user
         // experienced, never derived from the instant (ADR 0001).
-        let intake = Intake(
-            pillTypeID: aggregate.id,
-            blisterID: try #require(aggregate.currentBlister?.id),
-            position: Position(row: 0, column: 1),
-            slot: .evening,
-            day: today,
-            instant: Date(timeIntervalSince1970: 1_791_243_000)
-        )
+        let intake = try aggregate.consume(Position(row: 0, column: 1), slot: .evening, doneSlots: [], day: today, instant: Date(timeIntervalSince1970: 1_791_243_000))
 
-        try await intakes.create(intake)
+        try await repository.update(aggregate, recording: intake)
 
-        #expect(try await intakes.fetch(id: intake.id) == intake)
-        #expect(try await intakes.fetch(day: today, pillTypeID: nil) == [intake])
-        #expect(try await intakes.fetch(day: today, pillTypeID: aggregate.id) == [intake])
-        #expect(try await intakes.fetch(day: Day(year: 2026, month: 10, day: 5), pillTypeID: nil).isEmpty)
-        #expect(try await intakes.fetch(day: today, pillTypeID: UUID()).isEmpty)
+        #expect(try await repository.fetch(id: aggregate.id) == aggregate)
+        #expect(try await repository.intake(id: intake.id) == intake)
+        #expect(try await repository.intakes(on: today, pillTypeID: nil) == [intake])
+        #expect(try await repository.intakes(on: today, pillTypeID: aggregate.id) == [intake])
+        #expect(try await repository.intakes(on: Day(year: 2026, month: 10, day: 5), pillTypeID: nil).isEmpty)
+        #expect(try await repository.intakes(on: today, pillTypeID: UUID()).isEmpty)
     }
 
-    @Test func fetchForADayIsOrderedByInstant() async throws {
-        let (pillTypes, intakes) = try makeRepositories()
-        let aggregate = try makeAggregate()
-        try await pillTypes.create(aggregate)
-        let blisterID = try #require(aggregate.currentBlister?.id)
-        let later = Intake(pillTypeID: aggregate.id, blisterID: blisterID, position: Position(row: 0, column: 1), slot: .evening, day: today, instant: Date(timeIntervalSince1970: 2_000))
-        let earlier = Intake(pillTypeID: aggregate.id, blisterID: blisterID, position: Position(row: 0, column: 0), slot: .morning, day: today, instant: Date(timeIntervalSince1970: 1_000))
+    @Test func intakesForADayAreOrderedByInstant() async throws {
+        let (repository, _) = try makeRepository()
+        var aggregate = try makeAggregate()
+        try await repository.create(aggregate)
+        let later = try aggregate.consume(Position(row: 0, column: 1), slot: .evening, doneSlots: [], day: today, instant: Date(timeIntervalSince1970: 2_000))
+        try await repository.update(aggregate, recording: later)
+        let earlier = try aggregate.consume(Position(row: 0, column: 0), slot: .morning, doneSlots: [.evening], day: today, instant: Date(timeIntervalSince1970: 1_000))
+        try await repository.update(aggregate, recording: earlier)
 
-        try await intakes.create(later)
-        try await intakes.create(earlier)
-
-        #expect(try await intakes.fetch(day: today, pillTypeID: nil) == [earlier, later])
+        #expect(try await repository.intakes(on: today, pillTypeID: nil) == [earlier, later])
     }
 
-    @Test func deleteRemovesOnlyThatIntake() async throws {
-        let (pillTypes, intakes) = try makeRepositories()
-        let aggregate = try makeAggregate()
-        try await pillTypes.create(aggregate)
-        let blisterID = try #require(aggregate.currentBlister?.id)
-        let first = Intake(pillTypeID: aggregate.id, blisterID: blisterID, position: Position(row: 0, column: 0), slot: .morning, day: today, instant: Date(timeIntervalSince1970: 1_000))
-        let second = Intake(pillTypeID: aggregate.id, blisterID: blisterID, position: Position(row: 0, column: 1), slot: .evening, day: today, instant: Date(timeIntervalSince1970: 2_000))
-        try await intakes.create(first)
-        try await intakes.create(second)
+    @Test func undoStoresThePresentPositionAndRemovesOnlyThatIntake() async throws {
+        let (repository, _) = try makeRepository()
+        var aggregate = try makeAggregate()
+        try await repository.create(aggregate)
+        let first = try aggregate.consume(Position(row: 0, column: 0), slot: .morning, doneSlots: [], day: today, instant: Date(timeIntervalSince1970: 1_000))
+        try await repository.update(aggregate, recording: first)
+        let second = try aggregate.consume(Position(row: 0, column: 1), slot: .evening, doneSlots: [.morning], day: today, instant: Date(timeIntervalSince1970: 2_000))
+        try await repository.update(aggregate, recording: second)
 
-        try await intakes.delete(id: first.id)
+        try aggregate.undo(first, on: today)
+        try await repository.update(aggregate, removing: first)
 
-        #expect(try await intakes.fetch(day: today, pillTypeID: nil) == [second])
-        #expect(try await intakes.fetch(id: first.id) == nil)
+        #expect(try await repository.fetch(id: aggregate.id)?.currentBlister?.presentPositions == [Position(row: 0, column: 0)])
+        #expect(try await repository.intakes(on: today, pillTypeID: nil) == [second])
+        #expect(try await repository.intake(id: first.id) == nil)
     }
 
-    @Test func creatingAnIntakeForAnUnknownPillTypeFails() async throws {
-        let (_, intakes) = try makeRepositories()
-        let intake = Intake(pillTypeID: UUID(), blisterID: UUID(), position: Position(row: 0, column: 0), slot: .morning, day: today, instant: .now)
+    @Test func recordingAnIntakeForAnUnknownPillTypeStoresNothing() async throws {
+        let (repository, _) = try makeRepository()
+        var aggregate = try makeAggregate()
+        let intake = try aggregate.consume(Position(row: 0, column: 0), slot: .morning, doneSlots: [], day: today, instant: .now)
 
         await #expect(throws: DataError.notFound) {
-            try await intakes.create(intake)
+            try await repository.update(aggregate, recording: intake)
         }
+        #expect(try await repository.intakes(on: today, pillTypeID: nil).isEmpty)
     }
 
     @Test func intakesRemainAfterTheirBlisterIsRetired() async throws {
-        let (pillTypes, intakes) = try makeRepositories()
+        let (repository, _) = try makeRepository()
         var aggregate = try makeAggregate()
-        try await pillTypes.create(aggregate)
+        try await repository.create(aggregate)
         let oldBlisterID = try #require(aggregate.currentBlister?.id)
-        let intake = try await Consume(pillTypes: pillTypes, intakes: intakes)(
+        let intake = try await Consume(repository: repository)(
             pillTypeID: aggregate.id, position: Position(row: 0, column: 0), slot: .morning, day: today, instant: Date(timeIntervalSince1970: 1_000)
         )
-        aggregate = try #require(try await pillTypes.fetch(id: aggregate.id))
+        aggregate = try #require(try await repository.fetch(id: aggregate.id))
         try aggregate.syncCurrentBlister(present: [])
-        try await pillTypes.update(aggregate)
+        try await repository.update(aggregate)
 
-        try await StartNewBlister(repository: pillTypes)(pillTypeID: aggregate.id)
+        try await StartNewBlister(repository: repository)(pillTypeID: aggregate.id)
 
-        let fetched = try #require(try await intakes.fetch(id: intake.id))
+        let fetched = try #require(try await repository.intake(id: intake.id))
         #expect(fetched == intake)
         #expect(fetched.blisterID == oldBlisterID)
-        let stored = try #require(try await pillTypes.fetch(id: aggregate.id))
+        let stored = try #require(try await repository.fetch(id: aggregate.id))
         #expect(stored.blisters.first { $0.id == oldBlisterID }?.state == .retired)
     }
 
     @Test func intakesSurviveDeletingThePrescription() async throws {
-        let (pillTypes, intakes) = try makeRepositories()
+        let (repository, _) = try makeRepository()
         var aggregate = try makeAggregate()
-        try await pillTypes.create(aggregate)
-        let intake = Intake(pillTypeID: aggregate.id, blisterID: try #require(aggregate.currentBlister?.id), position: Position(row: 0, column: 0), slot: .morning, day: today, instant: Date(timeIntervalSince1970: 1_000))
-        try await intakes.create(intake)
+        try await repository.create(aggregate)
+        let intake = try aggregate.consume(Position(row: 0, column: 0), slot: .morning, doneSlots: [], day: today, instant: Date(timeIntervalSince1970: 1_000))
+        try await repository.update(aggregate, recording: intake)
 
         aggregate.removePrescription()
-        try await pillTypes.update(aggregate)
+        try await repository.update(aggregate)
 
-        #expect(try await intakes.fetch(id: intake.id) == intake)
+        #expect(try await repository.intake(id: intake.id) == intake)
     }
 
-    @Test func createNotifiesTheSharedChangeStream() async throws {
-        let (pillTypes, intakes) = try makeRepositories()
-        let aggregate = try makeAggregate()
-        try await pillTypes.create(aggregate)
-        let stream = await pillTypes.changes
-        var iterator = stream.makeAsyncIterator()
+    @Test func consumeNotifiesTheChangeStream() async throws {
+        let (repository, notifier) = try makeRepository()
+        var aggregate = try makeAggregate()
+        try await repository.create(aggregate)
+        var iterator = notifier.changes.makeAsyncIterator()
 
-        try await intakes.create(Intake(pillTypeID: aggregate.id, blisterID: try #require(aggregate.currentBlister?.id), position: Position(row: 0, column: 0), slot: .morning, day: today, instant: .now))
+        let intake = try aggregate.consume(Position(row: 0, column: 0), slot: .morning, doneSlots: [], day: today, instant: .now)
+        try await repository.update(aggregate, recording: intake)
 
         #expect(await iterator.next() != nil)
     }

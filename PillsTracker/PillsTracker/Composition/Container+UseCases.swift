@@ -13,14 +13,14 @@ extension Container {
     }
 
     nonisolated var consume: Factory<Consume> {
-        self { Consume(pillTypes: self.pillTypeRepository(), intakes: self.intakeRepository()) }
+        self { Consume(repository: self.pillTypeRepository()) }
     }
 
     nonisolated var undo: Factory<Undo> {
-        self { Undo(pillTypes: self.pillTypeRepository(), intakes: self.intakeRepository()) }
+        self { Undo(repository: self.pillTypeRepository()) }
     }
 
     nonisolated var dailyProgress: Factory<DailyProgress> {
-        self { DailyProgress(pillTypes: self.pillTypeRepository(), intakes: self.intakeRepository()) }
+        self { DailyProgress(repository: self.pillTypeRepository()) }
     }
 }

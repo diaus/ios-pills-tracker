@@ -17,48 +17,45 @@ struct UndoTests {
 
     @Test func restoresThePositionAndDeletesTodaysIntakeFromTheCurrentBlister() async throws {
         let (aggregate, intake) = try makeConsumed(day: today)
-        let pillTypes = FakePillTypeRepository([aggregate])
-        let intakes = FakeIntakeRepository([intake])
-        let sut = Undo(pillTypes: pillTypes, intakes: intakes)
+        let pillTypes = FakePillTypeRepository([aggregate], intakes: [intake])
+        let sut = Undo(repository: pillTypes)
 
         try await sut(intakeID: intake.id, day: today)
 
         let current = try #require(await pillTypes.fetch(id: aggregate.id)?.currentBlister)
         #expect(current.isPresent(position))
         #expect(current.presentPositions.count == 3)
-        #expect(await intakes.all.isEmpty)
+        #expect(await pillTypes.allIntakes.isEmpty)
     }
 
     @Test func refusesAnIntakeFromAnotherDay() async throws {
         let (aggregate, intake) = try makeConsumed(day: Day(year: 2026, month: 10, day: 5))
-        let pillTypes = FakePillTypeRepository([aggregate])
-        let intakes = FakeIntakeRepository([intake])
-        let sut = Undo(pillTypes: pillTypes, intakes: intakes)
+        let pillTypes = FakePillTypeRepository([aggregate], intakes: [intake])
+        let sut = Undo(repository: pillTypes)
 
         await #expect(throws: DomainError.undoNotAllowed) {
             try await sut(intakeID: intake.id, day: today)
         }
         #expect(await pillTypes.fetch(id: aggregate.id) == aggregate)
-        #expect(await intakes.all == [intake])
+        #expect(await pillTypes.allIntakes == [intake])
     }
 
     @Test func refusesAnIntakeFromARetiredBlister() async throws {
         var (aggregate, intake) = try makeConsumed(day: today)
         try aggregate.syncCurrentBlister(present: [])
         try aggregate.startNewBlister()
-        let pillTypes = FakePillTypeRepository([aggregate])
-        let intakes = FakeIntakeRepository([intake])
-        let sut = Undo(pillTypes: pillTypes, intakes: intakes)
+        let pillTypes = FakePillTypeRepository([aggregate], intakes: [intake])
+        let sut = Undo(repository: pillTypes)
 
         await #expect(throws: DomainError.undoNotAllowed) {
             try await sut(intakeID: intake.id, day: today)
         }
         #expect(await pillTypes.fetch(id: aggregate.id) == aggregate)
-        #expect(await intakes.all == [intake])
+        #expect(await pillTypes.allIntakes == [intake])
     }
 
     @Test func refusesAnUnknownIntake() async throws {
-        let sut = Undo(pillTypes: FakePillTypeRepository(), intakes: FakeIntakeRepository())
+        let sut = Undo(repository: FakePillTypeRepository())
         await #expect(throws: DomainError.undoNotAllowed) {
             try await sut(intakeID: UUID(), day: today)
         }

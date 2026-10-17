@@ -10,6 +10,7 @@ import SwiftUI
 @MainActor @Observable
 final class HomeViewModel {
     @ObservationIgnored @Injected(\.pillTypeRepository) private var repository
+    @ObservationIgnored @Injected(\.dataChangeNotifier) private var notifier
     @ObservationIgnored @Injected(\.dailyProgress) private var dailyProgress
 
     /// Today's read model of every Pill Type, ordered by creation date, oldest first.
@@ -56,7 +57,7 @@ final class HomeViewModel {
 
     /// Reloads after every write (including Consume and Undo on the Blister screen); runs until the owning view's task is cancelled.
     func observeChanges() async {
-        for await _ in await repository.changes {
+        for await _ in notifier.changes {
             await load()
         }
     }
