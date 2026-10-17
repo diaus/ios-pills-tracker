@@ -18,19 +18,19 @@ struct BlisterView: View {
 
     var body: some View {
         Group {
-            if let pillType = model.pillType, let blister = model.currentBlister {
+            if let progress = model.progress, let blister = progress.currentBlister {
                 ScrollView {
                     VStack(spacing: 16) {
-                        if model.showsSlotChips {
-                            slotChips
+                        if progress.hasPrescription {
+                            slotChips(progress)
                         }
                         BlisterGridView(shape: blister.shape, presentPositions: blister.presentPositions) { position in
                             tappedPosition = TappedPosition(position: position, isPresent: blister.isPresent(position))
                         }
-                        Text(.blisterPillsLeft(count: model.presentCount))
+                        Text(.blisterPillsLeft(count: progress.presentCount))
                             .font(.headline)
                             .foregroundStyle(.secondary)
-                        if model.canStartNewBlister {
+                        if progress.canStartNewBlister {
                             StartNewBlisterButton {
                                 Task { await model.startNewBlister() }
                             }
@@ -38,7 +38,7 @@ struct BlisterView: View {
                     }
                     .padding()
                 }
-                .navigationTitle(pillType.name)
+                .navigationTitle(progress.pillType.name)
             } else if model.hasLoaded {
                 ContentUnavailableView(.blisterNotFound, systemImage: "questionmark.circle")
             } else {
@@ -52,11 +52,11 @@ struct BlisterView: View {
                 Button(.blisterPrescription, systemImage: "calendar.badge.clock") {
                     isEditingPrescription = true
                 }
-                .disabled(model.pillType == nil)
+                .disabled(model.progress == nil)
                 Button(.blisterPillType, systemImage: "pills") {
                     isEditingPillType = true
                 }
-                .disabled(model.pillType == nil)
+                .disabled(model.progress == nil)
             }
         }
         .sheet(isPresented: $isEditingPrescription) {
@@ -67,7 +67,7 @@ struct BlisterView: View {
         }
         .positionActionSheet(
             for: $tappedPosition,
-            openSlots: model.openSlots,
+            consumableSlots: { model.progress?.consumableSlots(at: $0) ?? [] },
             onConsume: { position, slot in
                 Task { await model.consume(position, slot: slot) }
             },
@@ -95,10 +95,10 @@ struct BlisterView: View {
     }
 
     /// Today's chips. A Done chip whose Intake can be undone (today, Current Blister) opens the Undo confirmation.
-    private var slotChips: some View {
+    private func slotChips(_ progress: PillTypeProgress) -> some View {
         HStack(spacing: 8) {
-            ForEach(model.slots, id: \.slot) { slotProgress in
-                if let intake = model.undoableIntake(for: slotProgress.slot) {
+            ForEach(progress.slots, id: \.slot) { slotProgress in
+                if let intake = progress.undoableIntake(for: slotProgress.slot) {
                     Button {
                         undoCandidate = intake
                     } label: {

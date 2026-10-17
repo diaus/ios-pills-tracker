@@ -17,9 +17,7 @@ final class BlisterViewModel {
     @ObservationIgnored @Injected(\.dailyProgress) private var dailyProgress
 
     let pillTypeID: UUID
-    private(set) var pillType: PillType?
-    private(set) var currentBlister: Blister?
-    /// Today's progress; nil while the Pill Type has no Prescription.
+    /// Today's read model of the Pill Type; nil until loaded or when the Pill Type no longer exists.
     private(set) var progress: PillTypeProgress?
     private(set) var today = TodayTracker.today()
     private(set) var hasLoaded = false
@@ -29,36 +27,8 @@ final class BlisterViewModel {
         self.pillTypeID = pillTypeID
     }
 
-    var presentCount: Int { currentBlister?.presentPositions.count ?? 0 }
-
-    /// Start New Blister is offered only once every Position is Empty.
-    var canStartNewBlister: Bool { currentBlister?.isEmpty ?? false }
-
-    /// Slots a Present pill can be consumed for right now: today's Open Slots of an Active Prescription.
-    var openSlots: [Slot] {
-        guard let progress, progress.prescriptionState == .active else { return [] }
-        return progress.openSlots
-    }
-
-    /// Chips are shown once the Pill Type has a Prescription.
-    var showsSlotChips: Bool { progress != nil }
-
-    /// The Prescription's Slots for the chips, Done or Open today.
-    var slots: [SlotProgress] { progress?.slots ?? [] }
-
-    /// The Intake behind a Done chip that may be undone: made today, from the Current Blister.
-    func undoableIntake(for slot: Slot) -> Intake? {
-        guard let intake = progress?.intake(for: slot),
-              intake.day == today,
-              intake.blisterID == currentBlister?.id else { return nil }
-        return intake
-    }
-
     func load() async {
         do {
-            let aggregate = try await repository.fetch(id: pillTypeID)
-            pillType = aggregate?.pillType
-            currentBlister = aggregate?.currentBlister
             progress = try await dailyProgress(pillTypeID: pillTypeID, day: today)
         } catch {
             errorMessage = error.userMessage

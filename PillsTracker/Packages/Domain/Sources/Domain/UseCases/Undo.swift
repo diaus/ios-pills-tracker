@@ -13,14 +13,11 @@ public struct Undo: Sendable {
     }
 
     public func callAsFunction(intakeID: UUID, day: Day) async throws {
-        guard let intake = try await intakes.fetch(id: intakeID), intake.day == day else {
-            throw UseCaseError.undoNotAllowed
-        }
+        guard let intake = try await intakes.fetch(id: intakeID) else { throw UseCaseError.undoNotAllowed }
         guard var aggregate = try await pillTypes.fetch(id: intake.pillTypeID) else { throw UseCaseError.pillTypeNotFound }
-        guard let index = try? aggregate.currentBlisterIndex(), aggregate.blisters[index].id == intake.blisterID else {
-            throw UseCaseError.undoNotAllowed
-        }
+        try aggregate.validateUndo(of: intake, on: day)
 
+        let index = try aggregate.currentBlisterIndex()
         aggregate.blisters[index].presentPositions.insert(intake.position)
         try await pillTypes.update(aggregate)
         try await intakes.delete(id: intake.id)

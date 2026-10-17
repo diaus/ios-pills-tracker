@@ -30,9 +30,9 @@ struct HomeView: View {
 
                         if !model.pausedPrescriptions.isEmpty {
                             Section(.homePaused) {
-                                ForEach(model.pausedPrescriptions) { aggregate in
-                                    NavigationLink(value: AppRoute.blister(pillTypeID: aggregate.id)) {
-                                        pausedRow(aggregate)
+                                ForEach(model.pausedPrescriptions) { progress in
+                                    NavigationLink(value: AppRoute.blister(pillTypeID: progress.id)) {
+                                        pausedRow(progress.aggregate)
                                     }
                                 }
                             }

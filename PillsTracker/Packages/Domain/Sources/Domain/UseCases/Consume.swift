@@ -15,16 +15,10 @@ public struct Consume: Sendable {
     @discardableResult
     public func callAsFunction(pillTypeID: UUID, position: Position, slot: Slot, day: Day, instant: Date) async throws -> Intake {
         guard var aggregate = try await pillTypes.fetch(id: pillTypeID) else { throw UseCaseError.pillTypeNotFound }
-        let index = try aggregate.currentBlisterIndex()
-        guard let prescription = aggregate.prescription, prescription.state == .active else {
-            throw UseCaseError.noActivePrescription
-        }
-        guard aggregate.blisters[index].contains(position) else { throw UseCaseError.positionOutOfBounds }
-        guard aggregate.blisters[index].isPresent(position) else { throw UseCaseError.positionEmpty }
-
         let doneSlots = Set(try await intakes.fetch(day: day, pillTypeID: pillTypeID).map(\.slot))
-        guard prescription.contains(slot), !doneSlots.contains(slot) else { throw UseCaseError.slotNotOpen }
+        try aggregate.validateConsume(position: position, slot: slot, doneSlots: doneSlots)
 
+        let index = try aggregate.currentBlisterIndex()
         aggregate.blisters[index].presentPositions.remove(position)
         let intake = Intake(
             pillTypeID: pillTypeID,

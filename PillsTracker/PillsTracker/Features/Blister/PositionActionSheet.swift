@@ -9,12 +9,13 @@ struct TappedPosition: Identifiable, Hashable {
     var id: Position { position }
 }
 
-/// Action sheet shown after tapping a Position. A Present one lists today's Open Slots to Consume for,
-/// plus "remove without prescription" (a Sync Edit); with no Open Slot only the Sync Edit remains.
+/// Action sheet shown after tapping a Position. A Present one lists the Slots it can be consumed for
+/// (today's Open Slots of an Active Prescription), plus "remove without prescription" (a Sync Edit);
+/// with nothing consumable only the Sync Edit remains.
 /// An Empty one can only be set Present (a Sync Edit); Consume from Empty is refused in Domain.
 private struct PositionActionSheet: ViewModifier {
     @Binding var tapped: TappedPosition?
-    let openSlots: [Slot]
+    let consumableSlots: (Position) -> [Slot]
     let onConsume: (Position, Slot) -> Void
     let onSync: (Position, _ isPresent: Bool) -> Void
 
@@ -26,7 +27,7 @@ private struct PositionActionSheet: ViewModifier {
             presenting: tapped
         ) { tapped in
             if tapped.isPresent {
-                ForEach(openSlots, id: \.self) { slot in
+                ForEach(consumableSlots(tapped.position), id: \.self) { slot in
                     Button(slot.consumeTitle) {
                         onConsume(tapped.position, slot)
                     }
@@ -47,10 +48,10 @@ private struct PositionActionSheet: ViewModifier {
 extension View {
     func positionActionSheet(
         for tapped: Binding<TappedPosition?>,
-        openSlots: [Slot],
+        consumableSlots: @escaping (Position) -> [Slot],
         onConsume: @escaping (Position, Slot) -> Void,
         onSync: @escaping (Position, _ isPresent: Bool) -> Void
     ) -> some View {
-        modifier(PositionActionSheet(tapped: tapped, openSlots: openSlots, onConsume: onConsume, onSync: onSync))
+        modifier(PositionActionSheet(tapped: tapped, consumableSlots: consumableSlots, onConsume: onConsume, onSync: onSync))
     }
 }

@@ -12,35 +12,32 @@ final class HomeViewModel {
     @ObservationIgnored @Injected(\.pillTypeRepository) private var repository
     @ObservationIgnored @Injected(\.dailyProgress) private var dailyProgress
 
-    /// Every Pill Type ordered by creation date, oldest first.
-    private(set) var pillTypes: [PillTypeAggregate] = []
-    /// Today's progress for every Pill Type with a Prescription, ordered by creation date.
+    /// Today's read model of every Pill Type, ordered by creation date, oldest first.
     private(set) var progress: [PillTypeProgress] = []
     private(set) var today = TodayTracker.today()
     private(set) var hasLoaded = false
     var errorMessage: LocalizedStringResource?
 
-    var pillTypeCount: Int { pillTypes.count }
+    var pillTypeCount: Int { progress.count }
 
     /// True while the user has no Pill Types yet.
-    var isEmpty: Bool { hasLoaded && pillTypes.isEmpty }
+    var isEmpty: Bool { hasLoaded && progress.isEmpty }
 
     var activePrescriptions: [PillTypeProgress] {
         progress.filter { $0.prescriptionState == .active }
     }
 
-    var pausedPrescriptions: [PillTypeAggregate] {
-        pillTypes.filter { $0.prescription?.state == .paused }
+    var pausedPrescriptions: [PillTypeProgress] {
+        progress.filter { $0.prescriptionState == .paused }
     }
 
     /// Pill Types exist but none has a Prescription yet.
     var hasNoPrescriptions: Bool {
-        !pillTypes.isEmpty && pillTypes.allSatisfy { $0.prescription == nil }
+        !progress.isEmpty && progress.allSatisfy { !$0.hasPrescription }
     }
 
     func load() async {
         do {
-            pillTypes = try await repository.fetchAll()
             progress = try await dailyProgress(day: today)
         } catch {
             errorMessage = error.userMessage
@@ -65,7 +62,7 @@ final class HomeViewModel {
 
     /// Resumes a Paused Prescription straight from the Paused section.
     func resumePrescription(pillTypeID: UUID) async {
-        guard var aggregate = pillTypes.first(where: { $0.id == pillTypeID }) else { return }
+        guard var aggregate = progress.first(where: { $0.id == pillTypeID })?.aggregate else { return }
         do {
             try aggregate.resumePrescription()
             try await repository.update(aggregate)
