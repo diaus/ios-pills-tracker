@@ -94,18 +94,17 @@ struct BlisterView: View {
     /// Today's chips. A Done chip whose Intake can be undone (today, Current Blister) opens the Undo confirmation.
     private var slotChips: some View {
         HStack(spacing: 8) {
-            ForEach(Slot.allCases, id: \.self) { slot in
-                let state = model.chipState(for: slot)
-                if let intake = model.undoableIntake(for: slot) {
+            ForEach(model.slots, id: \.slot) { slotProgress in
+                if let intake = model.undoableIntake(for: slotProgress.slot) {
                     Button {
                         undoCandidate = intake
                     } label: {
-                        SlotChipView(slot: slot, state: state)
+                        SlotChipView(slot: slotProgress.slot, isDone: slotProgress.isDone)
                     }
                     .buttonStyle(.plain)
                     .accessibilityHint(Text(.blisterUndoHint))
                 } else {
-                    SlotChipView(slot: slot, state: state)
+                    SlotChipView(slot: slotProgress.slot, isDone: slotProgress.isDone)
                 }
             }
         }

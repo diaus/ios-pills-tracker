@@ -13,6 +13,8 @@ final class AddPillTypeViewModel {
     var name = ""
     var rows = 2
     var columns = 5
+    /// Slots of the Prescription to create with the Pill Type; none means no Prescription.
+    var selectedSlots: Set<Slot> = []
 
     private(set) var nameError: LocalizedStringResource?
     private(set) var rowsError: LocalizedStringResource?
@@ -23,9 +25,10 @@ final class AddPillTypeViewModel {
     /// Validates, persists and returns true on success so the sheet can dismiss.
     func save() async -> Bool {
         clearErrors()
-        let aggregate: PillTypeAggregate
+        var aggregate: PillTypeAggregate
         do {
             aggregate = try PillTypeAggregate.new(name: name, rows: rows, columns: columns, createdAt: Date())
+            if !selectedSlots.isEmpty { try aggregate.setPrescriptionSlots(selectedSlots) }
         } catch {
             show(error)
             return false

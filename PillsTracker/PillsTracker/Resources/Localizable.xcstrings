@@ -23,6 +23,28 @@
         }
       }
     },
+    "addPillType.prescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prescription"
+          }
+        }
+      }
+    },
+    "addPillType.prescription.footer" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Optional. Pick when one pill is taken each day."
+          }
+        }
+      }
+    },
     "addPillType.rows" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -921,17 +943,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Done"
-          }
-        }
-      }
-    },
-    "slotChip.notPrescribed" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Not prescribed"
           }
         }
       }

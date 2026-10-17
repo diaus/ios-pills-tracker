@@ -43,9 +43,8 @@ final class BlisterViewModel {
     /// Chips are shown once the Pill Type has a Prescription.
     var showsSlotChips: Bool { progress != nil }
 
-    func chipState(for slot: Slot) -> SlotChipState {
-        progress?.chipState(for: slot) ?? .notPrescribed
-    }
+    /// The Prescription's Slots for the chips, Done or Open today.
+    var slots: [SlotProgress] { progress?.slots ?? [] }
 
     /// The Intake behind a Done chip that may be undone: made today, from the Current Blister.
     func undoableIntake(for slot: Slot) -> Intake? {
