@@ -19,12 +19,12 @@ struct PrescriptionCardView: View {
                     }
                 }
                 if progress.isCompleted {
-                    Label("home.completed", systemImage: "checkmark.circle.fill")
+                    Label(.homeCompleted, systemImage: "checkmark.circle.fill")
                         .font(.footnote)
                         .foregroundStyle(.green)
                 }
                 if progress.isLowStock {
-                    Label("home.lowStock", systemImage: "exclamationmark.triangle.fill")
+                    Label(.homeLowStock, systemImage: "exclamationmark.triangle.fill")
                         .font(.footnote)
                         .foregroundStyle(.orange)
                 }

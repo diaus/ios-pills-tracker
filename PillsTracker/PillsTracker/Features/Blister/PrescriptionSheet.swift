@@ -29,43 +29,45 @@ struct PrescriptionSheet: View {
                             .foregroundStyle(.red)
                     }
                 } header: {
-                    Text("prescription.slots")
+                    Text(.prescriptionSlots)
                 } footer: {
-                    Text("prescription.slots.footer")
+                    Text(.prescriptionSlotsFooter)
                 }
 
                 if model.hasPrescription {
                     Section {
-                        LabeledContent("prescription.state") {
-                            Text(model.isPaused ? "prescription.state.paused" : "prescription.state.active")
+                        LabeledContent {
+                            Text(model.isPaused ? .prescriptionStatePaused : .prescriptionStateActive)
+                        } label: {
+                            Text(.prescriptionState)
                         }
                         if model.isPaused {
-                            Button("prescription.resume", systemImage: "play.circle") {
+                            Button(.prescriptionResume, systemImage: "play.circle") {
                                 Task { await model.resume() }
                             }
                         } else {
-                            Button("prescription.pause", systemImage: "pause.circle") {
+                            Button(.prescriptionPause, systemImage: "pause.circle") {
                                 Task { await model.pause() }
                             }
                         }
                     }
 
                     Section {
-                        Button("prescription.delete", role: .destructive) {
+                        Button(.prescriptionDelete, role: .destructive) {
                             isConfirmingDelete = true
                         }
                     }
                 }
             }
             .disabled(model.isSaving)
-            .navigationTitle(model.hasPrescription ? "prescription.title.edit" : "prescription.title.new")
+            .navigationTitle(model.hasPrescription ? .prescriptionTitleEdit : .prescriptionTitleNew)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("common.cancel") { dismiss() }
+                    Button(.commonCancel) { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("common.save") {
+                    Button(.commonSave) {
                         Task {
                             if await model.save() { dismiss() }
                         }
@@ -73,15 +75,15 @@ struct PrescriptionSheet: View {
                     .disabled(!model.hasLoaded)
                 }
             }
-            .confirmationDialog("prescription.delete.confirm.title", isPresented: $isConfirmingDelete, titleVisibility: .visible) {
-                Button("prescription.delete.confirm", role: .destructive) {
+            .confirmationDialog(.prescriptionDeleteConfirmTitle, isPresented: $isConfirmingDelete, titleVisibility: .visible) {
+                Button(.prescriptionDeleteConfirm, role: .destructive) {
                     Task {
                         if await model.delete() { dismiss() }
                     }
                 }
-                Button("common.cancel", role: .cancel) {}
+                Button(.commonCancel, role: .cancel) {}
             } message: {
-                Text("prescription.delete.confirm.message")
+                Text(.prescriptionDeleteConfirmMessage)
             }
             .errorAlert(message: $model.errorMessage)
             .task { await model.load() }

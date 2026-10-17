@@ -26,25 +26,25 @@ struct PillTypeSheet: View {
                     rowsError: model.rowsError,
                     columnsError: model.columnsError,
                     shapeError: model.shapeError,
-                    shapeFooter: model.isShapeLocked ? "pillType.shape.locked" : "pillType.shape.footer",
+                    shapeFooter: model.isShapeLocked ? .pillTypeShapeLocked : .pillTypeShapeFooter,
                     isShapeLocked: model.isShapeLocked
                 )
 
                 Section {
-                    Button("pillType.delete", role: .destructive) {
+                    Button(.pillTypeDelete, role: .destructive) {
                         isConfirmingDelete = true
                     }
                 }
             }
             .disabled(model.isSaving)
-            .navigationTitle("pillType.title")
+            .navigationTitle(.pillTypeTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("common.cancel") { dismiss() }
+                    Button(.commonCancel) { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("common.save") {
+                    Button(.commonSave) {
                         Task {
                             if await model.save() { dismiss() }
                         }
@@ -52,8 +52,8 @@ struct PillTypeSheet: View {
                     .disabled(!model.hasLoaded)
                 }
             }
-            .confirmationDialog("pillType.delete.confirm.title", isPresented: $isConfirmingDelete, titleVisibility: .visible) {
-                Button("pillType.delete.confirm", role: .destructive) {
+            .confirmationDialog(.pillTypeDeleteConfirmTitle, isPresented: $isConfirmingDelete, titleVisibility: .visible) {
+                Button(.pillTypeDeleteConfirm, role: .destructive) {
                     Task {
                         if await model.delete() {
                             dismiss()
@@ -61,9 +61,9 @@ struct PillTypeSheet: View {
                         }
                     }
                 }
-                Button("common.cancel", role: .cancel) {}
+                Button(.commonCancel, role: .cancel) {}
             } message: {
-                Text("pillType.delete.confirm.message")
+                Text(.pillTypeDeleteConfirmMessage)
             }
             .errorAlert(message: $model.errorMessage)
             .task { await model.load() }

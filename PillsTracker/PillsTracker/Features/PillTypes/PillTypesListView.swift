@@ -10,7 +10,7 @@ struct PillTypesListView: View {
             NavigationLink(value: AppRoute.blister(pillTypeID: aggregate.id)) {
                 VStack(alignment: .leading) {
                     Text(aggregate.pillType.name)
-                    Text("pillTypes.shape \(aggregate.pillType.shape.rows) \(aggregate.pillType.shape.columns)")
+                    Text(.pillTypesShape(rows: aggregate.pillType.shape.rows, columns: aggregate.pillType.shape.columns))
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
@@ -18,10 +18,10 @@ struct PillTypesListView: View {
         }
         .overlay {
             if model.pillTypes.isEmpty {
-                ContentUnavailableView("home.empty.title", systemImage: "pills", description: Text("home.empty.body"))
+                ContentUnavailableView(.homeEmptyTitle, systemImage: "pills", description: Text(.homeEmptyBody))
             }
         }
-        .navigationTitle("pillTypes.title")
+        .navigationTitle(.pillTypesTitle)
         .errorAlert(message: $model.errorMessage)
         .task { await model.load() }
         .task { await model.observeChanges() }

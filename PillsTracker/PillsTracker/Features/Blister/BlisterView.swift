@@ -27,7 +27,7 @@ struct BlisterView: View {
                         BlisterGridView(shape: blister.shape, presentPositions: blister.presentPositions) { position in
                             tappedPosition = TappedPosition(position: position, isPresent: blister.isPresent(position))
                         }
-                        Text("blister.pillsLeft \(model.presentCount)")
+                        Text(.blisterPillsLeft(count: model.presentCount))
                             .font(.headline)
                             .foregroundStyle(.secondary)
                         if model.canStartNewBlister {
@@ -40,17 +40,17 @@ struct BlisterView: View {
                 }
                 .navigationTitle(pillType.name)
             } else if model.hasLoaded {
-                ContentUnavailableView("blister.notFound", systemImage: "questionmark.circle")
+                ContentUnavailableView(.blisterNotFound, systemImage: "questionmark.circle")
             }
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
-                Button("blister.prescription", systemImage: "calendar.badge.clock") {
+                Button(.blisterPrescription, systemImage: "calendar.badge.clock") {
                     isEditingPrescription = true
                 }
                 .disabled(model.pillType == nil)
-                Button("blister.pillType", systemImage: "pills") {
+                Button(.blisterPillType, systemImage: "pills") {
                     isEditingPillType = true
                 }
                 .disabled(model.pillType == nil)
@@ -73,17 +73,17 @@ struct BlisterView: View {
             }
         )
         .confirmationDialog(
-            "blister.undo.title",
+            .blisterUndoTitle,
             isPresented: Binding(get: { undoCandidate != nil }, set: { if !$0 { undoCandidate = nil } }),
             titleVisibility: .visible,
             presenting: undoCandidate
         ) { intake in
-            Button("blister.undo.confirm", role: .destructive) {
+            Button(.blisterUndoConfirm, role: .destructive) {
                 Task { await model.undo(intake) }
             }
-            Button("common.cancel", role: .cancel) {}
+            Button(.commonCancel, role: .cancel) {}
         } message: { _ in
-            Text("blister.undo.message")
+            Text(.blisterUndoMessage)
         }
         .errorAlert(message: $model.errorMessage)
         .task { await model.load() }
@@ -103,7 +103,7 @@ struct BlisterView: View {
                         SlotChipView(slot: slot, state: state)
                     }
                     .buttonStyle(.plain)
-                    .accessibilityHint(Text("blister.undo.hint"))
+                    .accessibilityHint(Text(.blisterUndoHint))
                 } else {
                     SlotChipView(slot: slot, state: state)
                 }

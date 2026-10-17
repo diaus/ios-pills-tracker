@@ -17,11 +17,11 @@ final class PillTypeViewModel {
     var name = ""
     var rows = GridShape.allowedRange.lowerBound
     var columns = GridShape.allowedRange.lowerBound
-    private(set) var nameError: LocalizedStringKey?
-    private(set) var rowsError: LocalizedStringKey?
-    private(set) var columnsError: LocalizedStringKey?
-    private(set) var shapeError: LocalizedStringKey?
-    var errorMessage: LocalizedStringKey?
+    private(set) var nameError: LocalizedStringResource?
+    private(set) var rowsError: LocalizedStringResource?
+    private(set) var columnsError: LocalizedStringResource?
+    private(set) var shapeError: LocalizedStringResource?
+    var errorMessage: LocalizedStringResource?
     private(set) var isSaving = false
 
     init(pillTypeID: UUID) {

@@ -4,19 +4,23 @@ import Testing
 
 struct StringCatalogTests {
     @Test func homeEmptyStateTextComesFromTheStringCatalog() {
-        let title = String(localized: "home.empty.title", bundle: .main)
-        #expect(title == "No pill types yet")
+        #expect(String(localized: .homeEmptyTitle) == "No pill types yet")
+    }
+
+    @Test func symbolArgumentsFillTheirPlaceholders() {
+        #expect(String(localized: .blisterPillsLeft(count: 3)) == "3 pills left")
+        #expect(String(localized: .homeAllPillTypes(count: 2)) == "All Pill Types (2)")
+        #expect(String(localized: .pillTypesShape(rows: 2, columns: 5)) == "2 × 5 blister")
     }
 }
 
 struct ErrorMessageCatalogTests {
     @Test func unknownErrorFallbackComesFromTheStringCatalog() {
-        #expect(String(localized: "common.error.unknown", bundle: .main) == "Something went wrong. Please try again.")
+        #expect(String(localized: .commonErrorUnknown) == "Something went wrong. Please try again.")
     }
 
-    @Test(arguments: ["error.notFound", "error.corruptRecord", "error.positionOutOfBounds"])
-    func newErrorKeysAreTranslated(key: String) {
-        let text = String(localized: String.LocalizationValue(key), bundle: .main)
-        #expect(text != key)
+    @Test(arguments: [LocalizedStringResource.errorNotFound, .errorCorruptRecord, .errorPositionOutOfBounds])
+    func newErrorKeysAreTranslated(resource: LocalizedStringResource) {
+        #expect(String(localized: resource) != resource.key)
     }
 }

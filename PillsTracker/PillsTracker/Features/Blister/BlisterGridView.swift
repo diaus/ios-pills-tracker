@@ -21,7 +21,7 @@ struct BlisterGridView: View {
                     .aspectRatio(1, contentMode: .fit)
                     .contentShape(Rectangle())
                     .onTapGesture { onTap?(position) }
-                    .accessibilityLabel(Text(isPresent ? "position.present" : "position.empty"))
+                    .accessibilityLabel(Text(isPresent ? .positionPresent : .positionEmpty))
             }
         }
     }

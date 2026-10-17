@@ -88,6 +88,9 @@
 			);
 			buildRules = (
 			);
+			dependencies = (
+				AA00000000000000000000D1 /* PBXTargetDependency */,
+			);
 			fileSystemSynchronizedGroups = (
 				4987D446306BC13A0079A444 /* PillsTracker */,
 			);
@@ -154,6 +157,7 @@
 				AA00000000000000000000A1 /* XCLocalSwiftPackageReference "Packages/Domain" */,
 				AA00000000000000000000A2 /* XCLocalSwiftPackageReference "Packages/Data" */,
 				AA00000000000000000000A3 /* XCRemoteSwiftPackageReference "Factory" */,
+				AA00000000000000000000A4 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 4987D445306BC13A0079A444 /* Products */;
@@ -197,6 +201,10 @@
 			isa = PBXTargetDependency;
 			target = 4987D443306BC13A0079A444 /* PillsTracker */;
 			targetProxy = 4987D454306BC13C0079A444 /* PBXContainerItemProxy */;
+		};
+		AA00000000000000000000D1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = AA00000000000000000000B4 /* SwiftLintBuildToolPlugin */;
 		};
 /* End PBXTargetDependency section */
 
@@ -347,7 +355,7 @@
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
-				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -379,7 +387,7 @@
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
-				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -479,6 +487,14 @@
 				minimumVersion = 2.5.0;
 			};
 		};
+		AA00000000000000000000A4 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SimplyDanny/SwiftLintPlugins";
+			requirement = {
+				kind = exactVersion;
+				version = 0.65.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -494,6 +510,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = AA00000000000000000000A3 /* XCRemoteSwiftPackageReference "Factory" */;
 			productName = FactoryKit;
+		};
+		AA00000000000000000000B4 /* SwiftLintBuildToolPlugin */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AA00000000000000000000A4 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */;
+			productName = "plugin:SwiftLintBuildToolPlugin";
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

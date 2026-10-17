@@ -11,7 +11,7 @@ final class PillTypesListViewModel {
     @ObservationIgnored @Injected(\.pillTypeRepository) private var repository
 
     private(set) var pillTypes: [PillTypeAggregate] = []
-    var errorMessage: LocalizedStringKey?
+    var errorMessage: LocalizedStringResource?
 
     func load() async {
         do {

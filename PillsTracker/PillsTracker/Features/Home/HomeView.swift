@@ -12,14 +12,14 @@ struct HomeView: View {
             Group {
                 if model.isEmpty {
                     ContentUnavailableView(
-                        "home.empty.title",
+                        .homeEmptyTitle,
                         systemImage: "pills",
-                        description: Text("home.empty.body")
+                        description: Text(.homeEmptyBody)
                     )
                 } else if model.hasLoaded {
                     List {
                         if !model.activePrescriptions.isEmpty {
-                            Section("home.active") {
+                            Section(.homeActive) {
                                 ForEach(model.activePrescriptions) { progress in
                                     NavigationLink(value: AppRoute.blister(pillTypeID: progress.id)) {
                                         PrescriptionCardView(progress: progress)
@@ -29,7 +29,7 @@ struct HomeView: View {
                         }
 
                         if !model.pausedPrescriptions.isEmpty {
-                            Section("home.paused") {
+                            Section(.homePaused) {
                                 ForEach(model.pausedPrescriptions) { aggregate in
                                     NavigationLink(value: AppRoute.blister(pillTypeID: aggregate.id)) {
                                         pausedRow(aggregate)
@@ -41,22 +41,22 @@ struct HomeView: View {
                         if model.hasNoPrescriptions {
                             Section {
                                 ContentUnavailableView(
-                                    "home.noPrescriptions.title",
+                                    .homeNoPrescriptionsTitle,
                                     systemImage: "calendar.badge.clock",
-                                    description: Text("home.noPrescriptions.body")
+                                    description: Text(.homeNoPrescriptionsBody)
                                 )
                             }
                         }
 
                         Section {
                             NavigationLink(value: AppRoute.pillTypes) {
-                                Label("home.allPillTypes \(model.pillTypeCount)", systemImage: "list.bullet")
+                                Label(.homeAllPillTypes(count: model.pillTypeCount), systemImage: "list.bullet")
                             }
                         }
                     }
                 }
             }
-            .navigationTitle("home.title")
+            .navigationTitle(.homeTitle)
             .navigationDestination(for: AppRoute.self) { route in
                 switch route {
                 case .pillTypes:
@@ -67,7 +67,7 @@ struct HomeView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
-                    Button("home.addPillType", systemImage: "plus") {
+                    Button(.homeAddPillType, systemImage: "plus") {
                         isAddingPillType = true
                     }
                 }
@@ -86,7 +86,7 @@ struct HomeView: View {
         HStack {
             Text(aggregate.pillType.name)
             Spacer()
-            Button("prescription.resume") {
+            Button(.prescriptionResume) {
                 Task { await model.resumePrescription(pillTypeID: aggregate.id) }
             }
             .buttonStyle(.bordered)

@@ -23,7 +23,7 @@ final class BlisterViewModel {
     private(set) var progress: PillTypeProgress?
     private(set) var today = TodayTracker.today()
     private(set) var hasLoaded = false
-    var errorMessage: LocalizedStringKey?
+    var errorMessage: LocalizedStringResource?
 
     init(pillTypeID: UUID) {
         self.pillTypeID = pillTypeID
