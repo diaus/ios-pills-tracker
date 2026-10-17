@@ -61,8 +61,8 @@ fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
 
-# graft's local graph cache — regenerable, not committed (run `graft build`).
-/graft/
-
 # MobileBuildMCP (formerly XcodeBuildMCP) session defaults — machine-local paths and simulator IDs.
 /.mobilebuildmcp/
+
+# graft's local graph cache — regenerable, not committed (run `graft build`).
+/graft/
