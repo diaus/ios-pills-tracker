@@ -16,18 +16,7 @@ public struct Consume: Sendable {
     public func callAsFunction(pillTypeID: UUID, position: Position, slot: Slot, day: Day, instant: Date) async throws -> Intake {
         guard var aggregate = try await pillTypes.fetch(id: pillTypeID) else { throw UseCaseError.pillTypeNotFound }
         let doneSlots = Set(try await intakes.fetch(day: day, pillTypeID: pillTypeID).map(\.slot))
-        try aggregate.validateConsume(position: position, slot: slot, doneSlots: doneSlots)
-
-        let index = try aggregate.currentBlisterIndex()
-        aggregate.blisters[index].presentPositions.remove(position)
-        let intake = Intake(
-            pillTypeID: pillTypeID,
-            blisterID: aggregate.blisters[index].id,
-            position: position,
-            slot: slot,
-            day: day,
-            instant: instant
-        )
+        let intake = try aggregate.consume(position, slot: slot, doneSlots: doneSlots, day: day, instant: instant)
         try await pillTypes.update(aggregate)
         try await intakes.create(intake)
         return intake

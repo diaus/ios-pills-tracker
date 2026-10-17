@@ -26,7 +26,7 @@ struct EditPillTypeTests {
 
     @Test func changeShapeIsRefusedWhileTheCurrentBlisterHasAPresentPosition() throws {
         var aggregate = try makeAggregate()
-        aggregate.blisters[0].presentPositions = [Position(row: 0, column: 0)]
+        try aggregate.syncCurrentBlister(present: [Position(row: 0, column: 0)])
         let before = aggregate
 
         #expect(throws: DomainError.currentBlisterNotEmpty) {
@@ -37,7 +37,7 @@ struct EditPillTypeTests {
 
     @Test func changeShapeIsAllowedWhenTheCurrentBlisterIsEmpty() throws {
         var aggregate = try makeAggregate()
-        aggregate.blisters[0].presentPositions = []
+        try aggregate.syncCurrentBlister(present: [])
 
         let newShape = try GridShape(rows: 3, columns: 4)
         try aggregate.changeShape(newShape)
@@ -47,8 +47,8 @@ struct EditPillTypeTests {
 
     @Test func changedShapeAppliesToTheNextStartNewBlisterNotToTheEmptyCurrentOne() async throws {
         var aggregate = try makeAggregate()
-        aggregate.blisters[0].presentPositions = []
-        let emptyCurrent = aggregate.blisters[0]
+        try aggregate.syncCurrentBlister(present: [])
+        let emptyCurrent = try #require(aggregate.currentBlister)
         let oldShape = try GridShape(rows: 2, columns: 2)
         let newShape = try GridShape(rows: 3, columns: 4)
         try aggregate.changeShape(newShape)

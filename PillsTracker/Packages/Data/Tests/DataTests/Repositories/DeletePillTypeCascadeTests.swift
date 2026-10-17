@@ -23,7 +23,7 @@ struct DeletePillTypeCascadeTests {
         var aggregate = try PillTypeAggregate.new(name: name, rows: 1, columns: 2, createdAt: Date(timeIntervalSince1970: 1_000))
         try aggregate.setPrescriptionSlots([.morning, .evening])
         let retired = Blister(pillTypeID: aggregate.id, shape: aggregate.pillType.shape, state: .retired, presentPositions: [])
-        aggregate.blisters.insert(retired, at: 0)
+        aggregate = aggregate.inserting(retired)
         try await pillTypes.create(aggregate)
         let currentID = try #require(aggregate.currentBlister?.id)
         try await intakes.create(Intake(pillTypeID: aggregate.id, blisterID: retired.id, position: Position(row: 0, column: 0), slot: .morning, day: Day(year: 2026, month: 10, day: 5), instant: Date(timeIntervalSince1970: 1_000)))

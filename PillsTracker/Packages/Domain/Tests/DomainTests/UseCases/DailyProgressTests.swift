@@ -56,7 +56,7 @@ struct DailyProgressTests {
 
     @Test func flagsLowStockWhenPresentPillsAreFewerThanOpenSlots() async throws {
         var aggregate = try makeAggregate(slots: [.morning, .day, .evening])
-        aggregate.blisters[0].presentPositions = [Position(row: 0, column: 2)]
+        try aggregate.syncCurrentBlister(present: [Position(row: 0, column: 2)])
         let sut = makeSUT([aggregate])
 
         let progress = try #require(try await sut(day: today).first)
@@ -67,7 +67,7 @@ struct DailyProgressTests {
 
     @Test func enoughPresentPillsIsNotLowStock() async throws {
         var aggregate = try makeAggregate(slots: [.morning, .evening])
-        aggregate.blisters[0].presentPositions = [Position(row: 0, column: 1), Position(row: 0, column: 2)]
+        try aggregate.syncCurrentBlister(present: [Position(row: 0, column: 1), Position(row: 0, column: 2)])
         let sut = makeSUT([aggregate])
 
         let progress = try #require(try await sut(day: today).first)
@@ -179,7 +179,7 @@ struct DailyProgressTests {
         let full = try #require(try await makeSUT([aggregate])(day: today).first)
         #expect(!full.canStartNewBlister)
 
-        aggregate.blisters[0].presentPositions = []
+        try aggregate.syncCurrentBlister(present: [])
         let empty = try #require(try await makeSUT([aggregate])(day: today).first)
         #expect(empty.canStartNewBlister)
     }
@@ -187,8 +187,8 @@ struct DailyProgressTests {
     @Test func aDoneSlotIsUndoableOnlyFromTheCurrentBlister() async throws {
         var aggregate = try makeAggregate(slots: [.morning, .evening])
         let fromRetired = try intake(for: aggregate, slot: .morning)
-        aggregate.blisters[0].state = .retired
-        aggregate.blisters.append(.fresh(pillTypeID: aggregate.id, shape: aggregate.pillType.shape))
+        try aggregate.syncCurrentBlister(present: [])
+        try aggregate.startNewBlister()
         let fromCurrent = try intake(for: aggregate, slot: .evening, column: 1)
         let sut = makeSUT([aggregate], intakes: [fromRetired, fromCurrent])
 
@@ -210,7 +210,7 @@ struct DailyProgressTests {
 
     @Test func nothingIsConsumableFromAnEmptyPositionOrOutsideTheGrid() async throws {
         var aggregate = try makeAggregate(slots: [.morning])
-        aggregate.blisters[0].presentPositions.remove(Position(row: 0, column: 0))
+        try aggregate.syncPosition(Position(row: 0, column: 0), isPresent: false)
         let sut = makeSUT([aggregate])
 
         let progress = try #require(try await sut(day: today).first)

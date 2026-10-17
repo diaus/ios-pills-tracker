@@ -14,7 +14,7 @@ struct PillTypeRepositoryLiveTests {
     @Test func pillTypeWithItsBlisterRoundTrips() async throws {
         let (repository, _) = try makeRepository()
         var aggregate = try PillTypeAggregate.new(name: "Aspirin", rows: 2, columns: 5, createdAt: Date(timeIntervalSince1970: 1_000))
-        aggregate.blisters[0].presentPositions.remove(Position(row: 1, column: 4))
+        try aggregate.syncPosition(Position(row: 1, column: 4), isPresent: false)
 
         try await repository.create(aggregate)
         let fetched = try #require(try await repository.fetch(id: aggregate.id))
@@ -27,7 +27,7 @@ struct PillTypeRepositoryLiveTests {
         var aggregate = try PillTypeAggregate.new(name: "Aspirin", rows: 2, columns: 5, createdAt: Date(timeIntervalSince1970: 1_000))
         let oldShape = try GridShape(rows: 1, columns: 3)
         let retired = Blister(pillTypeID: aggregate.id, shape: oldShape, state: .retired, presentPositions: [])
-        aggregate.blisters.insert(retired, at: 0)
+        aggregate = aggregate.inserting(retired)
 
         try await repository.create(aggregate)
         let fetched = try #require(try await repository.fetch(id: aggregate.id))
@@ -78,9 +78,8 @@ struct PillTypeRepositoryLiveTests {
         try await repository.create(aggregate)
 
         try aggregate.pillType.rename("Ibuprofen")
-        aggregate.blisters[0].state = .retired
-        aggregate.blisters[0].presentPositions = []
-        aggregate.blisters.append(.fresh(pillTypeID: aggregate.id, shape: aggregate.pillType.shape))
+        try aggregate.syncCurrentBlister(present: [])
+        try aggregate.startNewBlister()
         try await repository.update(aggregate)
 
         let fetched = try #require(try await repository.fetch(id: aggregate.id))

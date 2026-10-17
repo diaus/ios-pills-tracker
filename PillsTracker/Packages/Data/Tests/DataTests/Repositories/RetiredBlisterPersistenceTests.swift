@@ -9,8 +9,8 @@ struct RetiredBlisterPersistenceTests {
         let container = try PillsModelContainer.make(inMemory: true)
         let repository = PillTypeRepositoryLive(modelContainer: container, notifier: DataChangeNotifier())
         var aggregate = try PillTypeAggregate.new(name: "Aspirin", rows: 1, columns: 2, createdAt: Date(timeIntervalSince1970: 1_000))
-        aggregate.blisters[0].presentPositions = []
-        let oldID = aggregate.blisters[0].id
+        try aggregate.syncCurrentBlister(present: [])
+        let oldID = try #require(aggregate.currentBlister?.id)
         try await repository.create(aggregate)
 
         try await StartNewBlister(repository: repository)(pillTypeID: aggregate.id)

@@ -39,10 +39,11 @@ final class HomeViewModel {
     func load() async {
         do {
             progress = try await dailyProgress(day: today)
+            // Only a successful load may show the empty or not-found state; a failed one keeps loading.
+            hasLoaded = true
         } catch {
             errorMessage = error.userMessage
         }
-        hasLoaded = true
     }
 
     /// Re-evaluates "today" and reloads when the Day rolled over.

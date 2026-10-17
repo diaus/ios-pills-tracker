@@ -1,9 +1,9 @@
 import Foundation
 
-/// The preconditions of Consume, Undo and Start New Blister, stated once. The use cases throw them;
-/// `PillTypeProgress` turns them into the affordances a screen shows.
+/// The preconditions of Consume, Undo and Start New Blister, stated once. The aggregate's Blister
+/// operations throw them; `PillTypeProgress` turns them into the affordances a screen shows.
 extension PillTypeAggregate {
-    /// Index of the Current Blister in `blisters`, so a use case can mutate it in place.
+    /// Index of the Current Blister in `blisters`, so a Blister operation can mutate it in place.
     func currentBlisterIndex() throws(UseCaseError) -> Int {
         guard let index = blisters.firstIndex(where: { $0.state == .current }) else { throw .noCurrentBlister }
         return index

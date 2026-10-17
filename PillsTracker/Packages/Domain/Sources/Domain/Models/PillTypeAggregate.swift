@@ -3,8 +3,9 @@ import Foundation
 /// The Pill Type aggregate: the Pill Type together with everything it owns.
 public struct PillTypeAggregate: Identifiable, Hashable, Sendable {
     public var pillType: PillType
-    /// Every Blister of the Pill Type (Current and Retired).
-    public var blisters: [Blister]
+    /// Every Blister of the Pill Type (Current and Retired), changed only through the Blister operations
+    /// below so that at most one is Current.
+    public private(set) var blisters: [Blister]
     /// The at-most-one daily rule for this Pill Type.
     public var prescription: Prescription?
 
@@ -40,6 +41,44 @@ public struct PillTypeAggregate: Identifiable, Hashable, Sendable {
     public mutating func changeShape(_ shape: GridShape) throws(DomainError) {
         if let current = currentBlister, !current.isEmpty { throw .currentBlisterNotEmpty }
         pillType.shape = shape
+    }
+
+    // MARK: Blister
+
+    /// Consume: empties a Present `position` of the Current Blister for an Open `slot` and returns the
+    /// Intake to record. `doneSlots` are the Slots already Done on `day`.
+    public mutating func consume(_ position: Position, slot: Slot, doneSlots: Set<Slot>, day: Day, instant: Date) throws(UseCaseError) -> Intake {
+        try validateConsume(position: position, slot: slot, doneSlots: doneSlots)
+        let index = try currentBlisterIndex()
+        blisters[index].presentPositions.remove(position)
+        return Intake(pillTypeID: id, blisterID: blisters[index].id, position: position, slot: slot, day: day, instant: instant)
+    }
+
+    /// Undo: makes the Position of `intake` Present again on the Current Blister. The caller removes the Intake.
+    public mutating func undo(_ intake: Intake, on day: Day) throws(UseCaseError) {
+        try validateUndo(of: intake, on: day)
+        let index = try currentBlisterIndex()
+        blisters[index].presentPositions.insert(intake.position)
+    }
+
+    /// Start New Blister: retires the empty Current Blister and adds a fresh one in the Pill Type's
+    /// shape as it is now. The Retired Blister keeps its final grid and shape.
+    public mutating func startNewBlister() throws(UseCaseError) {
+        try validateStartNewBlister()
+        let index = try currentBlisterIndex()
+        blisters[index].state = .retired
+        blisters.append(.fresh(pillTypeID: id, shape: pillType.shape))
+    }
+
+    /// Sync Edit: sets one Position of the Current Blister Present or Empty. Retired Blisters stay as they are.
+    public mutating func syncPosition(_ position: Position, isPresent: Bool) throws(UseCaseError) {
+        let index = try currentBlisterIndex()
+        guard blisters[index].contains(position) else { throw .positionOutOfBounds }
+        if isPresent {
+            blisters[index].presentPositions.insert(position)
+        } else {
+            blisters[index].presentPositions.remove(position)
+        }
     }
 
     // MARK: Prescription
