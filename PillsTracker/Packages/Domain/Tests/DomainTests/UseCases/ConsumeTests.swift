@@ -13,15 +13,14 @@ struct ConsumeTests {
         return aggregate
     }
 
-    private func makeSUT(_ aggregate: PillTypeAggregate, intakes: [Intake] = []) -> (Consume, FakePillTypeRepository, FakeIntakeRepository) {
-        let pillTypes = FakePillTypeRepository([aggregate])
-        let intakeRepository = FakeIntakeRepository(intakes)
-        return (Consume(pillTypes: pillTypes, intakes: intakeRepository), pillTypes, intakeRepository)
+    private func makeSUT(_ aggregate: PillTypeAggregate, intakes: [Intake] = []) -> (Consume, FakePillTypeRepository) {
+        let repository = FakePillTypeRepository([aggregate], intakes: intakes)
+        return (Consume(repository: repository), repository)
     }
 
     @Test func emptiesThePositionAndRecordsAnIntakeForTheDay() async throws {
         let aggregate = try makeAggregate()
-        let (sut, pillTypes, intakes) = makeSUT(aggregate)
+        let (sut, pillTypes) = makeSUT(aggregate)
 
         let intake = try await sut(pillTypeID: aggregate.id, position: position, slot: .morning, day: today, instant: instant)
 
@@ -30,7 +29,7 @@ struct ConsumeTests {
         #expect(!current.isPresent(position))
         #expect(current.presentPositions.count == 2)
 
-        #expect(await intakes.all == [intake])
+        #expect(await pillTypes.allIntakes == [intake])
         #expect(intake.pillTypeID == aggregate.id)
         #expect(intake.blisterID == current.id)
         #expect(intake.position == position)
@@ -42,63 +41,63 @@ struct ConsumeTests {
     @Test func refusesAnEmptyPosition() async throws {
         var aggregate = try makeAggregate()
         try aggregate.syncPosition(position, isPresent: false)
-        let (sut, pillTypes, intakes) = makeSUT(aggregate)
+        let (sut, pillTypes) = makeSUT(aggregate)
 
         await #expect(throws: DomainError.positionEmpty) {
             try await sut(pillTypeID: aggregate.id, position: position, slot: .morning, day: today, instant: instant)
         }
         #expect(await pillTypes.fetch(id: aggregate.id) == aggregate)
-        #expect(await intakes.all.isEmpty)
+        #expect(await pillTypes.allIntakes.isEmpty)
     }
 
     @Test func refusesAPositionOutsideTheCurrentBlistersShape() async throws {
         let aggregate = try makeAggregate()
-        let (sut, pillTypes, intakes) = makeSUT(aggregate)
+        let (sut, pillTypes) = makeSUT(aggregate)
 
         await #expect(throws: DomainError.positionOutOfBounds) {
             try await sut(pillTypeID: aggregate.id, position: Position(row: 1, column: 0), slot: .morning, day: today, instant: instant)
         }
         #expect(await pillTypes.fetch(id: aggregate.id) == aggregate)
-        #expect(await intakes.all.isEmpty)
+        #expect(await pillTypes.allIntakes.isEmpty)
     }
 
     @Test func refusesASlotThatIsNotPrescribed() async throws {
         let aggregate = try makeAggregate(slots: [.morning])
-        let (sut, _, intakes) = makeSUT(aggregate)
+        let (sut, pillTypes) = makeSUT(aggregate)
 
         await #expect(throws: DomainError.slotNotOpen) {
             try await sut(pillTypeID: aggregate.id, position: position, slot: .evening, day: today, instant: instant)
         }
-        #expect(await intakes.all.isEmpty)
+        #expect(await pillTypes.allIntakes.isEmpty)
     }
 
     @Test func refusesASlotAlreadyDoneToday() async throws {
         let aggregate = try makeAggregate()
         let blisterID = try #require(aggregate.currentBlister?.id)
         let earlier = Intake(pillTypeID: aggregate.id, blisterID: blisterID, position: Position(row: 0, column: 0), slot: .morning, day: today, instant: instant)
-        let (sut, pillTypes, intakes) = makeSUT(aggregate, intakes: [earlier])
+        let (sut, pillTypes) = makeSUT(aggregate, intakes: [earlier])
 
         await #expect(throws: DomainError.slotNotOpen) {
             try await sut(pillTypeID: aggregate.id, position: position, slot: .morning, day: today, instant: instant)
         }
         #expect(await pillTypes.fetch(id: aggregate.id) == aggregate)
-        #expect(await intakes.all == [earlier])
+        #expect(await pillTypes.allIntakes == [earlier])
     }
 
     @Test func aSlotDoneYesterdayIsOpenToday() async throws {
         let aggregate = try makeAggregate()
         let blisterID = try #require(aggregate.currentBlister?.id)
         let yesterday = Intake(pillTypeID: aggregate.id, blisterID: blisterID, position: Position(row: 0, column: 0), slot: .morning, day: Day(year: 2026, month: 10, day: 5), instant: instant)
-        let (sut, _, intakes) = makeSUT(aggregate, intakes: [yesterday])
+        let (sut, pillTypes) = makeSUT(aggregate, intakes: [yesterday])
 
         try await sut(pillTypeID: aggregate.id, position: position, slot: .morning, day: today, instant: instant)
 
-        #expect(await intakes.all.count == 2)
+        #expect(await pillTypes.allIntakes.count == 2)
     }
 
     @Test func refusesWithoutAPrescription() async throws {
         let aggregate = try makeAggregate(slots: nil)
-        let (sut, _, _) = makeSUT(aggregate)
+        let (sut, _) = makeSUT(aggregate)
 
         await #expect(throws: DomainError.noActivePrescription) {
             try await sut(pillTypeID: aggregate.id, position: position, slot: .morning, day: today, instant: instant)
@@ -108,7 +107,7 @@ struct ConsumeTests {
     @Test func refusesWhileThePrescriptionIsPaused() async throws {
         var aggregate = try makeAggregate()
         try aggregate.pausePrescription()
-        let (sut, _, _) = makeSUT(aggregate)
+        let (sut, _) = makeSUT(aggregate)
 
         await #expect(throws: DomainError.noActivePrescription) {
             try await sut(pillTypeID: aggregate.id, position: position, slot: .morning, day: today, instant: instant)
@@ -116,7 +115,7 @@ struct ConsumeTests {
     }
 
     @Test func throwsForUnknownPillType() async throws {
-        let sut = Consume(pillTypes: FakePillTypeRepository(), intakes: FakeIntakeRepository())
+        let sut = Consume(repository: FakePillTypeRepository())
         await #expect(throws: DomainError.pillTypeNotFound) {
             try await sut(pillTypeID: UUID(), position: position, slot: .morning, day: today, instant: instant)
         }

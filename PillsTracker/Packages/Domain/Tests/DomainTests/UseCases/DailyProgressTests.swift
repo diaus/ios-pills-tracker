@@ -18,7 +18,7 @@ struct DailyProgressTests {
     }
 
     private func makeSUT(_ aggregates: [PillTypeAggregate], intakes: [Intake] = []) -> DailyProgress {
-        DailyProgress(pillTypes: FakePillTypeRepository(aggregates), intakes: FakeIntakeRepository(intakes))
+        DailyProgress(repository: FakePillTypeRepository(aggregates, intakes: intakes))
     }
 
     @Test func slotsWithAnIntakeTodayAreDoneAndTheRestOpen() async throws {
@@ -107,8 +107,7 @@ struct DailyProgressTests {
     @Test func aSlotConsumedBeforeThePrescriptionWasRemovedAndSetAgainTheSameDayStaysDone() async throws {
         var aggregate = try makeAggregate(slots: [.morning, .evening])
         let pillTypes = FakePillTypeRepository([aggregate])
-        let intakes = FakeIntakeRepository()
-        try await Consume(pillTypes: pillTypes, intakes: intakes)(
+        try await Consume(repository: pillTypes)(
             pillTypeID: aggregate.id, position: Position(row: 0, column: 0), slot: .morning, day: today, instant: instant
         )
 
@@ -118,7 +117,7 @@ struct DailyProgressTests {
         try aggregate.setPrescriptionSlots([.morning, .evening])
         try await pillTypes.update(aggregate)
 
-        let sut = DailyProgress(pillTypes: pillTypes, intakes: intakes)
+        let sut = DailyProgress(repository: pillTypes)
         let progress = try #require(try await sut(day: today).first)
         #expect(progress.isDone(.morning))
         #expect(progress.openSlots == [.evening])

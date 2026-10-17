@@ -9,6 +9,7 @@ import SwiftUI
 @MainActor @Observable
 final class PillTypesListViewModel {
     @ObservationIgnored @Injected(\.pillTypeRepository) private var repository
+    @ObservationIgnored @Injected(\.dataChangeNotifier) private var notifier
 
     private(set) var pillTypes: [PillTypeAggregate] = []
     var errorMessage: LocalizedStringResource?
@@ -22,7 +23,7 @@ final class PillTypesListViewModel {
     }
 
     func observeChanges() async {
-        for await _ in await repository.changes {
+        for await _ in notifier.changes {
             await load()
         }
     }

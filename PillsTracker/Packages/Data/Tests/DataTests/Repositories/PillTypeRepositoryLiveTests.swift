@@ -101,8 +101,8 @@ struct PillTypeRepositoryLiveTests {
     }
 
     @Test func everyWriteFiresTheChangeStream() async throws {
-        let (repository, _) = try makeRepository()
-        var iterator = await repository.changes.makeAsyncIterator()
+        let (repository, notifier) = try makeRepository()
+        var iterator = notifier.changes.makeAsyncIterator()
         let aggregate = try PillTypeAggregate.new(name: "Aspirin", rows: 1, columns: 1, createdAt: Date(timeIntervalSince1970: 1_000))
 
         try await repository.create(aggregate)

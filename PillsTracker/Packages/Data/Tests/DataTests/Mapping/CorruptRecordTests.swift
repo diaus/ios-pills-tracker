@@ -8,14 +8,11 @@ import Domain
 struct CorruptRecordTests {
     private let container: ModelContainer
     private let pillTypes: PillTypeRepositoryLive
-    private let intakes: IntakeRepositoryLive
     private let pillTypeID = UUID()
 
     init() throws {
         container = try PillsModelContainer.make(inMemory: true)
-        let notifier = DataChangeNotifier()
-        pillTypes = PillTypeRepositoryLive(modelContainer: container, notifier: notifier)
-        intakes = IntakeRepositoryLive(modelContainer: container, notifier: notifier)
+        pillTypes = PillTypeRepositoryLive(modelContainer: container, notifier: DataChangeNotifier())
     }
 
     /// Inserts a Pill Type row directly, with `configure` adding the corrupt child rows.
@@ -61,7 +58,7 @@ struct CorruptRecordTests {
             context.insert(intake)
             intake.pillType = pillType
         }
-        await #expect(throws: DataError.corruptRecord) { try await intakes.fetch(id: intakeID) }
-        await #expect(throws: DataError.corruptRecord) { try await intakes.fetch(day: Day(year: 2026, month: 10, day: 6), pillTypeID: nil) }
+        await #expect(throws: DataError.corruptRecord) { try await pillTypes.intake(id: intakeID) }
+        await #expect(throws: DataError.corruptRecord) { try await pillTypes.intakes(on: Day(year: 2026, month: 10, day: 6), pillTypeID: nil) }
     }
 }

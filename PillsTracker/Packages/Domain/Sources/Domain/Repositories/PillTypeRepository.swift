@@ -1,15 +1,22 @@
 import Foundation
 
-/// Persistence boundary for the Pill Type aggregate (Pill Type with its Blisters and Prescription).
+/// Persistence boundary for the Pill Type aggregate (Pill Type with its Blisters and Prescription)
+/// and the Intakes it owns. Each write is one save: it happens completely or not at all.
 public protocol PillTypeRepository: Sendable {
     /// Every aggregate ordered by Pill Type creation date, oldest first.
     func fetchAll() async throws -> [PillTypeAggregate]
     func fetch(id: UUID) async throws -> PillTypeAggregate?
-    func create(_ aggregate: PillTypeAggregate) async throws
-    /// Replaces the stored aggregate (Pill Type fields, Blisters and Prescription) with `aggregate`.
-    func update(_ aggregate: PillTypeAggregate) async throws
-    func delete(id: UUID) async throws
+    /// Every Intake recorded on `day`, optionally only those of one Pill Type, ordered by instant.
+    func intakes(on day: Day, pillTypeID: UUID?) async throws -> [Intake]
+    func intake(id: UUID) async throws -> Intake?
 
-    /// Fires after every write to any repository in the Data layer.
-    var changes: AsyncStream<Void> { get async }
+    func create(_ aggregate: PillTypeAggregate) async throws
+    /// Stores the aggregate's Pill Type fields, Blisters and Prescription.
+    func update(_ aggregate: PillTypeAggregate) async throws
+    /// Stores the aggregate and records `intake` (Consume) in the same save.
+    func update(_ aggregate: PillTypeAggregate, recording intake: Intake) async throws
+    /// Stores the aggregate and removes `intake` (Undo) in the same save.
+    func update(_ aggregate: PillTypeAggregate, removing intake: Intake) async throws
+    /// Deletes the Pill Type with everything it owns, Intakes included.
+    func delete(id: UUID) async throws
 }

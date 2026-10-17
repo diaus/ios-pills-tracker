@@ -4,19 +4,16 @@ import Foundation
 /// again and the Intake is removed. Intakes from another Day or a Retired Blister cannot be undone,
 /// because the user can no longer verify them against the Blister in hand.
 public struct Undo: Sendable {
-    private let pillTypes: any PillTypeRepository
-    private let intakes: any IntakeRepository
+    private let repository: any PillTypeRepository
 
-    public init(pillTypes: any PillTypeRepository, intakes: any IntakeRepository) {
-        self.pillTypes = pillTypes
-        self.intakes = intakes
+    public init(repository: any PillTypeRepository) {
+        self.repository = repository
     }
 
     public func callAsFunction(intakeID: UUID, day: Day) async throws {
-        guard let intake = try await intakes.fetch(id: intakeID) else { throw DomainError.undoNotAllowed }
-        guard var aggregate = try await pillTypes.fetch(id: intake.pillTypeID) else { throw DomainError.pillTypeNotFound }
+        guard let intake = try await repository.intake(id: intakeID) else { throw DomainError.undoNotAllowed }
+        guard var aggregate = try await repository.fetch(id: intake.pillTypeID) else { throw DomainError.pillTypeNotFound }
         try aggregate.undo(intake, on: day)
-        try await pillTypes.update(aggregate)
-        try await intakes.delete(id: intake.id)
+        try await repository.update(aggregate, removing: intake)
     }
 }
