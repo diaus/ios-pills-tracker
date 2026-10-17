@@ -1,76 +1,36 @@
 import Domain
 import SwiftUI
 
-/// What a Slot chip conveys for one Prescription today.
-enum SlotChipState {
-    case notPrescribed
-    case open
-    /// An Intake exists for the Slot today.
-    case done
-}
-
-/// One of the three Morning / Day / Evening chips on a Home card or the Blister screen.
+/// The icon chip of one prescribed Slot on a Home card or the Blister screen: Open, or Done once
+/// an Intake exists for the Slot today.
 struct SlotChipView: View {
     let slot: Slot
-    let state: SlotChipState
+    let isDone: Bool
 
     var body: some View {
         HStack(spacing: 3) {
-            if state == .done {
+            if isDone {
                 Image(systemName: "checkmark")
                     .font(.caption2.weight(.bold))
             }
-            Text(slot.title)
+            Image(systemName: slot.systemImage)
                 .font(.caption)
-                .fontWeight(state == .notPrescribed ? .regular : .medium)
         }
-        .foregroundStyle(foreground)
+        .foregroundStyle(isDone ? .green : .primary)
         .padding(.horizontal, 8)
         .padding(.vertical, 4)
-        .background(background, in: Capsule())
+        .background(isDone ? Color.green.opacity(0.18) : Color.accentColor.opacity(0.18), in: Capsule())
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(slot.title))
-        .accessibilityValue(Text(accessibilityValue))
-    }
-
-    private var foreground: Color {
-        switch state {
-        case .notPrescribed: .secondary
-        case .open: .primary
-        case .done: .green
-        }
-    }
-
-    private var background: Color {
-        switch state {
-        case .notPrescribed: .secondary.opacity(0.1)
-        case .open: .accentColor.opacity(0.18)
-        case .done: .green.opacity(0.18)
-        }
-    }
-
-    private var accessibilityValue: LocalizedStringResource {
-        switch state {
-        case .notPrescribed: .slotChipNotPrescribed
-        case .open: .slotChipOpen
-        case .done: .slotChipDone
-        }
-    }
-}
-
-extension PillTypeProgress {
-    /// The chip state of `slot` for this Pill Type today.
-    func chipState(for slot: Slot) -> SlotChipState {
-        guard let status = slots.first(where: { $0.slot == slot }) else { return .notPrescribed }
-        return status.isDone ? .done : .open
+        .accessibilityValue(Text(isDone ? .slotChipDone : .slotChipOpen))
     }
 }
 
 #Preview {
     HStack {
-        SlotChipView(slot: .morning, state: .done)
-        SlotChipView(slot: .day, state: .notPrescribed)
-        SlotChipView(slot: .evening, state: .open)
+        SlotChipView(slot: .morning, isDone: true)
+        SlotChipView(slot: .day, isDone: false)
+        SlotChipView(slot: .evening, isDone: false)
     }
     .padding()
 }

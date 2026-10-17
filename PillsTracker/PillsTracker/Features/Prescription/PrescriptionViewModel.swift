@@ -37,14 +37,6 @@ final class PrescriptionViewModel {
         hasLoaded = true
     }
 
-    func isSelected(_ slot: Slot) -> Bool {
-        selectedSlots.contains(slot)
-    }
-
-    func setSelected(_ slot: Slot, _ isSelected: Bool) {
-        if isSelected { selectedSlots.insert(slot) } else { selectedSlots.remove(slot) }
-    }
-
     /// Creates the Prescription or replaces its Slots. Returns true on success so the sheet can dismiss.
     func save() async -> Bool {
         slotsError = nil

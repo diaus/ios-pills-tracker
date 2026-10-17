@@ -1,7 +1,7 @@
 import Domain
 import SwiftUI
 
-/// Home card for one Active Prescription: Pill Type name, today's Slot chips (Done / Open / not prescribed),
+/// Home card for one Active Prescription: Pill Type name, today's chips for its Slots (Done / Open),
 /// a Completed state when nothing is Open, a low-stock warning, and the mini Current Blister grid.
 struct PrescriptionCardView: View {
     let progress: PillTypeProgress
@@ -14,8 +14,8 @@ struct PrescriptionCardView: View {
                 Text(aggregate.pillType.name)
                     .font(.headline)
                 HStack(spacing: 6) {
-                    ForEach(Slot.allCases, id: \.self) { slot in
-                        SlotChipView(slot: slot, state: progress.chipState(for: slot))
+                    ForEach(progress.slots, id: \.slot) { slotProgress in
+                        SlotChipView(slot: slotProgress.slot, isDone: slotProgress.isDone)
                     }
                 }
                 if progress.isCompleted {

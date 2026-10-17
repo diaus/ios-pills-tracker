@@ -17,12 +17,7 @@ struct PrescriptionSheet: View {
         NavigationStack {
             Form {
                 Section {
-                    ForEach(Slot.allCases, id: \.self) { slot in
-                        Toggle(slot.title, isOn: Binding(
-                            get: { model.isSelected(slot) },
-                            set: { model.setSelected(slot, $0) }
-                        ))
-                    }
+                    SlotToggles(selection: $model.selectedSlots)
                     if let slotsError = model.slotsError {
                         Text(slotsError)
                             .font(.footnote)

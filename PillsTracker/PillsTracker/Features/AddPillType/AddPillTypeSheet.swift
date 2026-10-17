@@ -1,7 +1,7 @@
 import FactoryKit
 import SwiftUI
 
-/// Sheet for creating a Pill Type: name plus grid shape. Errors show inline under each field.
+/// Sheet for creating a Pill Type: name, grid shape and optional Prescription Slots. Errors show inline under each field.
 struct AddPillTypeSheet: View {
     @Environment(\.dismiss) private var dismiss
     @State private var model = Container.shared.addPillTypeViewModel()
@@ -18,6 +18,14 @@ struct AddPillTypeSheet: View {
                     columnsError: model.columnsError,
                     shapeFooter: .addPillTypeShapeFooter
                 )
+
+                Section {
+                    SlotToggles(selection: $model.selectedSlots)
+                } header: {
+                    Text(.addPillTypePrescription)
+                } footer: {
+                    Text(.addPillTypePrescriptionFooter)
+                }
             }
             .navigationTitle(.addPillTypeTitle)
             .navigationBarTitleDisplayMode(.inline)
