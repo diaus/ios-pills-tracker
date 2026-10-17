@@ -16,17 +16,17 @@ struct AddPillTypeSheet: View {
                     nameError: model.nameError,
                     rowsError: model.rowsError,
                     columnsError: model.columnsError,
-                    shapeFooter: "addPillType.shape.footer"
+                    shapeFooter: .addPillTypeShapeFooter
                 )
             }
-            .navigationTitle("addPillType.title")
+            .navigationTitle(.addPillTypeTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("common.cancel") { dismiss() }
+                    Button(.commonCancel) { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("common.save") {
+                    Button(.commonSave) {
                         Task {
                             if await model.save() { dismiss() }
                         }

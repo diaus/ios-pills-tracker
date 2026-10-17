@@ -3,56 +3,56 @@ import Domain
 import SwiftUI
 
 // The one place an error becomes alert text. Typed Domain, use case and Data errors carry codes
-// only; each maps to a String Catalog key here, and anything else is reported as unknown.
+// only; each maps to a String Catalog symbol here, and anything else is reported as unknown.
 
 extension DomainError {
-    /// User-facing text for a Domain error code (String Catalog key).
-    var message: LocalizedStringKey {
+    /// User-facing text for a Domain error code, from the String Catalog.
+    var message: LocalizedStringResource {
         switch self {
-        case .emptyName: "error.emptyName"
-        case .invalidRows: "error.invalidRows"
-        case .invalidColumns: "error.invalidColumns"
-        case .emptySlots: "error.emptySlots"
-        case .noPrescription: "error.noPrescription"
-        case .currentBlisterNotEmpty: "error.currentBlisterNotEmpty"
+        case .emptyName: .errorEmptyName
+        case .invalidRows: .errorInvalidRows
+        case .invalidColumns: .errorInvalidColumns
+        case .emptySlots: .errorEmptySlots
+        case .noPrescription: .errorNoPrescription
+        case .currentBlisterNotEmpty: .errorCurrentBlisterNotEmpty
         }
     }
 }
 
 extension UseCaseError {
-    /// User-facing text for a use case error code (String Catalog key).
-    var message: LocalizedStringKey {
+    /// User-facing text for a use case error code, from the String Catalog.
+    var message: LocalizedStringResource {
         switch self {
-        case .pillTypeNotFound: "error.pillTypeNotFound"
-        case .noCurrentBlister: "error.noCurrentBlister"
-        case .blisterNotEmpty: "error.blisterNotEmpty"
-        case .positionOutOfBounds: "error.positionOutOfBounds"
-        case .positionEmpty: "error.positionEmpty"
-        case .slotNotOpen: "error.slotNotOpen"
-        case .noActivePrescription: "error.noActivePrescription"
-        case .undoNotAllowed: "error.undoNotAllowed"
+        case .pillTypeNotFound: .errorPillTypeNotFound
+        case .noCurrentBlister: .errorNoCurrentBlister
+        case .blisterNotEmpty: .errorBlisterNotEmpty
+        case .positionOutOfBounds: .errorPositionOutOfBounds
+        case .positionEmpty: .errorPositionEmpty
+        case .slotNotOpen: .errorSlotNotOpen
+        case .noActivePrescription: .errorNoActivePrescription
+        case .undoNotAllowed: .errorUndoNotAllowed
         }
     }
 }
 
 extension DataError {
-    /// User-facing text for a persistence error code (String Catalog key).
-    var message: LocalizedStringKey {
+    /// User-facing text for a persistence error code, from the String Catalog.
+    var message: LocalizedStringResource {
         switch self {
-        case .notFound: "error.notFound"
-        case .corruptRecord: "error.corruptRecord"
+        case .notFound: .errorNotFound
+        case .corruptRecord: .errorCorruptRecord
         }
     }
 }
 
 extension Error {
     /// Catalog text for any error a view model catches; never a raw runtime description.
-    var userMessage: LocalizedStringKey {
+    var userMessage: LocalizedStringResource {
         switch self {
         case let error as DomainError: error.message
         case let error as UseCaseError: error.message
         case let error as DataError: error.message
-        default: "common.error.unknown"
+        default: .commonErrorUnknown
         }
     }
 }

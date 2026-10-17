@@ -49,11 +49,11 @@ struct SlotChipView: View {
         }
     }
 
-    private var accessibilityValue: LocalizedStringKey {
+    private var accessibilityValue: LocalizedStringResource {
         switch state {
-        case .notPrescribed: "slotChip.notPrescribed"
-        case .open: "slotChip.open"
-        case .done: "slotChip.done"
+        case .notPrescribed: .slotChipNotPrescribed
+        case .open: .slotChipOpen
+        case .done: .slotChipDone
         }
     }
 }

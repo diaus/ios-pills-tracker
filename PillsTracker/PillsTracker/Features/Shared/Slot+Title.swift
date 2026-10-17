@@ -2,21 +2,21 @@ import Domain
 import SwiftUI
 
 extension Slot {
-    /// User-facing label (String Catalog key).
-    var title: LocalizedStringKey {
+    /// User-facing label from the String Catalog.
+    var title: LocalizedStringResource {
         switch self {
-        case .morning: "slot.morning"
-        case .day: "slot.day"
-        case .evening: "slot.evening"
+        case .morning: .slotMorning
+        case .day: .slotDay
+        case .evening: .slotEvening
         }
     }
 
-    /// Action label for consuming a pill for this Slot (String Catalog key).
-    var consumeTitle: LocalizedStringKey {
+    /// Action label for consuming a pill for this Slot, from the String Catalog.
+    var consumeTitle: LocalizedStringResource {
         switch self {
-        case .morning: "blister.position.consume.morning"
-        case .day: "blister.position.consume.day"
-        case .evening: "blister.position.consume.evening"
+        case .morning: .blisterPositionConsumeMorning
+        case .day: .blisterPositionConsumeDay
+        case .evening: .blisterPositionConsumeEvening
         }
     }
 }

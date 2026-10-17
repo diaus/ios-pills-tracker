@@ -20,7 +20,7 @@ private struct PositionActionSheet: ViewModifier {
 
     func body(content: Content) -> some View {
         content.confirmationDialog(
-            "blister.position.title",
+            .blisterPositionTitle,
             isPresented: Binding(get: { tapped != nil }, set: { if !$0 { tapped = nil } }),
             titleVisibility: .hidden,
             presenting: tapped
@@ -31,15 +31,15 @@ private struct PositionActionSheet: ViewModifier {
                         onConsume(tapped.position, slot)
                     }
                 }
-                Button("blister.position.removeWithoutPrescription", role: .destructive) {
+                Button(.blisterPositionRemoveWithoutPrescription, role: .destructive) {
                     onSync(tapped.position, false)
                 }
             } else {
-                Button("blister.position.setPresent") {
+                Button(.blisterPositionSetPresent) {
                     onSync(tapped.position, true)
                 }
             }
-            Button("common.cancel", role: .cancel) {}
+            Button(.commonCancel, role: .cancel) {}
         }
     }
 }

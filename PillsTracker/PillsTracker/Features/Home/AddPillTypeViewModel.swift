@@ -14,10 +14,10 @@ final class AddPillTypeViewModel {
     var rows = 2
     var columns = 5
 
-    private(set) var nameError: LocalizedStringKey?
-    private(set) var rowsError: LocalizedStringKey?
-    private(set) var columnsError: LocalizedStringKey?
-    var errorMessage: LocalizedStringKey?
+    private(set) var nameError: LocalizedStringResource?
+    private(set) var rowsError: LocalizedStringResource?
+    private(set) var columnsError: LocalizedStringResource?
+    var errorMessage: LocalizedStringResource?
     private(set) var isSaving = false
 
     /// Validates, persists and returns true on success so the sheet can dismiss.

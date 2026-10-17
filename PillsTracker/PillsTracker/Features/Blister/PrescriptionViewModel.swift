@@ -15,8 +15,8 @@ final class PrescriptionViewModel {
     private(set) var aggregate: PillTypeAggregate?
     private(set) var hasLoaded = false
     var selectedSlots: Set<Slot> = []
-    private(set) var slotsError: LocalizedStringKey?
-    var errorMessage: LocalizedStringKey?
+    private(set) var slotsError: LocalizedStringResource?
+    var errorMessage: LocalizedStringResource?
     private(set) var isSaving = false
 
     init(pillTypeID: UUID) {

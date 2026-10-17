@@ -18,7 +18,7 @@ final class HomeViewModel {
     private(set) var progress: [PillTypeProgress] = []
     private(set) var today = TodayTracker.today()
     private(set) var hasLoaded = false
-    var errorMessage: LocalizedStringKey?
+    var errorMessage: LocalizedStringResource?
 
     var pillTypeCount: Int { pillTypes.count }
 
