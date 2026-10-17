@@ -35,7 +35,7 @@ struct UndoTests {
         let intakes = FakeIntakeRepository([intake])
         let sut = Undo(pillTypes: pillTypes, intakes: intakes)
 
-        await #expect(throws: UseCaseError.undoNotAllowed) {
+        await #expect(throws: DomainError.undoNotAllowed) {
             try await sut(intakeID: intake.id, day: today)
         }
         #expect(await pillTypes.fetch(id: aggregate.id) == aggregate)
@@ -50,7 +50,7 @@ struct UndoTests {
         let intakes = FakeIntakeRepository([intake])
         let sut = Undo(pillTypes: pillTypes, intakes: intakes)
 
-        await #expect(throws: UseCaseError.undoNotAllowed) {
+        await #expect(throws: DomainError.undoNotAllowed) {
             try await sut(intakeID: intake.id, day: today)
         }
         #expect(await pillTypes.fetch(id: aggregate.id) == aggregate)
@@ -59,7 +59,7 @@ struct UndoTests {
 
     @Test func refusesAnUnknownIntake() async throws {
         let sut = Undo(pillTypes: FakePillTypeRepository(), intakes: FakeIntakeRepository())
-        await #expect(throws: UseCaseError.undoNotAllowed) {
+        await #expect(throws: DomainError.undoNotAllowed) {
             try await sut(intakeID: UUID(), day: today)
         }
     }

@@ -1,4 +1,4 @@
-/// Typed validation and rule errors raised by Domain values and use cases.
+/// Typed validation and rule errors raised by Domain values, the Pill Type aggregate and the use cases.
 /// Carries codes only; the app maps them to user-facing text.
 public enum DomainError: Error, Equatable, Sendable {
     /// A Pill Type name was empty (after trimming whitespace).
@@ -11,6 +11,20 @@ public enum DomainError: Error, Equatable, Sendable {
     case emptySlots
     /// Pause or resume was requested for a Pill Type without a Prescription.
     case noPrescription
-    /// A grid shape change was asked while a Position of the Current Blister is still Present.
+    /// A grid shape change or Start New Blister was asked while a Position of the Current Blister is still Present.
     case currentBlisterNotEmpty
+    /// No Pill Type with the given id exists.
+    case pillTypeNotFound
+    /// The Pill Type has no Current Blister to act on.
+    case noCurrentBlister
+    /// Consume or Sync Edit was asked for a Position outside the Current Blister's grid.
+    case positionOutOfBounds
+    /// Consume was asked for a Position that is already Empty.
+    case positionEmpty
+    /// Consume was asked for a Slot that is not Open on that Day (not prescribed, or already Done).
+    case slotNotOpen
+    /// Consume was asked for a Pill Type without an Active Prescription.
+    case noActivePrescription
+    /// Undo was asked for an Intake from another Day or from a Retired Blister.
+    case undoNotAllowed
 }

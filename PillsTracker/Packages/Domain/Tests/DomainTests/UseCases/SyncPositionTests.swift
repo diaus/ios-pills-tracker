@@ -57,7 +57,7 @@ struct SyncPositionTests {
         let repository = FakePillTypeRepository([aggregate])
         let sut = SyncPosition(repository: repository)
 
-        await #expect(throws: UseCaseError.positionOutOfBounds) {
+        await #expect(throws: DomainError.positionOutOfBounds) {
             try await sut(pillTypeID: aggregate.id, position: outside, isPresent: true)
         }
         #expect(await repository.fetch(id: aggregate.id) == aggregate)
@@ -67,7 +67,7 @@ struct SyncPositionTests {
         let repository = FakePillTypeRepository()
         let sut = SyncPosition(repository: repository)
 
-        await #expect(throws: UseCaseError.pillTypeNotFound) {
+        await #expect(throws: DomainError.pillTypeNotFound) {
             try await sut(pillTypeID: UUID(), position: position, isPresent: true)
         }
     }

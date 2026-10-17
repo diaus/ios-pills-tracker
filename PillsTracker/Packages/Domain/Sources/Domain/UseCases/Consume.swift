@@ -14,7 +14,7 @@ public struct Consume: Sendable {
 
     @discardableResult
     public func callAsFunction(pillTypeID: UUID, position: Position, slot: Slot, day: Day, instant: Date) async throws -> Intake {
-        guard var aggregate = try await pillTypes.fetch(id: pillTypeID) else { throw UseCaseError.pillTypeNotFound }
+        guard var aggregate = try await pillTypes.fetch(id: pillTypeID) else { throw DomainError.pillTypeNotFound }
         let doneSlots = Set(try await intakes.fetch(day: day, pillTypeID: pillTypeID).map(\.slot))
         let intake = try aggregate.consume(position, slot: slot, doneSlots: doneSlots, day: day, instant: instant)
         try await pillTypes.update(aggregate)

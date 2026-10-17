@@ -342,17 +342,6 @@
         }
       }
     },
-    "error.blisterNotEmpty" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Empty every position before starting a new blister."
-          }
-        }
-      }
-    },
     "error.corruptRecord" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -370,7 +359,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Empty every position of the current blister before changing the shape."
+            "value" : "Empty every position of the current blister first."
           }
         }
       }

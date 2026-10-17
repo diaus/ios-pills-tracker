@@ -13,9 +13,7 @@ struct AddPillTypeSheet: View {
                     name: $model.name,
                     rows: $model.rows,
                     columns: $model.columns,
-                    nameError: model.nameError,
-                    rowsError: model.rowsError,
-                    columnsError: model.columnsError,
+                    error: model.validationError,
                     shapeFooter: .addPillTypeShapeFooter
                 )
 

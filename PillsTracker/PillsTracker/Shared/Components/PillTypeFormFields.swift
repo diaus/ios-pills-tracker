@@ -2,16 +2,13 @@ import Domain
 import SwiftUI
 
 /// Name and grid shape sections shared by the Add Pill Type and Pill Type sheets.
-/// Validation errors show inline under the field they belong to.
+/// Places a validation error inline under the field it belongs to; any other error (for example a
+/// locked shape) shows under both steppers.
 struct PillTypeFormFields: View {
     @Binding var name: String
     @Binding var rows: Int
     @Binding var columns: Int
-    var nameError: LocalizedStringResource?
-    var rowsError: LocalizedStringResource?
-    var columnsError: LocalizedStringResource?
-    /// An error about the shape as a whole (for example a locked shape), shown under both steppers.
-    var shapeError: LocalizedStringResource?
+    var error: DomainError?
     var shapeFooter: LocalizedStringResource
     var isShapeLocked = false
 
@@ -20,7 +17,7 @@ struct PillTypeFormFields: View {
             // TextField, like LabeledContent below, takes a LocalizedStringResource title only from iOS 26.
             TextField(String(localized: .addPillTypeName), text: $name)
                 .textInputAutocapitalization(.words)
-            fieldError(nameError)
+            fieldError(error == .emptyName)
         }
 
         Section {
@@ -31,7 +28,7 @@ struct PillTypeFormFields: View {
                     Text(.addPillTypeRows)
                 }
             }
-            fieldError(rowsError)
+            fieldError(error == .invalidRows)
             Stepper(value: $columns, in: GridShape.allowedRange) {
                 LabeledContent {
                     Text(columns, format: .number)
@@ -39,8 +36,8 @@ struct PillTypeFormFields: View {
                     Text(.addPillTypeColumns)
                 }
             }
-            fieldError(columnsError)
-            fieldError(shapeError)
+            fieldError(error == .invalidColumns)
+            fieldError(isShapeError)
         } header: {
             Text(.addPillTypeShape)
         } footer: {
@@ -49,10 +46,17 @@ struct PillTypeFormFields: View {
         .disabled(isShapeLocked)
     }
 
+    /// An error without a field of its own, such as a locked shape.
+    private var isShapeError: Bool {
+        guard let error else { return false }
+        return ![.emptyName, .invalidRows, .invalidColumns].contains(error)
+    }
+
+    /// The error's text, shown only under the field `isHere` picks.
     @ViewBuilder
-    private func fieldError(_ message: LocalizedStringResource?) -> some View {
-        if let message {
-            Text(message)
+    private func fieldError(_ isHere: Bool) -> some View {
+        if isHere, let error {
+            Text(error.message)
                 .font(.footnote)
                 .foregroundStyle(.red)
         }

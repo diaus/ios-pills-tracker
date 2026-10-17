@@ -44,7 +44,7 @@ struct ConsumeTests {
         try aggregate.syncPosition(position, isPresent: false)
         let (sut, pillTypes, intakes) = makeSUT(aggregate)
 
-        await #expect(throws: UseCaseError.positionEmpty) {
+        await #expect(throws: DomainError.positionEmpty) {
             try await sut(pillTypeID: aggregate.id, position: position, slot: .morning, day: today, instant: instant)
         }
         #expect(await pillTypes.fetch(id: aggregate.id) == aggregate)
@@ -55,7 +55,7 @@ struct ConsumeTests {
         let aggregate = try makeAggregate()
         let (sut, pillTypes, intakes) = makeSUT(aggregate)
 
-        await #expect(throws: UseCaseError.positionOutOfBounds) {
+        await #expect(throws: DomainError.positionOutOfBounds) {
             try await sut(pillTypeID: aggregate.id, position: Position(row: 1, column: 0), slot: .morning, day: today, instant: instant)
         }
         #expect(await pillTypes.fetch(id: aggregate.id) == aggregate)
@@ -66,7 +66,7 @@ struct ConsumeTests {
         let aggregate = try makeAggregate(slots: [.morning])
         let (sut, _, intakes) = makeSUT(aggregate)
 
-        await #expect(throws: UseCaseError.slotNotOpen) {
+        await #expect(throws: DomainError.slotNotOpen) {
             try await sut(pillTypeID: aggregate.id, position: position, slot: .evening, day: today, instant: instant)
         }
         #expect(await intakes.all.isEmpty)
@@ -78,7 +78,7 @@ struct ConsumeTests {
         let earlier = Intake(pillTypeID: aggregate.id, blisterID: blisterID, position: Position(row: 0, column: 0), slot: .morning, day: today, instant: instant)
         let (sut, pillTypes, intakes) = makeSUT(aggregate, intakes: [earlier])
 
-        await #expect(throws: UseCaseError.slotNotOpen) {
+        await #expect(throws: DomainError.slotNotOpen) {
             try await sut(pillTypeID: aggregate.id, position: position, slot: .morning, day: today, instant: instant)
         }
         #expect(await pillTypes.fetch(id: aggregate.id) == aggregate)
@@ -100,7 +100,7 @@ struct ConsumeTests {
         let aggregate = try makeAggregate(slots: nil)
         let (sut, _, _) = makeSUT(aggregate)
 
-        await #expect(throws: UseCaseError.noActivePrescription) {
+        await #expect(throws: DomainError.noActivePrescription) {
             try await sut(pillTypeID: aggregate.id, position: position, slot: .morning, day: today, instant: instant)
         }
     }
@@ -110,14 +110,14 @@ struct ConsumeTests {
         try aggregate.pausePrescription()
         let (sut, _, _) = makeSUT(aggregate)
 
-        await #expect(throws: UseCaseError.noActivePrescription) {
+        await #expect(throws: DomainError.noActivePrescription) {
             try await sut(pillTypeID: aggregate.id, position: position, slot: .morning, day: today, instant: instant)
         }
     }
 
     @Test func throwsForUnknownPillType() async throws {
         let sut = Consume(pillTypes: FakePillTypeRepository(), intakes: FakeIntakeRepository())
-        await #expect(throws: UseCaseError.pillTypeNotFound) {
+        await #expect(throws: DomainError.pillTypeNotFound) {
             try await sut(pillTypeID: UUID(), position: position, slot: .morning, day: today, instant: instant)
         }
     }

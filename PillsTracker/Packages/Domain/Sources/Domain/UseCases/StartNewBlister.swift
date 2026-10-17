@@ -10,7 +10,7 @@ public struct StartNewBlister: Sendable {
     }
 
     public func callAsFunction(pillTypeID: UUID) async throws {
-        guard var aggregate = try await repository.fetch(id: pillTypeID) else { throw UseCaseError.pillTypeNotFound }
+        guard var aggregate = try await repository.fetch(id: pillTypeID) else { throw DomainError.pillTypeNotFound }
         try aggregate.startNewBlister()
         try await repository.update(aggregate)
     }

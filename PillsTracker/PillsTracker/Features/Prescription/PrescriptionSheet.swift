@@ -18,8 +18,8 @@ struct PrescriptionSheet: View {
             Form {
                 Section {
                     SlotToggles(selection: $model.selectedSlots)
-                    if let slotsError = model.slotsError {
-                        Text(slotsError)
+                    if let validationError = model.validationError {
+                        Text(validationError.message)
                             .font(.footnote)
                             .foregroundStyle(.red)
                     }

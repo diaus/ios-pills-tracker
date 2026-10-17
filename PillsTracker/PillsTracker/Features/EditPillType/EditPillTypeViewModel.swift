@@ -17,10 +17,8 @@ final class EditPillTypeViewModel {
     var name = ""
     var rows = GridShape.allowedRange.lowerBound
     var columns = GridShape.allowedRange.lowerBound
-    private(set) var nameError: LocalizedStringResource?
-    private(set) var rowsError: LocalizedStringResource?
-    private(set) var columnsError: LocalizedStringResource?
-    private(set) var shapeError: LocalizedStringResource?
+    /// The rule the form broke; `PillTypeFormFields` shows it under its field.
+    private(set) var validationError: DomainError?
     var errorMessage: LocalizedStringResource?
     private(set) var isSaving = false
 
@@ -50,10 +48,7 @@ final class EditPillTypeViewModel {
 
     /// Applies the rename and, when it changed, the new shape. Returns true on success so the sheet can dismiss.
     func save() async -> Bool {
-        nameError = nil
-        rowsError = nil
-        columnsError = nil
-        shapeError = nil
+        validationError = nil
         guard var updated = aggregate else { return false }
         do {
             try updated.rename(name)
@@ -62,7 +57,7 @@ final class EditPillTypeViewModel {
                 try updated.changeShape(shape)
             }
         } catch {
-            show(error)
+            validationError = error
             return false
         }
         return await persist { try await repository.update(updated) }
@@ -82,16 +77,6 @@ final class EditPillTypeViewModel {
         } catch {
             errorMessage = error.userMessage
             return false
-        }
-    }
-
-    private func show(_ error: DomainError) {
-        switch error {
-        case .emptyName: nameError = error.message
-        case .invalidRows: rowsError = error.message
-        case .invalidColumns: columnsError = error.message
-        case .currentBlisterNotEmpty: shapeError = error.message
-        default: errorMessage = error.message
         }
     }
 }
