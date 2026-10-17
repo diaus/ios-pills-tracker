@@ -26,27 +26,22 @@ extension PillTypeModel {
         )
     }
 
-    /// Overwrites the stored Pill Type, its Blisters and its Prescription with `aggregate`.
+    /// Overwrites the stored Pill Type fields and Prescription with `aggregate`'s, updates the stored
+    /// Blisters and adds new ones. No Domain operation removes a Blister, so none is deleted here.
     func apply(_ aggregate: PillTypeAggregate) {
         name = aggregate.pillType.name
         rows = aggregate.pillType.shape.rows
         columns = aggregate.pillType.shape.columns
         createdAt = aggregate.pillType.createdAt
 
-        var existing = Dictionary(uniqueKeysWithValues: blisters.map { ($0.id, $0) })
-        var updated: [BlisterModel] = []
+        let stored = Dictionary(uniqueKeysWithValues: blisters.map { ($0.id, $0) })
         for blister in aggregate.blisters {
-            if let model = existing.removeValue(forKey: blister.id) {
+            if let model = stored[blister.id] {
                 model.apply(blister)
-                updated.append(model)
             } else {
-                updated.append(BlisterModel(blister))
+                blisters.append(BlisterModel(blister))
             }
         }
-        for orphan in existing.values {
-            orphan.modelContext?.delete(orphan)
-        }
-        blisters = updated
 
         switch (prescription, aggregate.prescription) {
         case (let model?, let value?):

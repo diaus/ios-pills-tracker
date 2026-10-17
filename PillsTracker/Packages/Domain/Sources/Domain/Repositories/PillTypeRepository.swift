@@ -11,7 +11,7 @@ public protocol PillTypeRepository: Sendable {
     func intake(id: UUID) async throws -> Intake?
 
     func create(_ aggregate: PillTypeAggregate) async throws
-    /// Stores the aggregate's Pill Type fields, Blisters and Prescription.
+    /// Stores the aggregate's Pill Type fields and Prescription, its changed Blisters and its new ones.
     func update(_ aggregate: PillTypeAggregate) async throws
     /// Stores the aggregate and records `intake` (Consume) in the same save.
     func update(_ aggregate: PillTypeAggregate, recording intake: Intake) async throws
