@@ -7,7 +7,11 @@ Judgement calls for reviewing a diff. Tooling already enforces the mechanical ru
 - **Layers.** Domain imports only Foundation: no SwiftData, no SwiftUI, no Factory. Only Data imports SwiftData. Factory wiring lives in Data's `DI/` and the app's `Composition/`.
 - **Utils is project-independent.** It holds helpers other projects could reuse (concurrency primitives, Foundation extensions) and imports only the standard library and Apple's system frameworks: no Domain, no Data, no third-party package. The glossary lint rule skips it, since its generic words aren't the domain's language.
 - **Folders by role.** A new file goes in the folder for its role:
-  - Domain: `Models/`, `Repositories/` (protocols), `UseCases/`, `Errors/`.
+  - Domain: `Models/`, `Repositories/` (protocols), `UseCases/`, `Errors/`. `Models/` splits by DDD building block:
+    - `Entities/`: a stored record with its own ID (`PillType`, `Blister`, `Intake`).
+    - `ValueObjects/`: a value without an ID, equal by its fields (`Day`, `GridShape`, `Slot`).
+    - `Aggregates/`: the cluster that enforces the rules over its entities; repositories load and store it as one unit.
+    - `ReadModels/`: computed from aggregates for a screen, never stored (`PillTypeProgress`).
   - Data: `Repositories/` (the concrete repositories only), `Infrastructure/` (generic SwiftData helpers the repositories share), `Mapping/` (model ↔ domain), `Schema/V<n>/`, `DI/`, `Errors/`.
   - Utils: one folder per topic, e.g. `Concurrency/`.
   - App: `App/`, `Composition/`, `Features/<Feature>/` (a view and its view model), `Shared/{Components,Extensions,Modifiers}/`.
