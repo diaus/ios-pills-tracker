@@ -33,3 +33,11 @@ Judgement calls for reviewing a diff. Tooling already enforces the mechanical ru
   - use a fake the code under test can never reach, so the assertion passes whatever the code does.
 - **SwiftData to-many relationships are unordered.** Tests over them compare as sets or sort first. Code that needs an order sorts explicitly.
 - Test names describe behaviour in glossary terms (`refusesASlotAlreadyDoneToday`).
+
+## Blast radius
+
+Run `graft build . --no-ignore && graft blast --base <fixed-point> --no-owners` once per review (the build takes under a second and makes a fresh clone work). It lists the code that depends on the changed lines, and marks each changed area `✗` when no test reaches it. Without the `graft` CLI, report this step as skipped.
+
+- **Every listed dependent still fits the change.** Read each one against the new behaviour: a caller that passes old arguments, a screen that shows a changed view, a use case that relies on an old rule.
+- **A `✗` area that holds logic gets a test,** in the package's tests where the logic lives. A view with no logic of its own needs none.
+- The list undercounts. graft misses calls through a protocol (`repository.create(...)`) and callers of a name two symbols share, so grep the changed protocol methods and shared names before calling a change contained.
