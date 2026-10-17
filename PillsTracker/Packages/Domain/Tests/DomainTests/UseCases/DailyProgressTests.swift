@@ -135,14 +135,19 @@ struct DailyProgressTests {
         #expect(all.filter { $0.prescriptionState == .active }.isEmpty)
     }
 
-    @Test func aPillTypeWithoutAPrescriptionIsExcluded() async throws {
+    @Test func aPillTypeWithoutAPrescriptionIsIncludedWithNoSlots() async throws {
         let withPrescription = try makeAggregate(name: "Aspirin", slots: [.morning])
         let without = try makeAggregate(name: "Vitamin", slots: nil, createdAt: 1)
         let sut = makeSUT([withPrescription, without])
 
         let all = try await sut(day: today)
 
-        #expect(all.map(\.id) == [withPrescription.id])
+        #expect(all.map(\.id) == [withPrescription.id, without.id])
+        let vitamin = try #require(all.last)
+        #expect(!vitamin.hasPrescription)
+        #expect(vitamin.prescriptionState == nil)
+        #expect(vitamin.slots.isEmpty)
+        #expect(vitamin.presentCount == 3)
     }
 
     @Test func isOrderedByPillTypeCreationDate() async throws {
@@ -155,13 +160,84 @@ struct DailyProgressTests {
         #expect(all.map(\.aggregate.pillType.name) == ["Older", "Newer"])
     }
 
-    @Test func singlePillTypeLookupReturnsNilWithoutAPrescription() async throws {
+    @Test func singlePillTypeLookupReturnsNilOnlyForAnUnknownPillType() async throws {
         let withPrescription = try makeAggregate(name: "Aspirin", slots: [.morning])
         let without = try makeAggregate(name: "Vitamin", slots: nil, createdAt: 1)
         let sut = makeSUT([withPrescription, without])
 
         #expect(try await sut(pillTypeID: withPrescription.id, day: today)?.id == withPrescription.id)
-        #expect(try await sut(pillTypeID: without.id, day: today) == nil)
+        let vitamin = try #require(try await sut(pillTypeID: without.id, day: today))
+        #expect(vitamin.id == without.id)
+        #expect(!vitamin.hasPrescription)
         #expect(try await sut(pillTypeID: UUID(), day: today) == nil)
+    }
+
+    // MARK: Affordances
+
+    @Test func startNewBlisterIsOfferedOnlyWhenEveryPositionIsEmpty() async throws {
+        var aggregate = try makeAggregate(slots: [.morning])
+        let full = try #require(try await makeSUT([aggregate])(day: today).first)
+        #expect(!full.canStartNewBlister)
+
+        aggregate.blisters[0].presentPositions = []
+        let empty = try #require(try await makeSUT([aggregate])(day: today).first)
+        #expect(empty.canStartNewBlister)
+    }
+
+    @Test func aDoneSlotIsUndoableOnlyFromTheCurrentBlister() async throws {
+        var aggregate = try makeAggregate(slots: [.morning, .evening])
+        let fromRetired = try intake(for: aggregate, slot: .morning)
+        aggregate.blisters[0].state = .retired
+        aggregate.blisters.append(.fresh(pillTypeID: aggregate.id, shape: aggregate.pillType.shape))
+        let fromCurrent = try intake(for: aggregate, slot: .evening, column: 1)
+        let sut = makeSUT([aggregate], intakes: [fromRetired, fromCurrent])
+
+        let progress = try #require(try await sut(day: today).first)
+
+        #expect(progress.isDone(.morning))
+        #expect(progress.undoableIntake(for: .morning) == nil)
+        #expect(progress.undoableIntake(for: .evening) == fromCurrent)
+    }
+
+    @Test func consumableSlotsAreTodaysOpenSlotsForAPresentPosition() async throws {
+        let aggregate = try makeAggregate(slots: [.morning, .day, .evening])
+        let sut = makeSUT([aggregate], intakes: [try intake(for: aggregate, slot: .day)])
+
+        let progress = try #require(try await sut(day: today).first)
+
+        #expect(progress.consumableSlots(at: Position(row: 0, column: 1)) == [.morning, .evening])
+    }
+
+    @Test func nothingIsConsumableFromAnEmptyPositionOrOutsideTheGrid() async throws {
+        var aggregate = try makeAggregate(slots: [.morning])
+        aggregate.blisters[0].presentPositions.remove(Position(row: 0, column: 0))
+        let sut = makeSUT([aggregate])
+
+        let progress = try #require(try await sut(day: today).first)
+
+        #expect(progress.openSlots == [.morning])
+        #expect(progress.consumableSlots(at: Position(row: 0, column: 0)).isEmpty)
+        #expect(progress.consumableSlots(at: Position(row: 5, column: 5)).isEmpty)
+        #expect(progress.consumableSlots(at: Position(row: 0, column: 1)) == [.morning])
+    }
+
+    @Test func nothingIsConsumableUnderAPausedPrescription() async throws {
+        var aggregate = try makeAggregate(slots: [.morning])
+        try aggregate.pausePrescription()
+        let sut = makeSUT([aggregate])
+
+        let progress = try #require(try await sut(day: today).first)
+
+        #expect(progress.openSlots == [.morning])
+        #expect(progress.consumableSlots(at: Position(row: 0, column: 0)).isEmpty)
+    }
+
+    @Test func nothingIsConsumableWithoutAPrescription() async throws {
+        let aggregate = try makeAggregate(slots: nil)
+        let sut = makeSUT([aggregate])
+
+        let progress = try #require(try await sut(day: today).first)
+
+        #expect(progress.consumableSlots(at: Position(row: 0, column: 0)).isEmpty)
     }
 }

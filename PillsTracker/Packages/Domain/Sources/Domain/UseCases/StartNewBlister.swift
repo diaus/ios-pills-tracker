@@ -13,9 +13,9 @@ public struct StartNewBlister: Sendable {
 
     public func callAsFunction(pillTypeID: UUID) async throws {
         guard var aggregate = try await repository.fetch(id: pillTypeID) else { throw UseCaseError.pillTypeNotFound }
-        let index = try aggregate.currentBlisterIndex()
-        guard aggregate.blisters[index].isEmpty else { throw UseCaseError.blisterNotEmpty }
+        try aggregate.validateStartNewBlister()
 
+        let index = try aggregate.currentBlisterIndex()
         aggregate.blisters[index].state = .retired
         aggregate.blisters.append(.fresh(pillTypeID: pillTypeID, shape: aggregate.pillType.shape))
         try await repository.update(aggregate)
