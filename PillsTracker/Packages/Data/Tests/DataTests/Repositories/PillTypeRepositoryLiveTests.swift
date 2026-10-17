@@ -3,10 +3,11 @@ import SwiftData
 import Testing
 import Domain
 @testable import Data
+import Utils
 
 struct PillTypeRepositoryLiveTests {
-    private func makeRepository() throws -> (PillTypeRepositoryLive, DataChangeNotifier) {
-        let notifier = DataChangeNotifier()
+    private func makeRepository() throws -> (PillTypeRepositoryLive, ChangeNotifier) {
+        let notifier = ChangeNotifier()
         let container = try PillsModelContainer.make(inMemory: true)
         return (PillTypeRepositoryLive(modelContainer: container, notifier: notifier), notifier)
     }
@@ -41,7 +42,7 @@ struct PillTypeRepositoryLiveTests {
     /// Blisters written before they carried a shape have rows and columns 0; they use the Pill Type's shape.
     @Test func aBlisterStoredWithoutAShapeUsesThePillTypesShape() async throws {
         let container = try PillsModelContainer.make(inMemory: true)
-        let repository = PillTypeRepositoryLive(modelContainer: container, notifier: DataChangeNotifier())
+        let repository = PillTypeRepositoryLive(modelContainer: container, notifier: ChangeNotifier())
         let pillTypeID = UUID()
         let blisterID = UUID()
         let context = ModelContext(container)

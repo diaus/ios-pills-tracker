@@ -3,6 +3,7 @@ import SwiftData
 import Testing
 import Domain
 @testable import Data
+import Utils
 
 /// Deleting a Pill Type removes everything it owns via SwiftData delete rules (ticket 06).
 struct DeletePillTypeCascadeTests {
@@ -10,7 +11,7 @@ struct DeletePillTypeCascadeTests {
 
     private func makeRepository() throws -> (ModelContainer, PillTypeRepositoryLive) {
         let container = try PillsModelContainer.make(inMemory: true)
-        return (container, PillTypeRepositoryLive(modelContainer: container, notifier: DataChangeNotifier()))
+        return (container, PillTypeRepositoryLive(modelContainer: container, notifier: ChangeNotifier()))
     }
 
     /// A Pill Type with a Prescription, one Retired and one Current Blister, and an Intake on each Blister.

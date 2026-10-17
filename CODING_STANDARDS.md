@@ -5,9 +5,11 @@ Judgement calls for reviewing a diff. Tooling already enforces the mechanical ru
 ## Architecture
 
 - **Layers.** Domain imports only Foundation: no SwiftData, no SwiftUI, no Factory. Only Data imports SwiftData. Factory wiring lives in Data's `DI/` and the app's `Composition/`.
+- **Utils is project-independent.** It holds helpers other projects could reuse (concurrency primitives, Foundation extensions) and imports only the standard library and Apple's system frameworks: no Domain, no Data, no third-party package. The glossary lint rule skips it, since its generic words aren't the domain's language.
 - **Folders by role.** A new file goes in the folder for its role:
   - Domain: `Models/`, `Repositories/` (protocols), `UseCases/`, `Errors/`.
   - Data: `Repositories/` (the concrete repositories only), `Infrastructure/` (generic SwiftData helpers the repositories share), `Mapping/` (model ↔ domain), `Schema/V<n>/`, `DI/`, `Errors/`.
+  - Utils: one folder per topic, e.g. `Concurrency/`.
   - App: `App/`, `Composition/`, `Features/<Feature>/` (a view and its view model), `Shared/{Components,Extensions,Modifiers}/`.
   Mixed folders get split. Repositories and helper infrastructure don't share a folder.
 - **No speculative abstraction.** Add a protocol, wrapper or injection point only for a need the current spec has. Use cases take `Day` as a parameter; there is no clock or `DateProvider` (ADR 0001). A two-case enum that only means yes/no is a `Bool`.

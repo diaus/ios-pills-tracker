@@ -40,6 +40,8 @@ custom_rules:
   # Only the terms with no common Swift/SwiftUI meaning: sheet, date, index, edit, Toggle and Bool.toggle() stay legal.
   glossary_avoided_term:
     name: "Glossary Avoided Term"
+    # Utils is project-independent: its generic words (a finished stream) aren't this domain's language.
+    excluded: "/Packages/Utils/"
     regex: '(?<![A-Za-z0-9_])(?:medication|medicine|drug|strip|cell|take|taken|consumption|dose|dosage|regimen|refill|mark|uncheck|pending|remaining|finished|archived)(?![a-z])|(?<![A-Za-z0-9_])toggle(?=[A-Z0-9_])|(?<![A-Z])(?:Medication|Medicine|Drug|Strip|Cell|Take|Taken|Consumption|Dose|Dosage|Regimen|Refill|Mark|Uncheck|Pending|Remaining|Finished|Archived)(?![a-z])|(?<=[a-z0-9])Toggle(?![a-z])'
     match_kinds:
       - identifier

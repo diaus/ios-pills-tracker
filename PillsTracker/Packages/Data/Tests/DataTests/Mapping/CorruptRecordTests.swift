@@ -3,6 +3,7 @@ import SwiftData
 import Testing
 import Domain
 @testable import Data
+import Utils
 
 /// A stored row that no longer satisfies a Domain invariant is reported, never silently repaired.
 struct CorruptRecordTests {
@@ -12,7 +13,7 @@ struct CorruptRecordTests {
 
     init() throws {
         container = try PillsModelContainer.make(inMemory: true)
-        pillTypes = PillTypeRepositoryLive(modelContainer: container, notifier: DataChangeNotifier())
+        pillTypes = PillTypeRepositoryLive(modelContainer: container, notifier: ChangeNotifier())
     }
 
     /// Inserts a Pill Type row directly, with `configure` adding the corrupt child rows.

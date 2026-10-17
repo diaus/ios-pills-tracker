@@ -2,12 +2,13 @@ import Foundation
 import Testing
 import Domain
 @testable import Data
+import Utils
 
 struct IntakePersistenceTests {
     private let today = Day(year: 2026, month: 10, day: 6)
 
-    private func makeRepository() throws -> (PillTypeRepositoryLive, DataChangeNotifier) {
-        let notifier = DataChangeNotifier()
+    private func makeRepository() throws -> (PillTypeRepositoryLive, ChangeNotifier) {
+        let notifier = ChangeNotifier()
         return (PillTypeRepositoryLive(modelContainer: try PillsModelContainer.make(inMemory: true), notifier: notifier), notifier)
     }
 
