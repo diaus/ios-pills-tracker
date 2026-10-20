@@ -65,3 +65,7 @@ struct EditPillTypeSheet: View {
         }
     }
 }
+
+#Preview {
+    EditPillTypeSheet(aggregate: .previewVitaminD) {}
+}

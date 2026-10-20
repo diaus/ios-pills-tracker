@@ -40,3 +40,11 @@ struct PrescriptionCardView: View {
         .padding(.vertical, 6)
     }
 }
+
+#Preview {
+    List {
+        PrescriptionCardView(progress: .previewVitaminD)
+        PrescriptionCardView(progress: .previewMagnesium)
+        PrescriptionCardView(progress: .preview(.previewVitaminD, done: [.morning, .evening]))
+    }
+}

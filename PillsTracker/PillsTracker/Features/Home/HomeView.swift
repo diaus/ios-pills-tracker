@@ -102,5 +102,5 @@ struct HomeView: View {
 }
 
 #Preview {
-    HomeView(dailyProgress: DailyProgressModel())
+    HomeView(dailyProgress: .preview(.loaded(PillTypeProgress.previewAll)))
 }

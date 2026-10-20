@@ -33,3 +33,15 @@ struct PillTypesListView: View {
         .navigationTitle(.pillTypesTitle)
     }
 }
+
+#Preview {
+    NavigationStack {
+        PillTypesListView(dailyProgress: .preview(.loaded(PillTypeProgress.previewAll)))
+    }
+}
+
+#Preview("Empty") {
+    NavigationStack {
+        PillTypesListView(dailyProgress: .preview(.loaded([])))
+    }
+}

@@ -61,3 +61,12 @@ final class DailyProgressModel {
         Day(date: .now, calendar: .current)
     }
 }
+
+extension DailyProgressModel {
+    /// A model already in `state`, for previews; it never loads.
+    static func preview(_ state: State) -> DailyProgressModel {
+        let model = DailyProgressModel()
+        model.state = state
+        return model
+    }
+}

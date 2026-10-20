@@ -82,3 +82,11 @@ struct PrescriptionSheet: View {
         }
     }
 }
+
+#Preview("New") {
+    PrescriptionSheet(aggregate: .previewIbuprofen)
+}
+
+#Preview("Edit") {
+    PrescriptionSheet(aggregate: .previewVitaminD)
+}
