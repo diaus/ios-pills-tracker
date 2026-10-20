@@ -63,7 +63,7 @@ final class BlisterViewModel {
 
     /// Loads the Selected Day's progress, then reloads it after every write until the calling task is cancelled.
     func run() async {
-        for await result in dailyProgress.progress(on: selectedDay) {
+        await dailyProgress.observeProgress(on: selectedDay) { result in
             switch result {
             case .success(let progress):
                 self.progress = progress.first { $0.id == pillTypeID }
