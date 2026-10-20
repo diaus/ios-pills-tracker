@@ -34,4 +34,15 @@ struct DailyProgressTests {
         #expect(all.map(\.day) == [today, today])
         #expect(all.map(\.isCompleted) == [true, false])
     }
+
+    @Test func eachPillTypeGetsItsCurrentBlistersIntakesFromEarlierDays() async throws {
+        var aggregate = try makeAggregate(name: "Aspirin", createdAt: 1_000)
+        let lastWeek = try aggregate.consume(Position(row: 0, column: 0), slot: .morning, doneSlots: [], day: Day(year: 2026, month: 9, day: 29), instant: .now)
+        let sut = DailyProgress(repository: FakePillTypeRepository([aggregate], intakes: [lastWeek]))
+
+        let progress = try #require(try await sut(day: today).first)
+
+        #expect(progress.undoableIntake(at: Position(row: 0, column: 0)) == lastWeek)
+        #expect(progress.openSlots == [.morning])
+    }
 }

@@ -51,6 +51,19 @@ struct SyncPositionTests {
         #expect(stored.currentBlister?.isPresent(position) == false)
     }
 
+    @Test func refusesToSetPresentAPositionAnIntakeEmptied() async throws {
+        var aggregate = try makeAggregate()
+        try aggregate.setPrescriptionSlots([.morning])
+        let intake = try aggregate.consume(position, slot: .morning, doneSlots: [], day: Day(year: 2026, month: 10, day: 6), instant: Date(timeIntervalSince1970: 1))
+        let repository = FakePillTypeRepository([aggregate], intakes: [intake])
+        let sut = SyncPosition(repository: repository)
+
+        await #expect(throws: DomainError.positionHasIntake) {
+            try await sut(pillTypeID: aggregate.id, position: position, isPresent: true)
+        }
+        #expect(await repository.fetch(id: aggregate.id) == aggregate)
+    }
+
     @Test(arguments: [Position(row: 1, column: 0), Position(row: 0, column: 3), Position(row: -1, column: 0)])
     func refusesAPositionOutsideTheCurrentBlistersShape(outside: Position) async throws {
         let aggregate = try makeAggregate()

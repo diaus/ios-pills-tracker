@@ -42,6 +42,14 @@ public actor PillTypeRepositoryLive: PillTypeRepository, ModelActor {
         return try modelContext.fetch(descriptor).map { try $0.toDomain() }
     }
 
+    public func intakes(blisterIDs: [UUID]) throws -> [Intake] {
+        let descriptor = FetchDescriptor<IntakeModel>(
+            predicate: #Predicate { blisterIDs.contains($0.blisterID) },
+            sortBy: [SortDescriptor(\.instant, order: .forward)]
+        )
+        return try modelContext.fetch(descriptor).map { try $0.toDomain() }
+    }
+
     public func intake(id: UUID) throws -> Intake? {
         try intakeModel(for: id)?.toDomain()
     }

@@ -29,4 +29,15 @@ struct DayTests {
             Day(year: 2026, month: 2, day: 1),
         ])
     }
+
+    @Test func countsCalendarDaysBetweenTwoDays() {
+        let today = Day(year: 2026, month: 3, day: 1)
+
+        #expect(today.days(from: today) == 0)
+        #expect(today.days(from: Day(year: 2026, month: 2, day: 28)) == 1)
+        #expect(today.days(from: Day(year: 2025, month: 12, day: 31)) == 60)
+        #expect(Day(year: 2026, month: 2, day: 28).days(from: today) == -1)
+        // Europe's spring-forward night (2026-03-29) is still one whole Day.
+        #expect(Day(year: 2026, month: 3, day: 30).days(from: Day(year: 2026, month: 3, day: 29)) == 1)
+    }
 }

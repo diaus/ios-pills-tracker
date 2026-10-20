@@ -25,6 +25,8 @@ public enum DomainError: Error, Equatable, Sendable {
     case slotNotOpen
     /// Consume was asked for a Pill Type without an Active Prescription.
     case noActivePrescription
-    /// Undo was asked for an Intake from another Day or from a Retired Blister.
+    /// A Sync Edit tried to set Present a Position that has an Intake; only Undo makes it Present again.
+    case positionHasIntake
+    /// Undo was asked for an Intake from a Retired Blister, or one that is not the latest at its Position.
     case undoNotAllowed
 }

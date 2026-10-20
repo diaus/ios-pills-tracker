@@ -34,10 +34,9 @@ final class BlisterViewModel {
         await perform { try await consume(pillTypeID: pillTypeID, position: position, slot: slot, day: day, instant: .now) }
     }
 
-    /// Undo: reverts today's Intake for `slot` from the Current Blister.
+    /// Undo: reverts an Intake from the Current Blister, made on any Day.
     func undo(_ intake: Intake) async {
-        let day = dailyProgress.today
-        await perform { try await undo(intakeID: intake.id, day: day) }
+        await perform { try await undo(intakeID: intake.id) }
     }
 
     /// Sync Edit: sets `position` Present or Empty on the Current Blister.

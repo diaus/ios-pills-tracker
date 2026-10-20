@@ -22,11 +22,15 @@ public struct PillTypeProgress: Identifiable, Hashable, Sendable {
     public let day: Day
     /// The Prescription's current Slots in Morning/Day/Evening order, Done or Open for the Day; empty without a Prescription.
     public let slots: [SlotProgress]
+    /// Every Intake from the Current Blister, on any Day.
+    public let blisterIntakes: [Intake]
 
-    /// `intakes` may hold any Pill Type's Intakes from any Day; only this Pill Type's Intakes on `day` count.
+    /// `intakes` may hold any Pill Type's Intakes from any Day; this Pill Type's Intakes on `day` make
+    /// its Slots Done, and those on the Current Blister drive Undo and Sync Edit.
     public init(aggregate: PillTypeAggregate, day: Day, intakes: [Intake]) {
         self.aggregate = aggregate
         self.day = day
+        blisterIntakes = intakes.filter { $0.pillTypeID == aggregate.id && $0.blisterID == aggregate.currentBlister?.id }
         let own = intakes.filter { $0.pillTypeID == aggregate.id && $0.day == day }
         slots = Slot.allCases
             .filter { aggregate.prescription?.contains($0) ?? false }
@@ -67,8 +71,40 @@ public struct PillTypeProgress: Identifiable, Hashable, Sendable {
 
     /// The Intake behind a Done chip that Undo would accept, or nil.
     public func undoableIntake(for slot: Slot) -> Intake? {
-        guard let intake = intake(for: slot), aggregate.canUndo(intake, on: day) else { return nil }
+        guard let intake = intake(for: slot), aggregate.canUndo(intake, blisterIntakes: blisterIntakes) else { return nil }
         return intake
+    }
+
+    /// The Intake that emptied `position` of the Current Blister, on any Day, which Undo would accept.
+    /// nil for a Present Position, or one emptied by a Sync Edit.
+    public func undoableIntake(at position: Position) -> Intake? {
+        guard let blister = currentBlister, blister.contains(position), !blister.isPresent(position),
+              let intake = PillTypeAggregate.latestIntake(at: position, in: blisterIntakes),
+              aggregate.canUndo(intake, blisterIntakes: blisterIntakes) else { return nil }
+        return intake
+    }
+
+    /// The Intake that emptied `position` of the Current Blister on the Day, which the grid marks.
+    public func intakeOnDay(at position: Position) -> Intake? {
+        guard let intake = undoableIntake(at: position), intake.day == day else { return nil }
+        return intake
+    }
+
+    /// The Slot of each Empty Position of the Current Blister consumed on the Day, for the grid's mark.
+    public var daySlotsByPosition: [Position: Slot] {
+        Dictionary(uniqueKeysWithValues: (currentBlister?.shape.allPositions ?? []).compactMap { position in
+            intakeOnDay(at: position).map { (position, $0.slot) }
+        })
+    }
+
+    /// Empty Positions of the Current Blister whose Intake Undo would accept.
+    public var undoablePositions: Set<Position> {
+        Set((currentBlister?.shape.allPositions ?? []).filter { undoableIntake(at: $0) != nil })
+    }
+
+    /// A Sync Edit can set `position` Present only when it has no Intake: a Consume is reverted by Undo.
+    public func canSetPresent(_ position: Position) -> Bool {
+        (try? aggregate.validateSyncPosition(position, isPresent: true, blisterIntakes: blisterIntakes)) != nil
     }
 
     /// The Slots a pill at `position` can be consumed for right now, in Morning/Day/Evening order.

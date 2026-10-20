@@ -14,6 +14,10 @@ v1 shows no history, but "taken today / left today" still needs a record of each
 
 ## Consequences
 
-- Blisters are kept as Retired records after replacement so old Intakes stay resolvable; Undo is limited to today's Intakes on the Current Blister.
+- Blisters are kept as Retired records after replacement so old Intakes stay resolvable; Undo is limited to Intakes on the Current Blister.
 - Deleting a Prescription leaves Intakes untouched; deleting a Pill Type cascades them.
 - One app-level model (`DailyProgressModel`), not the Domain, decides what "today" is and re-evaluates it on scene-active and significant-time-change; screens read the Day from it and pass it to the use cases.
+
+## Amendment: Undo on any Day of the Current Blister
+
+Undo was first limited to today's Intakes. It now accepts any Intake on the Current Blister, from any Day, reached by tapping its Empty Position on the grid. A wrong Consume noticed the next morning could otherwise only be "fixed" with a Sync Edit, which left a false Intake behind. The cost is that Undo can reopen a Slot on a past Day; that is accepted because the Intake it removes was wrong. To make Undo the only way back, a Sync Edit can no longer set Present a Position that has an Intake. Retired Blisters stay locked.

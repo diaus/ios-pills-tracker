@@ -8,6 +8,8 @@ public protocol PillTypeRepository: Sendable {
     func fetch(id: UUID) async throws -> PillTypeAggregate?
     /// Every Intake recorded on `day`, optionally only those of one Pill Type, ordered by instant.
     func intakes(on day: Day, pillTypeID: UUID?) async throws -> [Intake]
+    /// Every Intake from one of `blisterIDs`, on any Day, ordered by instant.
+    func intakes(blisterIDs: [UUID]) async throws -> [Intake]
     func intake(id: UUID) async throws -> Intake?
 
     func create(_ aggregate: PillTypeAggregate) async throws

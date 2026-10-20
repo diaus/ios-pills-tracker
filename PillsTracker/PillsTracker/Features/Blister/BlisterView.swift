@@ -23,8 +23,18 @@ struct BlisterView: View {
                         if progress.hasPrescription {
                             slotChips(progress)
                         }
-                        BlisterGridView(shape: blister.shape, presentPositions: blister.presentPositions) { position in
-                            tappedPosition = TappedPosition(position: position, isPresent: blister.isPresent(position))
+                        BlisterGridView(
+                            shape: blister.shape,
+                            presentPositions: blister.presentPositions,
+                            todaysSlots: progress.daySlotsByPosition,
+                            undoablePositions: progress.undoablePositions
+                        ) { position in
+                            // An Empty Position with an Intake is only ever undone; any other one opens the sheet.
+                            if let intake = progress.undoableIntake(at: position) {
+                                undoCandidate = intake
+                            } else {
+                                tappedPosition = TappedPosition(position: position, isPresent: blister.isPresent(position))
+                            }
                         }
                         Text(.blisterPillsLeft(count: progress.presentCount))
                             .font(.headline)
@@ -75,6 +85,7 @@ struct BlisterView: View {
         .positionActionSheet(
             for: $tappedPosition,
             consumableSlots: { model.progress?.consumableSlots(at: $0) ?? [] },
+            canSetPresent: { model.progress?.canSetPresent($0) ?? false },
             onConsume: { position, slot in
                 Task { await model.consume(position, slot: slot) }
             },
@@ -83,7 +94,7 @@ struct BlisterView: View {
             }
         )
         .confirmationDialog(
-            .blisterUndoTitle,
+            undoCandidate.map { Text($0.slot.undoTitle) } ?? Text(verbatim: ""),
             isPresented: Binding(get: { undoCandidate != nil }, set: { if !$0 { undoCandidate = nil } }),
             titleVisibility: .visible,
             presenting: undoCandidate
@@ -92,13 +103,13 @@ struct BlisterView: View {
                 Task { await model.undo(intake) }
             }
             Button(.commonCancel, role: .cancel) {}
-        } message: { _ in
-            Text(.blisterUndoMessage)
+        } message: { intake in
+            Text(.blisterUndoMessage(day: intake.day.relativeName(today: model.dailyProgress.today)))
         }
         .errorAlert(message: $model.errorMessage)
     }
 
-    /// Today's chips. A Done chip whose Intake can be undone (today, Current Blister) opens the Undo confirmation.
+    /// Today's chips. A Done chip whose Intake can be undone (Current Blister, latest at its Position) opens the Undo confirmation.
     private func slotChips(_ progress: PillTypeProgress) -> some View {
         HStack(spacing: 8) {
             ForEach(progress.slots, id: \.slot) { slotProgress in

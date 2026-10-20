@@ -157,6 +157,44 @@ struct PillTypeProgressTests {
         #expect(progress.undoableIntake(for: .evening) == fromCurrent)
     }
 
+    @Test func anEmptyPositionConsumedTodayCarriesItsIntake() throws {
+        var aggregate = try makeAggregate(slots: [.morning, .evening])
+        let morning = try aggregate.consume(Position(row: 0, column: 0), slot: .morning, doneSlots: [], day: today, instant: instant)
+        let yesterdayEvening = try aggregate.consume(Position(row: 0, column: 1), slot: .evening, doneSlots: [], day: Day(year: 2026, month: 10, day: 5), instant: instant)
+
+        let progress = progress(aggregate, intakes: [morning, yesterdayEvening])
+
+        #expect(progress.intakeOnDay(at: Position(row: 0, column: 0)) == morning)
+        #expect(progress.intakeOnDay(at: Position(row: 0, column: 1)) == nil)
+        #expect(progress.intakeOnDay(at: Position(row: 0, column: 2)) == nil)
+        #expect(progress.daySlotsByPosition == [Position(row: 0, column: 0): .morning])
+        #expect(progress.undoablePositions == [Position(row: 0, column: 0), Position(row: 0, column: 1)])
+    }
+
+    @Test func anEmptyPositionWithAnIntakeFromAnyDayIsUndoableAndCannotBeSetPresent() throws {
+        var aggregate = try makeAggregate(slots: [.morning])
+        let lastWeek = try aggregate.consume(Position(row: 0, column: 0), slot: .morning, doneSlots: [], day: Day(year: 2026, month: 9, day: 29), instant: instant)
+        try aggregate.syncPosition(Position(row: 0, column: 1), isPresent: false, blisterIntakes: [])
+
+        let progress = progress(aggregate, intakes: [lastWeek])
+
+        #expect(progress.undoableIntake(at: Position(row: 0, column: 0)) == lastWeek)
+        #expect(!progress.canSetPresent(Position(row: 0, column: 0)))
+        // Emptied by a Sync Edit: nothing to undo, and it can be set Present.
+        #expect(progress.undoableIntake(at: Position(row: 0, column: 1)) == nil)
+        #expect(progress.canSetPresent(Position(row: 0, column: 1)))
+    }
+
+    /// A Present Position with an Intake predates the Sync Edit rule; the grid shows it Present, unmarked.
+    @Test func aPresentPositionShowsNoIntake() throws {
+        let aggregate = try makeAggregate(slots: [.morning])
+
+        let progress = progress(aggregate, intakes: [try intake(for: aggregate, slot: .morning)])
+
+        #expect(progress.intakeOnDay(at: Position(row: 0, column: 0)) == nil)
+        #expect(progress.undoableIntake(at: Position(row: 0, column: 0)) == nil)
+    }
+
     @Test func consumableSlotsAreTodaysOpenSlotsForAPresentPosition() throws {
         let aggregate = try makeAggregate(slots: [.morning, .day, .evening])
 
@@ -167,7 +205,7 @@ struct PillTypeProgressTests {
 
     @Test func nothingIsConsumableFromAnEmptyPositionOrOutsideTheGrid() throws {
         var aggregate = try makeAggregate(slots: [.morning])
-        try aggregate.syncPosition(Position(row: 0, column: 0), isPresent: false)
+        try aggregate.syncPosition(Position(row: 0, column: 0), isPresent: false, blisterIntakes: [])
 
         let progress = progress(aggregate)
 
