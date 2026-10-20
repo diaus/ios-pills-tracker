@@ -20,6 +20,15 @@ extension Slot {
         }
     }
 
+    /// Title of the Undo confirmation for an Intake of this Slot, from the String Catalog.
+    var undoTitle: LocalizedStringResource {
+        switch self {
+        case .morning: .blisterUndoTitleMorning
+        case .day: .blisterUndoTitleDay
+        case .evening: .blisterUndoTitleEvening
+        }
+    }
+
     /// Action label for consuming a pill for this Slot, from the String Catalog.
     var consumeTitle: LocalizedStringResource {
         switch self {

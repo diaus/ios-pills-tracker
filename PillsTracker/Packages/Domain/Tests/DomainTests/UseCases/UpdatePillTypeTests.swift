@@ -12,7 +12,7 @@ struct UpdatePillTypeTests {
         let repository = FakePillTypeRepository([stored])
         // The stored Blister moved on since a screen read its copy; the change must not undo that.
         var newer = stored
-        try newer.syncPosition(Position(row: 0, column: 0), isPresent: false)
+        try newer.syncPosition(Position(row: 0, column: 0), isPresent: false, blisterIntakes: [])
         try await repository.update(newer)
 
         let updated = try await UpdatePillType(repository: repository)(pillTypeID: stored.id) { aggregate throws(DomainError) in

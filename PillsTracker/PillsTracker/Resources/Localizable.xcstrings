@@ -271,18 +271,40 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The pill goes back to the position it was taken from."
+            "value" : "Taken %(day)@"
           }
         }
       }
     },
-    "blister.undo.title" : {
+    "blister.undo.title.day" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Undo this intake?"
+            "value" : "Undo Day intake?"
+          }
+        }
+      }
+    },
+    "blister.undo.title.evening" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Undo Evening intake?"
+          }
+        }
+      }
+    },
+    "blister.undo.title.morning" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Undo Morning intake?"
           }
         }
       }
@@ -338,6 +360,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Save"
+          }
+        }
+      }
+    },
+    "day.today" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "today"
+          }
+        }
+      }
+    },
+    "day.yesterday" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "yesterday"
           }
         }
       }
@@ -474,6 +518,17 @@
         }
       }
     },
+    "error.positionHasIntake" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Undo this pill's intake to put it back."
+          }
+        }
+      }
+    },
     "error.positionOutOfBounds" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -502,7 +557,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Only today's intakes from the current blister can be undone."
+            "value" : "Only the latest intake at a position of the current blister can be undone."
           }
         }
       }
@@ -734,6 +789,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Empty"
+          }
+        }
+      }
+    },
+    "position.intakeToday" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Taken today, %(slot)@"
           }
         }
       }

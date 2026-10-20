@@ -15,7 +15,7 @@ struct PillTypeRepositoryLiveTests {
     @Test func pillTypeWithItsBlisterRoundTrips() async throws {
         let (repository, _) = try makeRepository()
         var aggregate = try PillTypeAggregate.new(name: "Aspirin", rows: 2, columns: 5, createdAt: Date(timeIntervalSince1970: 1_000))
-        try aggregate.syncPosition(Position(row: 1, column: 4), isPresent: false)
+        try aggregate.syncPosition(Position(row: 1, column: 4), isPresent: false, blisterIntakes: [])
 
         try await repository.create(aggregate)
         let fetched = try #require(try await repository.fetch(id: aggregate.id))

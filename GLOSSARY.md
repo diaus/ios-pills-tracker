@@ -35,7 +35,7 @@ The act of retiring the Current Blister (allowed only when every Position is Emp
 _Avoid_: Reset, refill, replace
 
 **Sync Edit**:
-Manually setting a Position to Present or Empty so the app matches reality. A Sync Edit is not an Intake and never affects today's progress.
+Manually setting a Position to Present or Empty so the app matches reality. A Sync Edit is not an Intake and never affects today's progress. A Position with an Intake cannot be set Present by a Sync Edit; only Undo makes it Present again.
 _Avoid_: Edit, toggle, manual consume
 
 ### Schedule
@@ -63,7 +63,7 @@ The act of taking a Present pill from a Position for one of today's open Slots. 
 _Avoid_: Take, mark, check off
 
 **Undo**:
-Reverting an Intake made today from the Current Blister: the Position becomes Present again and the Intake is removed. Intakes from a retired Blister cannot be undone.
+Reverting an Intake from the Current Blister, made on any Day: the Position becomes Present again and the Intake is removed, so its Slot is Open again on that Day. When a Position has several Intakes, Undo reverts the latest. Intakes from a Retired Blister cannot be undone.
 _Avoid_: Revert, uncheck
 
 **Day**:

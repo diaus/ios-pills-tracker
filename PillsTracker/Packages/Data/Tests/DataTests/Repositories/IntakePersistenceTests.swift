@@ -48,6 +48,21 @@ struct IntakePersistenceTests {
         #expect(try await repository.intakes(on: today, pillTypeID: nil) == [earlier, later])
     }
 
+    @Test func intakesOfBlistersSpanEveryDayAndAreOrderedByInstant() async throws {
+        let (repository, _) = try makeRepository()
+        var aggregate = try makeAggregate()
+        try await repository.create(aggregate)
+        let tonight = try aggregate.consume(Position(row: 0, column: 1), slot: .evening, doneSlots: [], day: today, instant: Date(timeIntervalSince1970: 2_000))
+        try await repository.update(aggregate, recording: tonight)
+        let lastWeek = try aggregate.consume(Position(row: 0, column: 0), slot: .morning, doneSlots: [], day: Day(year: 2026, month: 9, day: 29), instant: Date(timeIntervalSince1970: 1_000))
+        try await repository.update(aggregate, recording: lastWeek)
+        let blisterID = try #require(aggregate.currentBlister?.id)
+
+        #expect(try await repository.intakes(blisterIDs: [blisterID]) == [lastWeek, tonight])
+        #expect(try await repository.intakes(blisterIDs: [UUID()]).isEmpty)
+        #expect(try await repository.intakes(blisterIDs: []).isEmpty)
+    }
+
     @Test func undoStoresThePresentPositionAndRemovesOnlyThatIntake() async throws {
         let (repository, _) = try makeRepository()
         var aggregate = try makeAggregate()
@@ -57,7 +72,7 @@ struct IntakePersistenceTests {
         let second = try aggregate.consume(Position(row: 0, column: 1), slot: .evening, doneSlots: [.morning], day: today, instant: Date(timeIntervalSince1970: 2_000))
         try await repository.update(aggregate, recording: second)
 
-        try aggregate.undo(first, on: today)
+        try aggregate.undo(first, blisterIntakes: [first, second])
         try await repository.update(aggregate, removing: first)
 
         #expect(try await repository.fetch(id: aggregate.id)?.currentBlister?.presentPositions == [Position(row: 0, column: 0)])

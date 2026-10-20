@@ -55,8 +55,9 @@ public struct PillTypeAggregate: Identifiable, Hashable, Sendable {
     }
 
     /// Undo: makes the Position of `intake` Present again on the Current Blister. The caller removes the Intake.
-    public mutating func undo(_ intake: Intake, on day: Day) throws(DomainError) {
-        try validateUndo(of: intake, on: day)
+    /// `blisterIntakes` are the Current Blister's Intakes.
+    public mutating func undo(_ intake: Intake, blisterIntakes: [Intake]) throws(DomainError) {
+        try validateUndo(of: intake, blisterIntakes: blisterIntakes)
         let index = try currentBlisterIndex()
         blisters[index].presentPositions.insert(intake.position)
     }
@@ -71,9 +72,10 @@ public struct PillTypeAggregate: Identifiable, Hashable, Sendable {
     }
 
     /// Sync Edit: sets one Position of the Current Blister Present or Empty. Retired Blisters stay as they are.
-    public mutating func syncPosition(_ position: Position, isPresent: Bool) throws(DomainError) {
+    /// `blisterIntakes` are the Current Blister's Intakes.
+    public mutating func syncPosition(_ position: Position, isPresent: Bool, blisterIntakes: [Intake]) throws(DomainError) {
+        try validateSyncPosition(position, isPresent: isPresent, blisterIntakes: blisterIntakes)
         let index = try currentBlisterIndex()
-        guard blisters[index].contains(position) else { throw .positionOutOfBounds }
         if isPresent {
             blisters[index].presentPositions.insert(position)
         } else {

@@ -19,6 +19,7 @@ extension DomainError {
         case .noCurrentBlister: .errorNoCurrentBlister
         case .positionOutOfBounds: .errorPositionOutOfBounds
         case .positionEmpty: .errorPositionEmpty
+        case .positionHasIntake: .errorPositionHasIntake
         case .slotNotOpen: .errorSlotNotOpen
         case .noActivePrescription: .errorNoActivePrescription
         case .undoNotAllowed: .errorUndoNotAllowed

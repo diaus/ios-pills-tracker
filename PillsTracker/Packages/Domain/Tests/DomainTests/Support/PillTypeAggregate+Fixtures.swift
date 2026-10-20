@@ -4,7 +4,7 @@ extension PillTypeAggregate {
     /// Sync Edits the Current Blister so exactly `present` are Present, as a user matching the app to the Blister in hand.
     mutating func syncCurrentBlister(present: Set<Position>) throws {
         for position in currentBlister?.shape.allPositions ?? [] {
-            try syncPosition(position, isPresent: present.contains(position))
+            try syncPosition(position, isPresent: present.contains(position), blisterIntakes: [])
         }
     }
 

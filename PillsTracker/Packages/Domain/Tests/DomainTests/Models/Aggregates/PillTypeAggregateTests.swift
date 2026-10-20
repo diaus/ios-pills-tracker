@@ -31,4 +31,57 @@ struct PillTypeAggregateTests {
         aggregate = aggregate.inserting(retired)
         #expect(aggregate.currentBlister?.state == .current)
     }
+
+    // MARK: Undo
+
+    private let position = Position(row: 0, column: 1)
+
+    private func makeConsumable() throws -> PillTypeAggregate {
+        var aggregate = try PillTypeAggregate.new(name: "Aspirin", rows: 1, columns: 3, createdAt: Date(timeIntervalSince1970: 0))
+        try aggregate.setPrescriptionSlots([.morning, .evening])
+        return aggregate
+    }
+
+    @Test func undoesAnIntakeFromAnEarlierDayOnTheCurrentBlister() throws {
+        var aggregate = try makeConsumable()
+        let lastWeek = try aggregate.consume(position, slot: .morning, doneSlots: [], day: Day(year: 2026, month: 9, day: 29), instant: Date(timeIntervalSince1970: 1))
+
+        try aggregate.undo(lastWeek, blisterIntakes: [lastWeek])
+
+        #expect(aggregate.currentBlister?.isPresent(position) == true)
+    }
+
+    @Test func undoesOnlyTheLatestIntakeAtAPosition() throws {
+        var aggregate = try makeConsumable()
+        let day = Day(year: 2026, month: 10, day: 6)
+        let morning = try aggregate.consume(position, slot: .morning, doneSlots: [], day: day, instant: Date(timeIntervalSince1970: 1))
+        // A Position Present again with an Intake predates the Sync Edit rule, so it is built directly.
+        aggregate = PillTypeAggregate(
+            pillType: aggregate.pillType,
+            blisters: aggregate.blisters.map { blister in
+                var blister = blister
+                blister.presentPositions.insert(position)
+                return blister
+            },
+            prescription: aggregate.prescription
+        )
+        let evening = try aggregate.consume(position, slot: .evening, doneSlots: [.morning], day: day, instant: Date(timeIntervalSince1970: 2))
+
+        #expect(throws: DomainError.undoNotAllowed) {
+            try aggregate.undo(morning, blisterIntakes: [morning, evening])
+        }
+        #expect(aggregate.canUndo(evening, blisterIntakes: [morning, evening]))
+    }
+
+    // MARK: Sync Edit
+
+    @Test func syncEditCannotSetPresentAPositionWithAnIntake() throws {
+        var aggregate = try makeConsumable()
+        let intake = try aggregate.consume(position, slot: .morning, doneSlots: [], day: Day(year: 2026, month: 10, day: 6), instant: Date(timeIntervalSince1970: 1))
+
+        #expect(throws: DomainError.positionHasIntake) {
+            try aggregate.syncPosition(position, isPresent: true, blisterIntakes: [intake])
+        }
+        #expect(aggregate.currentBlister?.isPresent(position) == false)
+    }
 }

@@ -22,6 +22,17 @@ public struct Day: Hashable, Comparable, Sendable, Codable {
         )
     }
 
+    /// Whole calendar days from `earlier` to this Day; negative when `earlier` is in fact later.
+    /// Counted in UTC, where every Day is 24 hours, so a daylight-saving night is still one Day.
+    public func days(from earlier: Day) -> Int {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = .gmt
+        func start(of day: Day) -> Date {
+            calendar.date(from: DateComponents(year: day.year, month: day.month, day: day.day))!
+        }
+        return calendar.dateComponents([.day], from: start(of: earlier), to: start(of: self)).day!
+    }
+
     public static func < (lhs: Day, rhs: Day) -> Bool {
         (lhs.year, lhs.month, lhs.day) < (rhs.year, rhs.month, rhs.day)
     }

@@ -40,7 +40,7 @@ struct ConsumeTests {
 
     @Test func refusesAnEmptyPosition() async throws {
         var aggregate = try makeAggregate()
-        try aggregate.syncPosition(position, isPresent: false)
+        try aggregate.syncPosition(position, isPresent: false, blisterIntakes: [])
         let (sut, pillTypes) = makeSUT(aggregate)
 
         await #expect(throws: DomainError.positionEmpty) {
