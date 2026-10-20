@@ -10,6 +10,8 @@ public protocol PillTypeRepository: Sendable {
     func intakes(on day: Day, pillTypeID: UUID?) async throws -> [Intake]
     /// Every Intake from one of `blisterIDs`, on any Day, ordered by instant.
     func intakes(blisterIDs: [UUID]) async throws -> [Intake]
+    /// Every Intake of one Pill Type recorded on one of `days`, from any Blister, ordered by instant.
+    func intakes(pillTypeID: UUID, days: ClosedRange<Day>) async throws -> [Intake]
     func intake(id: UUID) async throws -> Intake?
 
     func create(_ aggregate: PillTypeAggregate) async throws

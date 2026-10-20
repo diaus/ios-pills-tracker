@@ -12,9 +12,4 @@ extension Day {
         default: date(in: calendar).formatted(.dateTime.month(.abbreviated).day())
         }
     }
-
-    /// Noon of this Day in `calendar`, safely inside the Day whatever its daylight-saving shift.
-    private func date(in calendar: Calendar) -> Date {
-        calendar.date(from: DateComponents(year: year, month: month, day: day, hour: 12))!
-    }
 }

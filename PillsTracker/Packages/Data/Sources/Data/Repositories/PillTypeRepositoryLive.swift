@@ -50,6 +50,16 @@ public actor PillTypeRepositoryLive: PillTypeRepository, ModelActor {
         return try modelContext.fetch(descriptor).map { try $0.toDomain() }
     }
 
+    /// Narrowed by year in the store, where a Day is three fields; the exact range is applied in memory.
+    public func intakes(pillTypeID: UUID, days: ClosedRange<Day>) throws -> [Intake] {
+        let firstYear = days.lowerBound.year, lastYear = days.upperBound.year
+        let descriptor = FetchDescriptor<IntakeModel>(
+            predicate: #Predicate { $0.pillTypeID == pillTypeID && $0.dayYear >= firstYear && $0.dayYear <= lastYear },
+            sortBy: [SortDescriptor(\.instant, order: .forward)]
+        )
+        return try modelContext.fetch(descriptor).map { try $0.toDomain() }.filter { days.contains($0.day) }
+    }
+
     public func intake(id: UUID) throws -> Intake? {
         try intakeModel(for: id)?.toDomain()
     }

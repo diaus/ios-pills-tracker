@@ -54,6 +54,12 @@ final class BlisterViewModel {
         select(selectedDay.adding(days: 1))
     }
 
+    /// Makes `day` the Selected Day, as a Day tapped in Intake History. Never after today.
+    func selectDay(_ day: Day) {
+        guard day != selectedDay, day <= dailyProgress.today else { return }
+        select(day)
+    }
+
     /// At a Day rollover a Selected Day that was today becomes the new today; a past one stays.
     func todayChanged(from old: Day, to new: Day) {
         if selectedDay == old || selectedDay > new {

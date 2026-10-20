@@ -42,7 +42,16 @@ struct CorruptRecordTests {
 
     @Test func aPrescriptionWithAnUnknownStateIsCorrupt() async throws {
         try seed { pillType, _ in
-            pillType.prescription = PrescriptionModel(id: UUID(), slots: [.morning], state: "bogus")
+            pillType.prescription = PrescriptionModel(id: UUID(), slots: [.morning], state: "bogus", startDay: Day(year: 2026, month: 1, day: 1), endDay: nil)
+        }
+        await #expect(throws: DataError.corruptRecord) { try await pillTypes.fetch(id: pillTypeID) }
+    }
+
+    @Test func aPrescriptionWithAPartlyStoredEndDayIsCorrupt() async throws {
+        try seed { pillType, _ in
+            let prescription = PrescriptionModel(id: UUID(), slots: [.morning], state: "active", startDay: Day(year: 2026, month: 1, day: 1), endDay: nil)
+            prescription.endDayYear = 2026
+            pillType.prescription = prescription
         }
         await #expect(throws: DataError.corruptRecord) { try await pillTypes.fetch(id: pillTypeID) }
     }

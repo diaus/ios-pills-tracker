@@ -111,6 +111,17 @@
         }
       }
     },
+    "blister.history" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "History"
+          }
+        }
+      }
+    },
     "blister.notFound" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -595,6 +606,50 @@
         }
       }
     },
+    "history.completed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Completed"
+          }
+        }
+      }
+    },
+    "history.intakeCount" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Intakes: %(count)lld"
+          }
+        }
+      }
+    },
+    "history.notCompleted" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not completed"
+          }
+        }
+      }
+    },
+    "history.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "History"
+          }
+        }
+      }
+    },
     "home.active" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -848,6 +903,28 @@
         }
       }
     },
+    "prescription.days" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start and End"
+          }
+        }
+      }
+    },
+    "prescription.days.footer" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "History marks each Day from the start to the end as completed or not."
+          }
+        }
+      }
+    },
     "prescription.delete" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -892,6 +969,28 @@
         }
       }
     },
+    "prescription.endDay" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ends"
+          }
+        }
+      }
+    },
+    "prescription.hasEndDay" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Has an end"
+          }
+        }
+      }
+    },
     "prescription.pause" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -932,6 +1031,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pick when one pill is taken each day. At least one slot is required."
+          }
+        }
+      }
+    },
+    "prescription.startDay" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Starts"
           }
         }
       }

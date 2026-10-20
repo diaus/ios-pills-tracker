@@ -28,6 +28,21 @@ struct PrescriptionPersistenceTests {
         #expect(fetched.prescription?.state == .paused)
     }
 
+    @Test func startDayAndEndDayRoundTripAndCanBeCleared() async throws {
+        let repository = try makeRepository()
+        var aggregate = try PillTypeAggregate.new(name: "Aspirin", rows: 1, columns: 1, createdAt: Date(timeIntervalSince1970: 1_000))
+        try aggregate.setPrescription(slots: [.morning], startDay: Day(year: 2026, month: 9, day: 1), endDay: Day(year: 2026, month: 9, day: 30))
+        try await repository.create(aggregate)
+        #expect(try await repository.fetch(id: aggregate.id)?.prescription == aggregate.prescription)
+
+        try aggregate.setPrescription(slots: [.morning], startDay: Day(year: 2026, month: 8, day: 15), endDay: nil)
+        try await repository.update(aggregate)
+
+        let fetched = try #require(try await repository.fetch(id: aggregate.id)?.prescription)
+        #expect(fetched.startDay == Day(year: 2026, month: 8, day: 15))
+        #expect(fetched.endDay == nil)
+    }
+
     @Test func addingAPrescriptionToAnExistingPillTypePersists() async throws {
         let repository = try makeRepository()
         var aggregate = try PillTypeAggregate.new(name: "Aspirin", rows: 1, columns: 1, createdAt: Date(timeIntervalSince1970: 1_000))

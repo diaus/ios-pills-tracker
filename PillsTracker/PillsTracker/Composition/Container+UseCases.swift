@@ -24,6 +24,10 @@ extension Container {
         self { UpdatePillType(repository: self.pillTypeRepository()) }
     }
 
+    nonisolated var intakeHistory: Factory<IntakeHistory> {
+        self { IntakeHistory(repository: self.pillTypeRepository()) }
+    }
+
     nonisolated var dailyProgress: Factory<DailyProgress> {
         self { DailyProgress(repository: self.pillTypeRepository()) }
     }

@@ -5,6 +5,7 @@ struct BlisterView: View {
     @State private var model: BlisterViewModel
     @State private var isEditingPrescription = false
     @State private var isEditingPillType = false
+    @State private var isShowingHistory = false
     /// Called after the Pill Type was deleted so the owner of the navigation path can return to Home.
     private let onPillTypeDeleted: @MainActor () -> Void
     @State private var tappedPosition: TappedPosition?
@@ -29,6 +30,10 @@ struct BlisterView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
+                Button(.blisterHistory, systemImage: "clock.arrow.circlepath") {
+                    isShowingHistory = true
+                }
+                .disabled(model.aggregate == nil)
                 Button(.blisterPrescription, systemImage: "calendar.badge.clock") {
                     isEditingPrescription = true
                 }
@@ -41,7 +46,16 @@ struct BlisterView: View {
         }
         .sheet(isPresented: $isEditingPrescription) {
             if let aggregate = model.aggregate {
-                PrescriptionSheet(aggregate: aggregate)
+                PrescriptionSheet(aggregate: aggregate, today: model.dailyProgress.today)
+            }
+        }
+        .sheet(isPresented: $isShowingHistory) {
+            IntakeHistorySheet(
+                pillTypeID: model.pillTypeID,
+                today: model.dailyProgress.today,
+                selectedDay: model.selectedDay
+            ) { day in
+                model.selectDay(day)
             }
         }
         .sheet(isPresented: $isEditingPillType) {
