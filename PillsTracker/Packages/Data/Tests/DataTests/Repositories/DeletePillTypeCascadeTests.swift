@@ -17,9 +17,9 @@ struct DeletePillTypeCascadeTests {
     /// A Pill Type with a Prescription, one Retired and one Current Blister, and an Intake on each Blister.
     private func seed(_ pillTypes: PillTypeRepositoryLive, name: String) async throws -> PillTypeAggregate {
         var aggregate = try PillTypeAggregate.new(name: name, rows: 1, columns: 2, createdAt: Date(timeIntervalSince1970: 1_000))
-        try aggregate.setPrescriptionSlots([.morning, .evening])
+        try aggregate.setPrescription(slots: [.morning, .evening], startDay: Day(year: 2026, month: 1, day: 1), endDay: nil)
         let retired = Blister(pillTypeID: aggregate.id, shape: aggregate.pillType.shape, state: .retired, presentPositions: [])
-        aggregate = aggregate.inserting(retired)
+        aggregate = PillTypeAggregate(pillType: aggregate.pillType, blisters: [retired] + aggregate.blisters, prescription: aggregate.prescription)
         try await pillTypes.create(aggregate)
         let currentID = try #require(aggregate.currentBlister?.id)
         try await pillTypes.update(aggregate, recording: Intake(pillTypeID: aggregate.id, blisterID: retired.id, position: Position(row: 0, column: 0), slot: .morning, day: Day(year: 2026, month: 10, day: 5), instant: Date(timeIntervalSince1970: 1_000)))

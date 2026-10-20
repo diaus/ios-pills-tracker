@@ -14,7 +14,7 @@ struct IntakePersistenceTests {
 
     private func makeAggregate() throws -> PillTypeAggregate {
         var aggregate = try PillTypeAggregate.new(name: "Aspirin", rows: 1, columns: 2, createdAt: Date(timeIntervalSince1970: 1_000))
-        try aggregate.setPrescriptionSlots([.morning, .evening])
+        try aggregate.setPrescription(slots: [.morning, .evening], startDay: Day(year: 2026, month: 1, day: 1), endDay: nil)
         return aggregate
     }
 
@@ -100,7 +100,9 @@ struct IntakePersistenceTests {
             pillTypeID: aggregate.id, position: Position(row: 0, column: 0), slot: .morning, day: today, instant: Date(timeIntervalSince1970: 1_000)
         )
         aggregate = try #require(try await repository.fetch(id: aggregate.id))
-        try aggregate.syncCurrentBlister(present: [])
+        for position in aggregate.pillType.shape.allPositions {
+            try aggregate.syncPosition(position, isPresent: false, blisterIntakes: [])
+        }
         try await repository.update(aggregate)
 
         try await StartNewBlister(repository: repository)(pillTypeID: aggregate.id)

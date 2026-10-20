@@ -28,7 +28,7 @@ struct PillTypeRepositoryLiveTests {
         var aggregate = try PillTypeAggregate.new(name: "Aspirin", rows: 2, columns: 5, createdAt: Date(timeIntervalSince1970: 1_000))
         let oldShape = try GridShape(rows: 1, columns: 3)
         let retired = Blister(pillTypeID: aggregate.id, shape: oldShape, state: .retired, presentPositions: [])
-        aggregate = aggregate.inserting(retired)
+        aggregate = PillTypeAggregate(pillType: aggregate.pillType, blisters: [retired] + aggregate.blisters)
 
         try await repository.create(aggregate)
         let fetched = try #require(try await repository.fetch(id: aggregate.id))
@@ -79,7 +79,9 @@ struct PillTypeRepositoryLiveTests {
         try await repository.create(aggregate)
 
         try aggregate.pillType.rename("Ibuprofen")
-        try aggregate.syncCurrentBlister(present: [])
+        for position in aggregate.pillType.shape.allPositions {
+            try aggregate.syncPosition(position, isPresent: false, blisterIntakes: [])
+        }
         try aggregate.startNewBlister()
         try await repository.update(aggregate)
 
