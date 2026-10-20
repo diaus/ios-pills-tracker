@@ -50,7 +50,10 @@ final class DailyProgressModel {
             return
         }
         await reloadingAfterWrites {
-            deliver(await Result { try await self.dailyProgress(day: day) })
+            let result = await Result { try await self.dailyProgress(day: day) }
+            // A load the caller stopped waiting for mid-flight would otherwise land on its next Day.
+            guard !Task.isCancelled else { return }
+            deliver(result)
         }
     }
 
