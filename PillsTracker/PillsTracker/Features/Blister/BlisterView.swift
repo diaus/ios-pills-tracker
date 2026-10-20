@@ -117,3 +117,24 @@ struct BlisterView: View {
         }
     }
 }
+
+#Preview {
+    NavigationStack {
+        BlisterView(
+            pillTypeID: PillTypeProgress.previewVitaminD.id,
+            dailyProgress: .preview(.loaded([.previewVitaminD]))
+        ) {}
+    }
+}
+
+#Preview("Loading") {
+    NavigationStack {
+        BlisterView(pillTypeID: UUID(), dailyProgress: .preview(.loading)) {}
+    }
+}
+
+#Preview("Failed") {
+    NavigationStack {
+        BlisterView(pillTypeID: UUID(), dailyProgress: .preview(.failed(.commonErrorUnknown))) {}
+    }
+}

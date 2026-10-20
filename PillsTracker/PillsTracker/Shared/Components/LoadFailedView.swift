@@ -9,3 +9,7 @@ struct LoadFailedView: View {
         ContentUnavailableView(.commonError, systemImage: "exclamationmark.triangle", description: Text(message))
     }
 }
+
+#Preview {
+    LoadFailedView(message: .commonErrorUnknown)
+}

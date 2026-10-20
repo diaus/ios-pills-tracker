@@ -62,3 +62,28 @@ struct PillTypeFormFields: View {
         }
     }
 }
+
+#Preview {
+    @Previewable @State var name = "Vitamin D"
+    @Previewable @State var rows = 3
+    @Previewable @State var columns = 4
+    Form {
+        PillTypeFormFields(name: $name, rows: $rows, columns: $columns, shapeFooter: .pillTypeShapeFooter)
+    }
+}
+
+#Preview("Error, shape locked") {
+    @Previewable @State var name = ""
+    @Previewable @State var rows = 3
+    @Previewable @State var columns = 4
+    Form {
+        PillTypeFormFields(
+            name: $name,
+            rows: $rows,
+            columns: $columns,
+            error: .emptyName,
+            shapeFooter: .pillTypeShapeLocked,
+            isShapeLocked: true
+        )
+    }
+}
