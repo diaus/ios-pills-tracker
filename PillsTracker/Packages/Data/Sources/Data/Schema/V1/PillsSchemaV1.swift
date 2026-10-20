@@ -1,6 +1,7 @@
 import SwiftData
 
-/// First version of the persisted schema. Each `@Model` lives in its own file
+/// First version of the persisted schema, before Prescriptions had a Start Day and End Day. Frozen:
+/// it only describes stores written by that version so `PillsMigrationPlan` can upgrade them. Each `@Model` lives in its own file
 /// as a nested type of this enum so later schema versions can evolve independently.
 public enum PillsSchemaV1: VersionedSchema {
     public static let versionIdentifier = Schema.Version(1, 0, 0)
@@ -9,9 +10,3 @@ public enum PillsSchemaV1: VersionedSchema {
         [PillTypeModel.self, BlisterModel.self, PrescriptionModel.self, IntakeModel.self]
     }
 }
-
-/// Current-version aliases used by the rest of the Data package.
-public typealias PillTypeModel = PillsSchemaV1.PillTypeModel
-public typealias BlisterModel = PillsSchemaV1.BlisterModel
-public typealias PrescriptionModel = PillsSchemaV1.PrescriptionModel
-public typealias IntakeModel = PillsSchemaV1.IntakeModel

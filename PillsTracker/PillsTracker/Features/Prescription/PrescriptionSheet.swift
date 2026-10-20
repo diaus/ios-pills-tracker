@@ -2,14 +2,14 @@ import Domain
 import SwiftUI
 
 /// Sheet opened from the Blister toolbar. Creates a Prescription when the Pill Type has none;
-/// otherwise edits its Slots and offers pause, resume and delete (with confirmation).
+/// otherwise edits its Slots, Start Day and End Day and offers pause, resume and delete (with confirmation).
 struct PrescriptionSheet: View {
     @Environment(\.dismiss) private var dismiss
     @State private var model: PrescriptionViewModel
     @State private var isConfirmingDelete = false
 
-    init(aggregate: PillTypeAggregate) {
-        _model = State(initialValue: PrescriptionViewModel(aggregate: aggregate))
+    init(aggregate: PillTypeAggregate, today: Day) {
+        _model = State(initialValue: PrescriptionViewModel(aggregate: aggregate, today: today))
     }
 
     var body: some View {
@@ -26,6 +26,24 @@ struct PrescriptionSheet: View {
                     Text(.prescriptionSlots)
                 } footer: {
                     Text(.prescriptionSlotsFooter)
+                }
+
+                Section {
+                    DatePicker(selection: $model.startDayDate, displayedComponents: .date) {
+                        Text(.prescriptionStartDay)
+                    }
+                    Toggle(isOn: $model.hasEndDay.animation()) {
+                        Text(.prescriptionHasEndDay)
+                    }
+                    if model.hasEndDay {
+                        DatePicker(selection: $model.endDayDate, in: model.startDayDate..., displayedComponents: .date) {
+                            Text(.prescriptionEndDay)
+                        }
+                    }
+                } header: {
+                    Text(.prescriptionDays)
+                } footer: {
+                    Text(.prescriptionDaysFooter)
                 }
 
                 if model.hasPrescription {
@@ -84,9 +102,9 @@ struct PrescriptionSheet: View {
 }
 
 #Preview("New") {
-    PrescriptionSheet(aggregate: .previewIbuprofen)
+    PrescriptionSheet(aggregate: .previewIbuprofen, today: Day(date: .now))
 }
 
 #Preview("Edit") {
-    PrescriptionSheet(aggregate: .previewVitaminD)
+    PrescriptionSheet(aggregate: .previewVitaminD, today: Day(date: .now))
 }

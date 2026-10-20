@@ -34,6 +34,34 @@ struct PillTypeAggregatePrescriptionTests {
         #expect(aggregate.prescription?.state == .paused)
     }
 
+    @Test func settingThePrescriptionStoresItsStartDayAndEndDay() throws {
+        var aggregate = try makeAggregate()
+        let start = Day(year: 2026, month: 9, day: 1)
+        let end = Day(year: 2026, month: 9, day: 30)
+
+        try aggregate.setPrescription(slots: [.morning], startDay: start, endDay: end)
+
+        #expect(aggregate.prescription?.startDay == start)
+        #expect(aggregate.prescription?.endDay == end)
+    }
+
+    @Test func editingThePrescriptionsDaysKeepsItsIdentityAndState() throws {
+        var aggregate = try makeAggregate()
+        try aggregate.setPrescription(slots: [.morning], startDay: Day(year: 2026, month: 9, day: 1), endDay: nil)
+        let originalID = try #require(aggregate.prescription?.id)
+        try aggregate.pausePrescription()
+        let newStart = Day(year: 2026, month: 8, day: 15)
+        let newEnd = Day(year: 2026, month: 12, day: 31)
+
+        try aggregate.setPrescription(slots: [.day], startDay: newStart, endDay: newEnd)
+
+        #expect(aggregate.prescription?.id == originalID)
+        #expect(aggregate.prescription?.state == .paused)
+        #expect(aggregate.prescription?.slots == [.day])
+        #expect(aggregate.prescription?.startDay == newStart)
+        #expect(aggregate.prescription?.endDay == newEnd)
+    }
+
     @Test func settingEmptySlotsIsRejected() throws {
         var aggregate = try makeAggregate()
         #expect(throws: DomainError.emptySlots) { try aggregate.setPrescriptionSlots([]) }

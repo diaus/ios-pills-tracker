@@ -85,14 +85,16 @@ public struct PillTypeAggregate: Identifiable, Hashable, Sendable {
 
     // MARK: Prescription
 
-    /// Creates an Active Prescription with `slots`, or edits the Slots of the existing one
-    /// (keeping its identity and Active/Paused state). Empty `slots` are rejected.
-    public mutating func setPrescriptionSlots(_ slots: Set<Slot>) throws(DomainError) {
+    /// Creates an Active Prescription, or edits the Slots, Start Day and End Day of the existing one
+    /// (keeping its identity and Active/Paused state). Empty `slots` are rejected; the Days are taken as given.
+    public mutating func setPrescription(slots: Set<Slot>, startDay: Day, endDay: Day?) throws(DomainError) {
         if var existing = prescription {
             try existing.setSlots(slots)
+            existing.startDay = startDay
+            existing.endDay = endDay
             prescription = existing
         } else {
-            prescription = try Prescription(pillTypeID: id, slots: slots)
+            prescription = try Prescription(pillTypeID: id, slots: slots, startDay: startDay, endDay: endDay)
         }
     }
 

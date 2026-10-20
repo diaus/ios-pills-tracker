@@ -10,6 +10,9 @@ import SwiftUI
 final class AddPillTypeViewModel {
     @ObservationIgnored @Injected(\.pillTypeRepository) private var repository
 
+    /// The Day a Prescription created with the Pill Type starts on.
+    private let today: Day
+
     var name = ""
     var rows = 2
     var columns = 5
@@ -21,13 +24,17 @@ final class AddPillTypeViewModel {
     var errorMessage: LocalizedStringResource?
     private(set) var isSaving = false
 
+    init(today: Day) {
+        self.today = today
+    }
+
     /// Validates, persists and returns true on success so the sheet can dismiss.
     func save() async -> Bool {
         validationError = nil
         var aggregate: PillTypeAggregate
         do {
             aggregate = try PillTypeAggregate.new(name: name, rows: rows, columns: columns, createdAt: Date())
-            if !selectedSlots.isEmpty { try aggregate.setPrescriptionSlots(selectedSlots) }
+            if !selectedSlots.isEmpty { try aggregate.setPrescription(slots: selectedSlots, startDay: today, endDay: nil) }
         } catch {
             validationError = error
             return false

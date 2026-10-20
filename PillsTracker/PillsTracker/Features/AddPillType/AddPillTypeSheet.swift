@@ -1,9 +1,14 @@
+import Domain
 import SwiftUI
 
 /// Sheet for creating a Pill Type: name, grid shape and optional Prescription Slots. Errors show inline under each field.
 struct AddPillTypeSheet: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var model = AddPillTypeViewModel()
+    @State private var model: AddPillTypeViewModel
+
+    init(today: Day) {
+        _model = State(initialValue: AddPillTypeViewModel(today: today))
+    }
 
     var body: some View {
         NavigationStack {
@@ -45,5 +50,5 @@ struct AddPillTypeSheet: View {
 }
 
 #Preview {
-    AddPillTypeSheet()
+    AddPillTypeSheet(today: Day(date: .now))
 }

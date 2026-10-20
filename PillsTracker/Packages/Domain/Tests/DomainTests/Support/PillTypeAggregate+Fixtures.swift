@@ -12,4 +12,14 @@ extension PillTypeAggregate {
     func inserting(_ blister: Blister) -> PillTypeAggregate {
         PillTypeAggregate(pillType: pillType, blisters: [blister] + blisters, prescription: prescription)
     }
+
+    /// Creates a Prescription with `slots` starting on a fixed Day, or edits the existing one's Slots
+    /// keeping its Days, for tests where the Start Day and End Day don't matter.
+    mutating func setPrescriptionSlots(_ slots: Set<Slot>) throws(DomainError) {
+        try setPrescription(
+            slots: slots,
+            startDay: prescription?.startDay ?? Day(year: 2026, month: 1, day: 1),
+            endDay: prescription?.endDay
+        )
+    }
 }

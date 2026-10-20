@@ -28,6 +28,10 @@ actor FakePillTypeRepository: PillTypeRepository {
         allIntakes.filter { blisterIDs.contains($0.blisterID) }.sorted { $0.instant < $1.instant }
     }
 
+    func intakes(pillTypeID: UUID, days: ClosedRange<Day>) -> [Intake] {
+        allIntakes.filter { $0.pillTypeID == pillTypeID && days.contains($0.day) }.sorted { $0.instant < $1.instant }
+    }
+
     func intake(id: UUID) -> Intake? {
         allIntakes.first { $0.id == id }
     }

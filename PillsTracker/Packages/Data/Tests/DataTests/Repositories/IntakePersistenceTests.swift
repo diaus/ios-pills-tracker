@@ -136,4 +136,24 @@ struct IntakePersistenceTests {
 
         #expect(await iterator.next() != nil)
     }
+
+    @Test func intakesOfAPillTypeOverDaysSpanItsBlistersAndStayInsideTheRange() async throws {
+        let (repository, _) = try makeRepository()
+        var aggregate = try makeAggregate()
+        try await repository.create(aggregate)
+        let before = try aggregate.consume(Position(row: 0, column: 0), slot: .morning, doneSlots: [], day: Day(year: 2026, month: 9, day: 30), instant: Date(timeIntervalSince1970: 1_000))
+        try await repository.update(aggregate, recording: before)
+        let first = try aggregate.consume(Position(row: 0, column: 1), slot: .morning, doneSlots: [], day: Day(year: 2026, month: 10, day: 1), instant: Date(timeIntervalSince1970: 2_000))
+        try await repository.update(aggregate, recording: first)
+        try aggregate.startNewBlister()
+        try await repository.update(aggregate)
+        let last = try aggregate.consume(Position(row: 0, column: 0), slot: .evening, doneSlots: [], day: Day(year: 2026, month: 10, day: 31), instant: Date(timeIntervalSince1970: 3_000))
+        try await repository.update(aggregate, recording: last)
+        let after = try aggregate.consume(Position(row: 0, column: 1), slot: .morning, doneSlots: [], day: Day(year: 2026, month: 11, day: 1), instant: Date(timeIntervalSince1970: 4_000))
+        try await repository.update(aggregate, recording: after)
+        let october = Day(year: 2026, month: 10, day: 1)...Day(year: 2026, month: 10, day: 31)
+
+        #expect(try await repository.intakes(pillTypeID: aggregate.id, days: october) == [first, last])
+        #expect(try await repository.intakes(pillTypeID: UUID(), days: october).isEmpty)
+    }
 }

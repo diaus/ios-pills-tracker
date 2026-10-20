@@ -82,7 +82,7 @@ struct HomeView: View {
             }
         }
         .sheet(isPresented: $isAddingPillType) {
-            AddPillTypeSheet()
+            AddPillTypeSheet(today: model.dailyProgress.today)
         }
         .errorAlert(message: $model.errorMessage)
     }
