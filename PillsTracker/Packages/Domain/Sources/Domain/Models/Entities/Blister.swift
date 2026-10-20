@@ -1,11 +1,5 @@
 import Foundation
 
-/// Whether a Blister is the one being consumed right now or a former one kept for history.
-public enum BlisterState: String, Sendable, Hashable, Codable {
-    case current
-    case retired
-}
-
 /// A Blister of one Pill Type: its pills laid out as a rectangular grid of Positions.
 /// Each Blister keeps the shape it was started with, so a later shape change of the Pill Type
 /// applies only to the next Start New Blister. Positions not listed in `presentPositions` are Empty.
