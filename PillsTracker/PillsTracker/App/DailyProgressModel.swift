@@ -8,8 +8,8 @@ import Utils
 
 /// Today's progress of every Pill Type, loaded once for the whole app and kept current: it reloads
 /// after every write and when "today" changes. The one owner of "today" (ADR 0001): screens read the
-/// Day from here and pass it to the use cases. Home, Blister and the Pill Types list show views of it;
-/// Blister also streams a past Selected Day's progress from here, kept current the same way.
+/// Day from here and pass it to the use cases. Home and the Pill Types list show views of it; Blister
+/// streams its Selected Day's progress from here, kept current the same way.
 @MainActor @Observable
 final class DailyProgressModel {
     enum State {
@@ -25,6 +25,8 @@ final class DailyProgressModel {
 
     private(set) var state = State.loading
     private(set) var today = DailyProgressModel.currentDay()
+    /// Set by `preview`: `state` is fixed and `progress(on:)` serves it instead of loading.
+    private var isFixed = false
 
     /// The loaded progress, or nil while loading or after a failure.
     var progress: [PillTypeProgress]? {
@@ -36,12 +38,19 @@ final class DailyProgressModel {
         await reloadingAfterWrites { await self.load() }
     }
 
-    /// Progress on `day`, for a screen showing a Day other than today: loaded at once, then reloaded
-    /// after every write until the caller stops iterating.
-    func progress(on day: Day) -> AsyncStream<State> {
+    /// Progress on `day`, for a screen showing one Day: loaded at once, then reloaded after every
+    /// write until the caller stops iterating. A failed load is reported and the next write retries.
+    func progress(on day: Day) -> AsyncStream<Result<[PillTypeProgress], any Error>> {
         AsyncStream(bufferingPolicy: .bufferingNewest(1)) { continuation in
+            if isFixed {
+                continuation.yield(.success(progress ?? []))
+                continuation.finish()
+                return
+            }
             let task = Task {
-                await reloadingAfterWrites { continuation.yield(await self.loadState(on: day)) }
+                await reloadingAfterWrites {
+                    continuation.yield(await Result { try await self.load(on: day) })
+                }
                 continuation.finish()
             }
             continuation.onTermination = { _ in task.cancel() }
@@ -68,15 +77,15 @@ final class DailyProgressModel {
     }
 
     private func load() async {
-        state = await loadState(on: today)
+        do {
+            state = .loaded(try await load(on: today))
+        } catch {
+            state = .failed(error.userMessage)
+        }
     }
 
-    private func loadState(on day: Day) async -> State {
-        do {
-            return .loaded(try await dailyProgress(day: day))
-        } catch {
-            return .failed(error.userMessage)
-        }
+    private func load(on day: Day) async throws -> [PillTypeProgress] {
+        try await dailyProgress(day: day)
     }
 
     private static func currentDay() -> Day {
@@ -89,6 +98,7 @@ extension DailyProgressModel {
     static func preview(_ state: State) -> DailyProgressModel {
         let model = DailyProgressModel()
         model.state = state
+        model.isFixed = true
         return model
     }
 }
