@@ -1,19 +1,5 @@
 import Foundation
 
-/// Done/Open state of one prescribed Slot on a Day.
-public struct SlotProgress: Hashable, Sendable {
-    public let slot: Slot
-    /// The Intake that made the Slot Done on that Day, or nil while it is Open.
-    public let intake: Intake?
-
-    public init(slot: Slot, intake: Intake?) {
-        self.slot = slot
-        self.intake = intake
-    }
-
-    public var isDone: Bool { intake != nil }
-}
-
 /// Everything a screen needs about one Pill Type on a Day: the aggregate, its Prescription's Slots
 /// Done or Open for the Day, and the affordances (what can be consumed, undone or started) drawn from
 /// the same preconditions the aggregate enforces. Built by `DailyProgress` for every Pill Type.

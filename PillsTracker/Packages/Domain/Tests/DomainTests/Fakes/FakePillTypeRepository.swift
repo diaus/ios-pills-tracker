@@ -58,7 +58,3 @@ actor FakePillTypeRepository: PillTypeRepository {
         allIntakes.removeAll { $0.pillTypeID == id }
     }
 }
-
-enum FakeRepositoryError: Error {
-    case notFound
-}

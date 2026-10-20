@@ -1,14 +1,6 @@
 import Domain
 import SwiftUI
 
-/// A tapped Position together with the state it had when tapped, so the sheet offers the right action.
-struct TappedPosition: Identifiable, Hashable {
-    let position: Position
-    let isPresent: Bool
-
-    var id: Position { position }
-}
-
 /// Action sheet shown after tapping a Position. A Present one lists the Slots it can be consumed for
 /// (today's Open Slots of an Active Prescription), plus "remove without prescription" (a Sync Edit);
 /// with nothing consumable only the Sync Edit remains.
