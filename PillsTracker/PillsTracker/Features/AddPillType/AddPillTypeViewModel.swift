@@ -10,14 +10,13 @@ import SwiftUI
 final class AddPillTypeViewModel {
     @ObservationIgnored @Injected(\.pillTypeRepository) private var repository
 
-    /// The Day a Prescription created with the Pill Type starts on.
-    private let today: Day
-
     var name = ""
     var rows = 2
     var columns = 5
     /// Slots of the Prescription to create with the Pill Type; none means no Prescription.
     var selectedSlots: Set<Slot> = []
+    /// Start Day and End Day of that Prescription; it starts today unless the user picks another Day.
+    var selectedDays: PrescriptionDaysSelection
 
     /// The rule the form broke; `PillTypeFormFields` shows it under its field.
     private(set) var validationError: DomainError?
@@ -25,7 +24,7 @@ final class AddPillTypeViewModel {
     private(set) var isSaving = false
 
     init(today: Day) {
-        self.today = today
+        selectedDays = PrescriptionDaysSelection(startDay: today, endDay: nil)
     }
 
     /// Validates, persists and returns true on success so the sheet can dismiss.
@@ -34,7 +33,9 @@ final class AddPillTypeViewModel {
         var aggregate: PillTypeAggregate
         do {
             aggregate = try PillTypeAggregate.new(name: name, rows: rows, columns: columns, createdAt: Date())
-            if !selectedSlots.isEmpty { try aggregate.setPrescription(slots: selectedSlots, startDay: today, endDay: nil) }
+            if !selectedSlots.isEmpty {
+                try aggregate.setPrescription(slots: selectedSlots, startDay: selectedDays.startDay, endDay: selectedDays.endDay)
+            }
         } catch {
             validationError = error
             return false

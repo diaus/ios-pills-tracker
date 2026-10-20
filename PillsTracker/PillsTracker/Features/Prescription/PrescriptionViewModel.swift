@@ -13,14 +13,7 @@ final class PrescriptionViewModel {
     /// The Pill Type as last stored by this sheet.
     private(set) var aggregate: PillTypeAggregate
     var selectedSlots: Set<Slot>
-    /// The Start Day as the picker holds it. Moving it past the End Day moves the End Day along.
-    var startDayDate: Date {
-        didSet { if endDayDate < startDayDate { endDayDate = startDayDate } }
-    }
-    /// Whether the Prescription has an End Day; off means open-ended.
-    var hasEndDay: Bool
-    /// The End Day as the picker holds it, kept while `hasEndDay` is off so turning it back on restores it.
-    var endDayDate: Date
+    var selectedDays: PrescriptionDaysSelection
     /// The rule the change broke, shown under the Slots.
     private(set) var validationError: DomainError?
     var errorMessage: LocalizedStringResource?
@@ -30,10 +23,10 @@ final class PrescriptionViewModel {
     init(aggregate: PillTypeAggregate, today: Day) {
         self.aggregate = aggregate
         selectedSlots = aggregate.prescription?.slots ?? []
-        let startDayDate = (aggregate.prescription?.startDay ?? today).date()
-        self.startDayDate = startDayDate
-        hasEndDay = aggregate.prescription?.endDay != nil
-        endDayDate = aggregate.prescription?.endDay?.date() ?? startDayDate
+        selectedDays = PrescriptionDaysSelection(
+            startDay: aggregate.prescription?.startDay ?? today,
+            endDay: aggregate.prescription?.endDay
+        )
     }
 
     var prescription: Prescription? { aggregate.prescription }
@@ -43,8 +36,7 @@ final class PrescriptionViewModel {
     /// Creates the Prescription or replaces its Slots, Start Day and End Day. Returns true on success so the sheet can dismiss.
     func save() async -> Bool {
         let slots = selectedSlots
-        let startDay = Day(date: startDayDate)
-        let endDay = hasEndDay ? Day(date: endDayDate) : nil
+        let startDay = selectedDays.startDay, endDay = selectedDays.endDay
         return await update { aggregate throws(DomainError) in
             try aggregate.setPrescription(slots: slots, startDay: startDay, endDay: endDay)
         }

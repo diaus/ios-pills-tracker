@@ -66,8 +66,8 @@ struct IntakeHistorySheet: View {
             .navigationTitle(.historyTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button(.commonCancel) { dismiss() }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(.commonDone) { dismiss() }
                 }
             }
             .onChange(of: visibleOffset, initial: true) { _, offset in
