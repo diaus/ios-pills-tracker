@@ -48,6 +48,10 @@ _Avoid_: Time, period, dose time
 The daily rule for a Pill Type: the non-empty set of Slots in which one pill is taken. A Pill Type has at most one Prescription.
 _Avoid_: Schedule, plan, regimen, dosage
 
+**Start Day / End Day**:
+The first and, optionally, last Day a Prescription is meant to cover. Start Day defaults to the Day the Prescription is created; End Day is empty for an open-ended Prescription. Both are editable. They only decide which Days Intake History judges Completed; they never limit Consume, Undo or the Home screen.
+_Avoid_: Start date, end date, course, duration
+
 **Active / Paused**:
 The two states of a Prescription. Only Active Prescriptions count toward today's progress and appear as Blister cards on the Home screen.
 _Avoid_: Enabled/disabled, on/off
@@ -70,6 +74,10 @@ _Avoid_: Current day, active day, viewed date
 Reverting an Intake from the Current Blister, made on any Day: the Position becomes Present again and the Intake is removed, so its Slot is Open again on that Day. When a Position has several Intakes, Undo reverts the latest. Intakes from a Retired Blister cannot be undone.
 _Avoid_: Revert, uncheck
 
+**Intake History**:
+The Intakes of one Pill Type laid out by Day, across the Current Blister and every Retired Blister, whatever the Prescription was when they were made. For each Day between the Prescription's Start Day and End Day it also shows whether the Day is Completed, judged against the Prescription's current Slots.
+_Avoid_: Prescription history, log, calendar
+
 **Day**:
 A local calendar day. Progress ("taken today", "left today") is computed per Day and rolls over at local midnight.
 _Avoid_: Date, today (as a stored value)
@@ -79,5 +87,5 @@ For an Active Prescription on a given Day, a Slot is Done when an Intake exists 
 _Avoid_: Pending, remaining
 
 **Completed**:
-The state of an Active Prescription on a Day when none of its Slots are Open.
+The state of a Prescription on a Day when none of its Slots are Open. The Home screen only shows it for Active Prescriptions; Intake History judges it for every Day from Start Day to End Day, Paused or not, against the current Slots.
 _Avoid_: Finished, all taken
