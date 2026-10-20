@@ -8,6 +8,8 @@ import SwiftUI
 /// in Domain. An Empty one with an Intake is routed to Undo before this sheet.
 private struct PositionActionSheet: ViewModifier {
     @Binding var tapped: TappedPosition?
+    /// Shown above the actions when set, e.g. to name a past Day being consumed for.
+    let title: Text?
     let consumableSlots: (Position) -> [Slot]
     let canSetPresent: (Position) -> Bool
     let onConsume: (Position, Slot) -> Void
@@ -15,9 +17,9 @@ private struct PositionActionSheet: ViewModifier {
 
     func body(content: Content) -> some View {
         content.confirmationDialog(
-            .blisterPositionTitle,
+            title ?? Text(.blisterPositionTitle),
             isPresented: Binding(get: { tapped != nil }, set: { if !$0 { tapped = nil } }),
-            titleVisibility: .hidden,
+            titleVisibility: title == nil ? .hidden : .visible,
             presenting: tapped
         ) { tapped in
             if tapped.isPresent {
@@ -42,11 +44,12 @@ private struct PositionActionSheet: ViewModifier {
 extension View {
     func positionActionSheet(
         for tapped: Binding<TappedPosition?>,
+        title: Text?,
         consumableSlots: @escaping (Position) -> [Slot],
         canSetPresent: @escaping (Position) -> Bool,
         onConsume: @escaping (Position, Slot) -> Void,
         onSync: @escaping (Position, _ isPresent: Bool) -> Void
     ) -> some View {
-        modifier(PositionActionSheet(tapped: tapped, consumableSlots: consumableSlots, canSetPresent: canSetPresent, onConsume: onConsume, onSync: onSync))
+        modifier(PositionActionSheet(tapped: tapped, title: title, consumableSlots: consumableSlots, canSetPresent: canSetPresent, onConsume: onConsume, onSync: onSync))
     }
 }

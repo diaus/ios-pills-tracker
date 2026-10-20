@@ -8,7 +8,8 @@ import Utils
 
 /// Today's progress of every Pill Type, loaded once for the whole app and kept current: it reloads
 /// after every write and when "today" changes. The one owner of "today" (ADR 0001): screens read the
-/// Day from here and pass it to the use cases. Home, Blister and the Pill Types list show views of it.
+/// Day from here and pass it to the use cases. Home, Blister and the Pill Types list show views of it;
+/// Blister also streams a past Selected Day's progress from here, kept current the same way.
 @MainActor @Observable
 final class DailyProgressModel {
     enum State {
@@ -32,11 +33,18 @@ final class DailyProgressModel {
 
     /// Loads, then reloads after every write until the calling task is cancelled.
     func run() async {
-        // Subscribed before the first load, so a write during it still triggers a reload.
-        let changes = notifier.changes
-        await load()
-        for await _ in changes {
-            await load()
+        await reloadingAfterWrites { await self.load() }
+    }
+
+    /// Progress on `day`, for a screen showing a Day other than today: loaded at once, then reloaded
+    /// after every write until the caller stops iterating.
+    func progress(on day: Day) -> AsyncStream<State> {
+        AsyncStream(bufferingPolicy: .bufferingNewest(1)) { continuation in
+            let task = Task {
+                await reloadingAfterWrites { continuation.yield(await self.loadState(on: day)) }
+                continuation.finish()
+            }
+            continuation.onTermination = { _ in task.cancel() }
         }
     }
 
@@ -49,11 +57,25 @@ final class DailyProgressModel {
         await load()
     }
 
+    /// Runs `load`, then again after every write until the calling task is cancelled.
+    private func reloadingAfterWrites(_ load: () async -> Void) async {
+        // Subscribed before the first load, so a write during it still triggers a reload.
+        let changes = notifier.changes
+        await load()
+        for await _ in changes {
+            await load()
+        }
+    }
+
     private func load() async {
+        state = await loadState(on: today)
+    }
+
+    private func loadState(on day: Day) async -> State {
         do {
-            state = .loaded(try await dailyProgress(day: today))
+            return .loaded(try await dailyProgress(day: day))
         } catch {
-            state = .failed(error.userMessage)
+            return .failed(error.userMessage)
         }
     }
 

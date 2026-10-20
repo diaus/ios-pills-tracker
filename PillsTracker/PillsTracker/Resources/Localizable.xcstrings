@@ -89,6 +89,28 @@
         }
       }
     },
+    "blister.day.next" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next day"
+          }
+        }
+      }
+    },
+    "blister.day.previous" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Previous day"
+          }
+        }
+      }
+    },
     "blister.notFound" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -184,6 +206,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Position"
+          }
+        }
+      }
+    },
+    "blister.position.titleForDay" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Consume for %(day)@"
           }
         }
       }
@@ -793,13 +826,13 @@
         }
       }
     },
-    "position.intakeToday" : {
+    "position.intakeOnDay" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Taken today, %(slot)@"
+            "value" : "Taken, %(slot)@"
           }
         }
       }

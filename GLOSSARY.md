@@ -59,8 +59,12 @@ The record that one pill of a Pill Type was taken from a specific Position of a 
 _Avoid_: Consumption, dose, history entry
 
 **Consume**:
-The act of taking a Present pill from a Position for one of today's open Slots. It makes the Position Empty and creates an Intake.
+The act of taking a Present pill from a Position for one of the Selected Day's Open Slots. It makes the Position Empty and creates an Intake on the Selected Day; consuming for a past Day records a pill that was taken but not logged then.
 _Avoid_: Take, mark, check off
+
+**Selected Day**:
+The Day the Blister screen shows progress for and Consumes for. It is today when the screen opens, can be moved to any earlier Day, and is never after today.
+_Avoid_: Current day, active day, viewed date
 
 **Undo**:
 Reverting an Intake from the Current Blister, made on any Day: the Position becomes Present again and the Intake is removed, so its Slot is Open again on that Day. When a Position has several Intakes, Undo reverts the latest. Intakes from a Retired Blister cannot be undone.
