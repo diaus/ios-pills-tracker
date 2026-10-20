@@ -28,23 +28,7 @@ struct PrescriptionSheet: View {
                     Text(.prescriptionSlotsFooter)
                 }
 
-                Section {
-                    DatePicker(selection: $model.startDayDate, displayedComponents: .date) {
-                        Text(.prescriptionStartDay)
-                    }
-                    Toggle(isOn: $model.hasEndDay.animation()) {
-                        Text(.prescriptionHasEndDay)
-                    }
-                    if model.hasEndDay {
-                        DatePicker(selection: $model.endDayDate, in: model.startDayDate..., displayedComponents: .date) {
-                            Text(.prescriptionEndDay)
-                        }
-                    }
-                } header: {
-                    Text(.prescriptionDays)
-                } footer: {
-                    Text(.prescriptionDaysFooter)
-                }
+                PrescriptionDaysSection(selection: $model.selectedDays)
 
                 if model.hasPrescription {
                     Section {
