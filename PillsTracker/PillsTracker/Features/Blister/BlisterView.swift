@@ -114,8 +114,11 @@ struct BlisterView: View {
                 }
                 .padding()
             }
+        } else if model.aggregate != nil {
+            // The Pill Type exists; the Selected Day's progress is still loading.
+            ProgressView()
         } else {
-            switch model.state {
+            switch model.dailyProgress.state {
             case .loading:
                 ProgressView()
             case .failed(let message):

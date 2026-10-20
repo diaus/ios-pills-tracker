@@ -5,8 +5,8 @@ import Observation
 import SwiftUI
 
 /// Shows one Pill Type's Current Blister with the Selected Day's Slot chips, and lets the user Consume
-/// for that Day, Undo and keep the grid in sync with reality. Both today's and a past Selected Day's
-/// progress come from the app's Daily Progress, which reloads them after each write.
+/// for that Day, Undo and keep the grid in sync with reality. The Selected Day's progress is streamed
+/// from the app's Daily Progress, which reloads it after each write.
 @MainActor @Observable
 final class BlisterViewModel {
     @ObservationIgnored @Injected(\.syncPosition) private var syncPosition
@@ -19,13 +19,15 @@ final class BlisterViewModel {
     var errorMessage: LocalizedStringResource?
     /// The Day the screen shows and Consumes for: today when the screen opens, never after today.
     private(set) var selectedDay: Day
-    /// The last load of a past Selected Day; its `day` tells whether it is still the Selected Day's.
-    private var pastDay: (day: Day, state: DailyProgressModel.State)?
+    /// The read model of the Pill Type on the Selected Day; nil until that Day's first load or when
+    /// the Pill Type no longer exists. Starts as today's, which the app has already loaded.
+    private(set) var progress: PillTypeProgress?
 
     init(pillTypeID: UUID, dailyProgress: DailyProgressModel) {
         self.pillTypeID = pillTypeID
         self.dailyProgress = dailyProgress
         selectedDay = dailyProgress.today
+        progress = dailyProgress.progress?.first { $0.id == pillTypeID }
     }
 
     var isOnToday: Bool { selectedDay == dailyProgress.today }
@@ -38,47 +40,36 @@ final class BlisterViewModel {
         dailyProgress.progress?.first { $0.id == pillTypeID }?.aggregate
     }
 
-    /// Loading, loaded or failed for the Selected Day: Daily Progress's state today, its stream for a past Day.
-    var state: DailyProgressModel.State {
-        guard !isOnToday else { return dailyProgress.state }
-        guard let pastDay, pastDay.day == selectedDay else { return .loading }
-        return pastDay.state
-    }
-
-    /// The read model of the Pill Type on the Selected Day; nil until loaded or when the Pill Type no longer exists.
-    var progress: PillTypeProgress? {
-        guard case .loaded(let progress) = state else { return nil }
-        return progress.first { $0.id == pillTypeID }
-    }
-
     /// How `day` reads next to today: "today", "yesterday", a weekday or "Jul 21".
     func name(of day: Day) -> String {
         day.relativeName(today: dailyProgress.today)
     }
 
     func moveBack() {
-        selectedDay = selectedDay.adding(days: -1)
+        select(selectedDay.adding(days: -1))
     }
 
     func moveForward() {
         guard canMoveForward else { return }
-        selectedDay = selectedDay.adding(days: 1)
+        select(selectedDay.adding(days: 1))
     }
 
     /// At a Day rollover a Selected Day that was today becomes the new today; a past one stays.
     func todayChanged(from old: Day, to new: Day) {
         if selectedDay == old || selectedDay > new {
-            selectedDay = new
+            select(new)
         }
     }
 
-    /// Keeps a past Selected Day's progress current until the calling task is cancelled. Today's
-    /// progress is already kept current by Daily Progress, so it returns at once.
+    /// Loads the Selected Day's progress, then reloads it after every write until the calling task is cancelled.
     func run() async {
-        guard !isOnToday else { return }
-        let day = selectedDay
-        for await state in dailyProgress.progress(on: day) {
-            pastDay = (day, state)
+        for await result in dailyProgress.progress(on: selectedDay) {
+            switch result {
+            case .success(let progress):
+                self.progress = progress.first { $0.id == pillTypeID }
+            case .failure(let error):
+                errorMessage = error.userMessage
+            }
         }
     }
 
@@ -100,6 +91,12 @@ final class BlisterViewModel {
 
     func startNewBlister() async {
         await perform { try await startNewBlister(pillTypeID: pillTypeID) }
+    }
+
+    /// Moves the Selected Day; its progress is gone until `run` loads the new Day's.
+    private func select(_ day: Day) {
+        selectedDay = day
+        progress = nil
     }
 
     private func perform(_ action: () async throws -> Void) async {
