@@ -5,13 +5,15 @@ import Domain
 import Utils
 
 struct PrescriptionPersistenceTests {
+    private let startDay = Day(year: 2026, month: 1, day: 1)
+
     private func makeRepository() throws -> PillTypeRepositoryLive {
         PillTypeRepositoryLive(modelContainer: try PillsModelContainer.make(inMemory: true), notifier: ChangeNotifier())
     }
 
     private func makeAggregate(slots: Set<Slot>) throws -> PillTypeAggregate {
         var aggregate = try PillTypeAggregate.new(name: "Aspirin", rows: 2, columns: 5, createdAt: Date(timeIntervalSince1970: 1_000))
-        try aggregate.setPrescriptionSlots(slots)
+        try aggregate.setPrescription(slots: slots, startDay: startDay, endDay: nil)
         return aggregate
     }
 
@@ -48,7 +50,7 @@ struct PrescriptionPersistenceTests {
         var aggregate = try PillTypeAggregate.new(name: "Aspirin", rows: 1, columns: 1, createdAt: Date(timeIntervalSince1970: 1_000))
         try await repository.create(aggregate)
 
-        try aggregate.setPrescriptionSlots([.day])
+        try aggregate.setPrescription(slots: [.day], startDay: startDay, endDay: nil)
         try await repository.update(aggregate)
 
         let fetched = try #require(try await repository.fetch(id: aggregate.id))
@@ -60,7 +62,7 @@ struct PrescriptionPersistenceTests {
         var aggregate = try makeAggregate(slots: [.morning])
         try await repository.create(aggregate)
 
-        try aggregate.setPrescriptionSlots([.day, .evening])
+        try aggregate.setPrescription(slots: [.day, .evening], startDay: startDay, endDay: nil)
         try aggregate.pausePrescription()
         try await repository.update(aggregate)
 

@@ -14,14 +14,10 @@ extension PrescriptionModel {
 
     func toDomain(pillTypeID: UUID) throws(DataError) -> Prescription {
         let state: PrescriptionState = try DataError.rawValue(state)
-        guard let startDayYear, let startDayMonth, let startDayDay else { throw .corruptRecord }
-        let startDay = Day(year: startDayYear, month: startDayMonth, day: startDayDay)
-        let endDay: Day?
-        switch (endDayYear, endDayMonth, endDayDay) {
-        case (nil, nil, nil): endDay = nil
-        case let (year?, month?, day?): endDay = Day(year: year, month: month, day: day)
-        default: throw .corruptRecord
+        guard let startDay = try Day.stored(year: startDayYear, month: startDayMonth, day: startDayDay) else {
+            throw .corruptRecord
         }
+        let endDay = try Day.stored(year: endDayYear, month: endDayMonth, day: endDayDay)
         return try DataError.record { () throws(DomainError) in
             try Prescription(id: id, pillTypeID: pillTypeID, slots: slots, state: state, startDay: startDay, endDay: endDay)
         }
