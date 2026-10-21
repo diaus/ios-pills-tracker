@@ -20,7 +20,7 @@ custom_rules:
   # Keep the prefixes in sync with the top-level key groups in Localizable.xcstrings.
   catalog_key_literal:
     name: "String Catalog Key Literal"
-    regex: '"(?:addPillType|blister|common|day|error|home|pillType|pillTypes|position|prescription|slot|slotChip)\.[A-Za-z.]*"'
+    regex: '"(?:addPillType|blister|common|day|error|home|pillType|pillTypes|position|prescription|slot|slotChip|widget)\.[A-Za-z.]*"'
     match_kinds:
       - string
     message: "Reference the generated String Catalog symbol (e.g. .homeTitle) instead of typing its key."

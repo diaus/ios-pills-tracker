@@ -11,6 +11,9 @@
 		AA00000000000000000000C2 /* Data in Frameworks */ = {isa = PBXBuildFile; productRef = AA00000000000000000000B2 /* Data */; };
 		AA00000000000000000000C3 /* FactoryKit in Frameworks */ = {isa = PBXBuildFile; productRef = AA00000000000000000000B3 /* FactoryKit */; };
 		AA00000000000000000000C4 /* Utils in Frameworks */ = {isa = PBXBuildFile; productRef = AA00000000000000000000B5 /* Utils */; };
+		AA00000000000000000000F1 /* Domain in Frameworks */ = {isa = PBXBuildFile; productRef = AA00000000000000000000F3 /* Domain */; };
+		AA00000000000000000000F2 /* Data in Frameworks */ = {isa = PBXBuildFile; productRef = AA00000000000000000000F4 /* Data */; };
+		AA00000000000000000000ED /* PillsTrackerWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = AA00000000000000000000E1 /* PillsTrackerWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -21,22 +24,70 @@
 			remoteGlobalIDString = 4987D443306BC13A0079A444;
 			remoteInfo = PillsTracker;
 		};
+		AA00000000000000000000EE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4987D43C306BC13A0079A444 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AA00000000000000000000E5;
+			remoteInfo = PillsTrackerWidget;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		AA00000000000000000000EC /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				AA00000000000000000000ED /* PillsTrackerWidget.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		4987D444306BC13A0079A444 /* PillsTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PillsTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4987D453306BC13C0079A444 /* PillsTrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PillsTrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA00000000000000000000E1 /* PillsTrackerWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PillsTrackerWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		AA00000000000000000000E3 /* Exceptions for "PillsTrackerWidget" folder in "PillsTrackerWidget" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = AA00000000000000000000E5 /* PillsTrackerWidget */;
+		};
+		AA00000000000000000000E4 /* Exceptions for "PillsTracker" folder in "PillsTrackerWidget" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Resources/Localizable.xcstrings,
+			);
+			target = AA00000000000000000000E5 /* PillsTrackerWidget */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		4987D446306BC13A0079A444 /* PillsTracker */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				AA00000000000000000000E4 /* Exceptions for "PillsTracker" folder in "PillsTrackerWidget" target */,
+			);
 			path = PillsTracker;
 			sourceTree = "<group>";
 		};
 		4987D456306BC13C0079A444 /* PillsTrackerTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = PillsTrackerTests;
+			sourceTree = "<group>";
+		};
+		AA00000000000000000000E2 /* PillsTrackerWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				AA00000000000000000000E3 /* Exceptions for "PillsTrackerWidget" folder in "PillsTrackerWidget" target */,
+			);
+			path = PillsTrackerWidget;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -56,6 +107,13 @@
 			files = (
 			);
 		};
+		AA00000000000000000000E7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+				AA00000000000000000000F1 /* Domain in Frameworks */,
+				AA00000000000000000000F2 /* Data in Frameworks */,
+			);
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -64,6 +122,7 @@
 			children = (
 				4987D446306BC13A0079A444 /* PillsTracker */,
 				4987D456306BC13C0079A444 /* PillsTrackerTests */,
+				AA00000000000000000000E2 /* PillsTrackerWidget */,
 				4987D445306BC13A0079A444 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -73,6 +132,7 @@
 			children = (
 				4987D444306BC13A0079A444 /* PillsTracker.app */,
 				4987D453306BC13C0079A444 /* PillsTrackerTests.xctest */,
+				AA00000000000000000000E1 /* PillsTrackerWidget.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -87,11 +147,13 @@
 				4987D440306BC13A0079A444 /* Sources */,
 				4987D441306BC13A0079A444 /* Frameworks */,
 				4987D442306BC13A0079A444 /* Resources */,
+				AA00000000000000000000EC /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				AA00000000000000000000D1 /* PBXTargetDependency */,
+				AA00000000000000000000EF /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				4987D446306BC13A0079A444 /* PillsTracker */,
@@ -128,6 +190,31 @@
 			productReference = 4987D453306BC13C0079A444 /* PillsTrackerTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		AA00000000000000000000E5 /* PillsTrackerWidget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AA00000000000000000000E9 /* Build configuration list for PBXNativeTarget "PillsTrackerWidget" */;
+			buildPhases = (
+				AA00000000000000000000E6 /* Sources */,
+				AA00000000000000000000E7 /* Frameworks */,
+				AA00000000000000000000E8 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				AA00000000000000000000F5 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				AA00000000000000000000E2 /* PillsTrackerWidget */,
+			);
+			name = PillsTrackerWidget;
+			packageProductDependencies = (
+				AA00000000000000000000F3 /* Domain */,
+				AA00000000000000000000F4 /* Data */,
+			);
+			productName = PillsTrackerWidget;
+			productReference = AA00000000000000000000E1 /* PillsTrackerWidget.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -144,6 +231,9 @@
 					4987D452306BC13C0079A444 = {
 						CreatedOnToolsVersion = 27.0;
 						TestTargetID = 4987D443306BC13A0079A444;
+					};
+					AA00000000000000000000E5 = {
+						CreatedOnToolsVersion = 27.0;
 					};
 				};
 			};
@@ -170,6 +260,7 @@
 			targets = (
 				4987D443306BC13A0079A444 /* PillsTracker */,
 				4987D452306BC13C0079A444 /* PillsTrackerTests */,
+				AA00000000000000000000E5 /* PillsTrackerWidget */,
 			);
 		};
 /* End PBXProject section */
@@ -181,6 +272,11 @@
 			);
 		};
 		4987D451306BC13C0079A444 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
+		AA00000000000000000000E8 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			files = (
 			);
@@ -198,6 +294,11 @@
 			files = (
 			);
 		};
+		AA00000000000000000000E6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -210,9 +311,80 @@
 			isa = PBXTargetDependency;
 			productRef = AA00000000000000000000B4 /* SwiftLintBuildToolPlugin */;
 		};
+		AA00000000000000000000EF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AA00000000000000000000E5 /* PillsTrackerWidget */;
+			targetProxy = AA00000000000000000000EE /* PBXContainerItemProxy */;
+		};
+		AA00000000000000000000F5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = AA00000000000000000000F6 /* SwiftLintBuildToolPlugin */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		AA00000000000000000000EA /* Debug configuration for PBXNativeTarget "PillsTrackerWidget" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = PillsTrackerWidget/PillsTrackerWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CP7QJ3G8V3;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PillsTrackerWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = PillsTracker;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.andrew.PillsTracker.Widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		AA00000000000000000000EB /* Release configuration for PBXNativeTarget "PillsTrackerWidget" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = PillsTrackerWidget/PillsTrackerWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CP7QJ3G8V3;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PillsTrackerWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = PillsTracker;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.andrew.PillsTracker.Widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		4987D463306BC13C0079A444 /* Debug configuration for PBXProject "PillsTracker" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -449,6 +621,14 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		AA00000000000000000000E9 /* Build configuration list for PBXNativeTarget "PillsTrackerWidget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA00000000000000000000EA /* Debug configuration for PBXNativeTarget "PillsTrackerWidget" */,
+				AA00000000000000000000EB /* Release configuration for PBXNativeTarget "PillsTrackerWidget" */,
+			);
+			defaultConfigurationName = Release;
+		};
 		4987D43F306BC13A0079A444 /* Build configuration list for PBXProject "PillsTracker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -510,6 +690,19 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		AA00000000000000000000F3 /* Domain */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Domain;
+		};
+		AA00000000000000000000F4 /* Data */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Data;
+		};
+		AA00000000000000000000F6 /* SwiftLintBuildToolPlugin */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AA00000000000000000000A4 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */;
+			productName = "plugin:SwiftLintBuildToolPlugin";
+		};
 		AA00000000000000000000B1 /* Domain */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Domain;
