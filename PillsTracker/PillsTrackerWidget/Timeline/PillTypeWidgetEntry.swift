@@ -12,7 +12,7 @@ nonisolated struct PillTypeWidgetEntry: TimelineEntry {
     /// Where tapping the widget opens the app: the shown Pill Type's Blister screen, dimmed or not, or Home
     /// with how to choose a Pill Type in the empty state, which a deleted Pill Type shows too.
     var tap: WidgetTap {
-        guard let pillTypeID, content != .empty else { return .configure }
+        guard let pillTypeID, content != .noPillType else { return .configure }
         return .blister(pillTypeID: pillTypeID)
     }
 }
