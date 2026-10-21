@@ -5,8 +5,9 @@ import Foundation
 import Observation
 import SwiftUI
 
-/// Renames a Pill Type, changes its grid shape (only while the Current Blister is empty) or deletes it.
-/// Rules live in Domain (`PillTypeAggregate`); this only drives the form and persists.
+/// Renames a Pill Type, sets or clears its Abbreviation, changes its grid shape (only while the Current
+/// Blister is empty) or deletes it. Rules live in Domain (`PillTypeAggregate`); this only drives the form
+/// and persists.
 @MainActor @Observable
 final class EditPillTypeViewModel {
     @ObservationIgnored @Injected(\.updatePillType) private var updatePillType
@@ -15,6 +16,8 @@ final class EditPillTypeViewModel {
     /// The Pill Type as the sheet opened on; the form starts from it.
     let aggregate: PillTypeAggregate
     var name: String
+    /// Empty means not set.
+    var abbreviation: String
     var rows: Int
     var columns: Int
     /// The rule the form broke; `PillTypeFormFields` shows it under its field.
@@ -25,19 +28,22 @@ final class EditPillTypeViewModel {
     init(aggregate: PillTypeAggregate) {
         self.aggregate = aggregate
         name = aggregate.pillType.name
+        abbreviation = aggregate.pillType.abbreviation ?? ""
         rows = aggregate.pillType.shape.rows
         columns = aggregate.pillType.shape.columns
     }
 
     var isShapeLocked: Bool { !aggregate.canChangeShape }
 
-    /// Applies the rename and, when it changed, the new shape. Returns true on success so the sheet can dismiss.
+    /// Applies the rename, the Abbreviation and, when it changed, the new shape. Returns true on success so
+    /// the sheet can dismiss.
     func save() async -> Bool {
         validationError = nil
-        let name = name, rows = rows, columns = columns
+        let name = name, abbreviation = abbreviation, rows = rows, columns = columns
         return await persist {
             try await updatePillType(pillTypeID: aggregate.id) { aggregate throws(DomainError) in
                 try aggregate.rename(name)
+                aggregate.setAbbreviation(abbreviation)
                 let shape = try GridShape(rows: rows, columns: columns)
                 if shape != aggregate.pillType.shape {
                     try aggregate.changeShape(shape)
