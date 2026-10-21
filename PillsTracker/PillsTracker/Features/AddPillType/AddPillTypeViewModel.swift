@@ -11,6 +11,8 @@ final class AddPillTypeViewModel {
     @ObservationIgnored @Injected(\.pillTypeRepository) private var repository
 
     var name = ""
+    /// Empty means not set.
+    var abbreviation = ""
     var rows = 2
     var columns = 5
     /// Slots of the Prescription to create with the Pill Type; none means no Prescription.
@@ -32,7 +34,7 @@ final class AddPillTypeViewModel {
         validationError = nil
         var aggregate: PillTypeAggregate
         do {
-            aggregate = try PillTypeAggregate.new(name: name, rows: rows, columns: columns, createdAt: Date())
+            aggregate = try PillTypeAggregate.new(name: name, abbreviation: abbreviation, rows: rows, columns: columns, createdAt: Date())
             if !selectedSlots.isEmpty {
                 try aggregate.setPrescription(slots: selectedSlots, startDay: selectedDays.startDay, endDay: selectedDays.endDay)
             }

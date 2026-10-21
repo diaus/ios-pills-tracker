@@ -1,6 +1,28 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "addPillType.abbreviation" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abbreviation (optional)"
+          }
+        }
+      }
+    },
+    "addPillType.abbreviation.footer" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A short form of the name, shown where the name doesn't fit, such as on the Lock Screen. If empty, the first two letters of the name are used."
+          }
+        }
+      }
+    },
     "addPillType.columns" : {
       "extractionState" : "manual",
       "localizations" : {
