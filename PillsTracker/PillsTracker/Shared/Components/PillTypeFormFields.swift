@@ -1,11 +1,13 @@
 import Domain
 import SwiftUI
 
-/// Name and grid shape sections shared by the Add Pill Type and Pill Type sheets.
+/// Name, Abbreviation and grid shape sections shared by the Add Pill Type and Pill Type sheets.
 /// Places a validation error inline under the field it belongs to; any other error (for example a
 /// locked shape) shows under both steppers.
 struct PillTypeFormFields: View {
     @Binding var name: String
+    /// Empty means not set; Domain stores a blank Abbreviation as not set.
+    @Binding var abbreviation: String
     @Binding var rows: Int
     @Binding var columns: Int
     var error: DomainError?
@@ -18,6 +20,13 @@ struct PillTypeFormFields: View {
             TextField(String(localized: .addPillTypeName), text: $name)
                 .textInputAutocapitalization(.words)
             fieldError(error == .emptyName)
+        }
+
+        Section {
+            TextField(String(localized: .addPillTypeAbbreviation), text: $abbreviation)
+                .autocorrectionDisabled()
+        } footer: {
+            Text(.addPillTypeAbbreviationFooter)
         }
 
         Section {
@@ -65,20 +74,29 @@ struct PillTypeFormFields: View {
 
 #Preview {
     @Previewable @State var name = "Vitamin D"
-    @Previewable @State var rows = 3
-    @Previewable @State var columns = 4
-    Form {
-        PillTypeFormFields(name: $name, rows: $rows, columns: $columns, shapeFooter: .pillTypeShapeFooter)
-    }
-}
-
-#Preview("Error, shape locked") {
-    @Previewable @State var name = ""
+    @Previewable @State var abbreviation = "D3"
     @Previewable @State var rows = 3
     @Previewable @State var columns = 4
     Form {
         PillTypeFormFields(
             name: $name,
+            abbreviation: $abbreviation,
+            rows: $rows,
+            columns: $columns,
+            shapeFooter: .pillTypeShapeFooter
+        )
+    }
+}
+
+#Preview("Error, shape locked") {
+    @Previewable @State var name = ""
+    @Previewable @State var abbreviation = ""
+    @Previewable @State var rows = 3
+    @Previewable @State var columns = 4
+    Form {
+        PillTypeFormFields(
+            name: $name,
+            abbreviation: $abbreviation,
             rows: $rows,
             columns: $columns,
             error: .emptyName,
