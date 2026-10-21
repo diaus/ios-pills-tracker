@@ -15,6 +15,35 @@ struct DayTests {
         #expect(Day(date: date, calendar: calendar) == Day(year: 2026, month: 3, day: 9))
     }
 
+    @Test func todayIsThePreviousDayUntilTheRollover() {
+        let calendar = Self.utc
+        // 2026-03-10 at 02:59 and at 03:00 UTC.
+        let beforeRollover = Date(timeIntervalSince1970: 1_773_111_540)
+        let atRollover = Date(timeIntervalSince1970: 1_773_111_600)
+
+        #expect(Day.current(at: beforeRollover, calendar: calendar) == Day(year: 2026, month: 3, day: 9))
+        #expect(Day.current(at: atRollover, calendar: calendar) == Day(year: 2026, month: 3, day: 10))
+    }
+
+    @Test func nextRolloverIsTheComingThreeOClock() {
+        let calendar = Self.utc
+        // 2026-03-10 at 01:30, 03:00 and 22:00 UTC.
+        let night = Date(timeIntervalSince1970: 1_773_106_200)
+        let atRollover = Date(timeIntervalSince1970: 1_773_111_600)
+        let evening = Date(timeIntervalSince1970: 1_773_180_000)
+        let nextMorning = Date(timeIntervalSince1970: 1_773_198_000)
+
+        #expect(Day.nextRollover(after: night, calendar: calendar) == atRollover)
+        #expect(Day.nextRollover(after: atRollover, calendar: calendar) == nextMorning)
+        #expect(Day.nextRollover(after: evening, calendar: calendar) == nextMorning)
+    }
+
+    private static var utc: Calendar {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = .gmt
+        return calendar
+    }
+
     @Test func ordersChronologically() {
         let days = [
             Day(year: 2026, month: 1, day: 2),

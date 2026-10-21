@@ -14,7 +14,7 @@ public enum PillsModelContainer {
         return try make(schema: schema, configuration: ModelConfiguration(schema: schema, url: url))
     }
 
-    private static func make(schema: Schema, configuration: ModelConfiguration) throws -> ModelContainer {
+    static func make(schema: Schema, configuration: ModelConfiguration) throws -> ModelContainer {
         try ModelContainer(for: schema, migrationPlan: PillsMigrationPlan.self, configurations: [configuration])
     }
 }
