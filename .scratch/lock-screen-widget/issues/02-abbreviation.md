@@ -12,5 +12,5 @@
 - [x] Data: schema V3 adds the optional field, with a lightweight migration from V2; existing Pill Types have no Abbreviation
 - [x] Data tests: the Abbreviation round-trips; a V2 store migrates with every Abbreviation not set
 - [x] Add Pill Type and Edit Pill Type screens have an optional Abbreviation text field; new strings added with `scripts/xcstrings.py`
-- [ ] UI checked on iPhone 16 (iOS 18.5): add a Pill Type with and without an Abbreviation, edit it, clear it
-- [ ] `scripts/check.sh` passes and `build_sim` builds with zero warnings
+- [x] UI checked on iPhone 16 (iOS 18.5): add a Pill Type with and without an Abbreviation, edit it, clear it
+- [x] `scripts/check.sh` passes and `build_sim` builds with zero warnings
