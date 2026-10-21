@@ -55,5 +55,5 @@ struct AddPillTypeSheet: View {
 }
 
 #Preview {
-    AddPillTypeSheet(today: Day(date: .now))
+    AddPillTypeSheet(today: Day.current)
 }

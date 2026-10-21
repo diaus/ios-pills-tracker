@@ -7,9 +7,10 @@ import SwiftUI
 import Utils
 
 /// Today's progress of every Pill Type, loaded once for the whole app and kept current: it reloads
-/// after every write and when "today" changes. The one owner of "today" (ADR 0001): screens read the
-/// Day from here and pass it to the use cases. Home and the Pill Types list show views of it; Blister
-/// observes its Selected Day's progress through here, kept current the same way.
+/// after every write and when Today changes. The one holder of Today in the app (ADR 0001, 0004):
+/// it reads `Day.current`, and screens read the Day from here and pass it to the use cases. Home and
+/// the Pill Types list show views of it; Blister observes its Selected Day's progress through here,
+/// kept current the same way.
 @MainActor @Observable
 final class DailyProgressModel {
     enum State {
@@ -24,7 +25,7 @@ final class DailyProgressModel {
     @ObservationIgnored @Injected(\.dataChangeNotifier) private var notifier
 
     private(set) var state = State.loading
-    private(set) var today = DailyProgressModel.currentDay()
+    private(set) var today = Day.current
     /// Set by `preview`: `state` is fixed and `observeProgress(on:)` serves it instead of loading.
     private var isFixed = false
 
@@ -33,10 +34,12 @@ final class DailyProgressModel {
         if case .loaded(let progress) = state { progress } else { nil }
     }
 
-    /// Loads today's progress into `state`, then reloads it after every write until the calling task
-    /// is cancelled.
+    /// Loads today's progress into `state`, then reloads it after every write and refreshes Today at
+    /// every rollover, until the calling task is cancelled.
     func run() async {
+        async let rollovers: Void = refreshingTodayAtRollovers()
         await reloadingAfterWrites { await self.loadToday() }
+        await rollovers
     }
 
     /// Loads `day`'s progress and hands it to `deliver`, then again after every write until the calling
@@ -57,9 +60,9 @@ final class DailyProgressModel {
         }
     }
 
-    /// Re-evaluates "today" and reloads when the Day rolled over or the last load failed.
+    /// Re-evaluates Today and reloads when the Day rolled over or the last load failed.
     func refreshToday() async {
-        let current = Self.currentDay()
+        let current = Day.current
         let hasFailed = if case .failed = state { true } else { false }
         guard current != today || hasFailed else { return }
         today = current
@@ -76,16 +79,27 @@ final class DailyProgressModel {
         }
     }
 
+    /// Refreshes Today at each next 03:00 while the app stays open, until the calling task is cancelled.
+    /// The significant-time-change notification fires at midnight, not at the rollover (ADR 0004).
+    private func refreshingTodayAtRollovers() async {
+        let rollover = DateComponents(hour: Day.rolloverHour, minute: 0, second: 0)
+        // Recomputed after every wake-up: one that a clock or time zone change put before 03:00 waits again.
+        while let next = Calendar.current.nextDate(after: .now, matching: rollover, matchingPolicy: .nextTime) {
+            do {
+                try await Task.sleep(for: .seconds(next.timeIntervalSinceNow))
+            } catch {
+                return
+            }
+            await refreshToday()
+        }
+    }
+
     private func loadToday() async {
         do {
             state = .loaded(try await dailyProgress(day: today))
         } catch {
             state = .failed(error.userMessage)
         }
-    }
-
-    private static func currentDay() -> Day {
-        Day(date: .now, calendar: .current)
     }
 }
 
