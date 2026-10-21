@@ -13,7 +13,8 @@ public actor PillTypeRepositoryLive: PillTypeRepository, ModelActor {
     public nonisolated let modelExecutor: any ModelExecutor
     private let notifier: ChangeNotifier
 
-    public init(modelContainer: ModelContainer, notifier: ChangeNotifier) {
+    /// A repository whose writes nobody observes, such as the widget extension's reader, leaves out `notifier`.
+    public init(modelContainer: ModelContainer, notifier: ChangeNotifier = ChangeNotifier()) {
         self.modelContainer = modelContainer
         modelExecutor = DefaultSerialModelExecutor(modelContext: ModelContext(modelContainer))
         self.notifier = notifier
