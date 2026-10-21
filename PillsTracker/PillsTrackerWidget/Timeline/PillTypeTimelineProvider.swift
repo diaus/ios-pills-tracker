@@ -34,27 +34,28 @@ nonisolated struct PillTypeTimelineProvider: AppIntentTimelineProvider {
     /// One entry per date, for the Pill Type `pillTypeID`: no Pill Type when it's nil or deleted, and
     /// unreadable when the store can't be read.
     private func entries(for pillTypeID: UUID?, at dates: [Date]) async -> [PillTypeWidgetEntry] {
+        guard let pillTypeID else {
+            return dates.map { PillTypeWidgetEntry(date: $0, pillTypeID: nil, content: .noPillType) }
+        }
+        // One fresh read of the store for all of this call's entries.
+        let repository = Result { try WidgetStore.repository() }
         var entries: [PillTypeWidgetEntry] = []
         for date in dates {
             let content: PillTypeWidgetContent
-            if let pillTypeID {
-                do {
-                    content = PillTypeWidgetContent(progress: try await progress(of: pillTypeID, on: Day.current(at: date, calendar: .current)))
-                } catch {
-                    content = .unreadable
-                }
-            } else {
-                content = .noPillType
+            do {
+                let day = Day.current(at: date, calendar: .current)
+                content = PillTypeWidgetContent(progress: try await progress(of: pillTypeID, on: day, in: repository.get()))
+            } catch {
+                content = .unreadable
             }
             entries.append(PillTypeWidgetEntry(date: date, pillTypeID: pillTypeID, content: content))
         }
         return entries
     }
 
-    /// The Pill Type's progress on `day`, from a fresh read of the store; nil when there's no such Pill Type.
-    private func progress(of pillTypeID: UUID, on day: Day) async throws -> PillTypeProgress? {
-        guard let repository = try WidgetStore.repository(),
-              let aggregate = try await repository.fetch(id: pillTypeID) else { return nil }
+    /// The Pill Type's progress on `day`; nil when there's no such Pill Type, or no store yet.
+    private func progress(of pillTypeID: UUID, on day: Day, in repository: (any PillTypeRepository)?) async throws -> PillTypeProgress? {
+        guard let repository, let aggregate = try await repository.fetch(id: pillTypeID) else { return nil }
         let intakes = try await repository.intakes(on: day, pillTypeID: pillTypeID)
         return PillTypeProgress(aggregate: aggregate, day: day, intakes: intakes)
     }
