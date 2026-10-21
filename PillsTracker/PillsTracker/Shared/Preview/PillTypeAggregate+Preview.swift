@@ -24,7 +24,7 @@ extension PillTypeAggregate {
         )
         let prescription = slots.isEmpty
             ? nil
-            : try! Prescription(pillTypeID: pillType.id, slots: slots, state: prescriptionState, startDay: Day(date: .now).adding(days: -30))
+            : try! Prescription(pillTypeID: pillType.id, slots: slots, state: prescriptionState, startDay: Day.current.adding(days: -30))
         return PillTypeAggregate(pillType: pillType, blisters: [blister], prescription: prescription)
     }
 
