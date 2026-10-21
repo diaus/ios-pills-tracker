@@ -21,8 +21,7 @@ public extension PillsModelContainer {
     /// The store at `url` opened read-only, or nil when there is none, in which case nothing is created.
     internal static func makeReader(existingStoreAt url: URL) throws -> ModelContainer? {
         guard FileManager.default.fileExists(atPath: url.path(percentEncoded: false)) else { return nil }
-        let schema = Schema(versionedSchema: PillsSchemaV3.self)
-        return try make(schema: schema, configuration: ModelConfiguration(schema: schema, url: url, allowsSave: false))
+        return try make(configuration: ModelConfiguration(schema: schema, url: url, allowsSave: false))
     }
 }
 
