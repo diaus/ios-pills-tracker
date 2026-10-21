@@ -1,8 +1,11 @@
 import Foundation
 
-/// A local calendar day. Progress is computed per Day and rolls over at local midnight.
-/// Stored explicitly on an Intake; never derived from an instant at read time (ADR 0001).
+/// A local calendar day. Progress is computed per Day. Stored explicitly on an Intake; never derived
+/// from an instant at read time (ADR 0001). Only Today, `current`, rolls over at 03:00 (ADR 0004).
 public struct Day: Hashable, Comparable, Sendable, Codable {
+    /// The local hour Today rolls over at: before it, Today is still the previous calendar Day.
+    public static let rolloverHour = 3
+
     public let year: Int
     public let month: Int
     public let day: Int
@@ -20,6 +23,15 @@ public struct Day: Hashable, Comparable, Sendable, Codable {
             month: calendar.component(.month, from: date),
             day: calendar.component(.day, from: date)
         )
+    }
+
+    /// Today: the calendar Day it is now on the device, or the previous one before `rolloverHour`.
+    /// Use cases never read it; they take the Day as a parameter (ADR 0004).
+    public static var current: Day {
+        let calendar = Calendar.current
+        let now = Date.now
+        guard calendar.component(.hour, from: now) < rolloverHour else { return Day(date: now, calendar: calendar) }
+        return Day(date: calendar.date(byAdding: .day, value: -1, to: now)!, calendar: calendar)
     }
 
     /// Whole calendar days from `earlier` to this Day; negative when `earlier` is in fact later.
