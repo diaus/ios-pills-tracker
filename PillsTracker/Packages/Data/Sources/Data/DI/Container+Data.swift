@@ -4,11 +4,11 @@ import SwiftData
 import Utils
 
 public extension Container {
-    /// The single on-disk `ModelContainer`.
+    /// The single on-disk `ModelContainer`, in the App Group the widget extension shares.
     var modelContainer: Factory<ModelContainer> {
         self {
             do {
-                return try PillsModelContainer.make()
+                return try PillsModelContainer.makeInAppGroup()
             } catch {
                 fatalError("Could not create the ModelContainer: \(error)")
             }
