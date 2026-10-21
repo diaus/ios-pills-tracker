@@ -5,7 +5,7 @@ import Foundation
 extension PillTypeProgress {
     /// Today's progress of `aggregate`, with an Intake recorded for each of `done`.
     static func preview(_ aggregate: PillTypeAggregate, done: Set<Slot> = []) -> PillTypeProgress {
-        let day = Day(date: .now, calendar: .current)
+        let day = Day.current
         let intakes = done.map { slot in
             Intake(
                 pillTypeID: aggregate.id,
