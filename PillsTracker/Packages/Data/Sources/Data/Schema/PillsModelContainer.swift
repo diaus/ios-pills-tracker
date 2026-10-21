@@ -3,7 +3,7 @@ import SwiftData
 
 /// Builds the app's `ModelContainer` for the current schema version, migrating older stores.
 public enum PillsModelContainer {
-    public static func make(inMemory: Bool = false) throws -> ModelContainer {
+    public static func make(inMemory: Bool) throws -> ModelContainer {
         let schema = Schema(versionedSchema: PillsSchemaV3.self)
         return try make(schema: schema, configuration: ModelConfiguration(schema: schema, isStoredInMemoryOnly: inMemory))
     }
