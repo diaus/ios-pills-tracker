@@ -804,6 +804,17 @@
         }
       }
     },
+    "home.widgetHelp" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To choose a Pill Type for this widget, touch and hold the Lock Screen, tap Customize, then tap the widget."
+          }
+        }
+      }
+    },
     "pillType.delete" : {
       "extractionState" : "manual",
       "localizations" : {
