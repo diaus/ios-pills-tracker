@@ -23,6 +23,38 @@ struct SchemaMigrationTests {
         #expect(prescription.slots == [.morning, .evening])
     }
 
+    @Test func pillTypesStoredBeforeAbbreviationExistedHaveNoAbbreviation() async throws {
+        let directory = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let url = directory.appending(path: "Pills.store")
+        let names = ["Aspirin", "Vitamin D"]
+        try writeV2Store(at: url, names: names)
+
+        let repository = PillTypeRepositoryLive(modelContainer: try PillsModelContainer.make(url: url), notifier: ChangeNotifier())
+        let pillTypes = try await repository.fetchAll().map(\.pillType)
+
+        #expect(pillTypes.map(\.name) == names)
+        #expect(pillTypes.allSatisfy { $0.abbreviation == nil })
+    }
+
+    /// A store as the version 2 app left it: Pill Types named `names`, created in that order.
+    private func writeV2Store(at url: URL, names: [String]) throws {
+        let schema = Schema(versionedSchema: PillsSchemaV2.self)
+        let container = try ModelContainer(for: schema, configurations: [ModelConfiguration(schema: schema, url: url)])
+        let context = ModelContext(container)
+        for (offset, name) in names.enumerated() {
+            let pillType = PillsSchemaV2.PillTypeModel(
+                id: UUID(), name: name, rows: 1, columns: 1, createdAt: Date(timeIntervalSince1970: 1_000 + Double(offset))
+            )
+            context.insert(pillType)
+            pillType.blisters = [
+                PillsSchemaV2.BlisterModel(id: UUID(), rows: 1, columns: 1, state: BlisterState.current.rawValue, presentPositions: []),
+            ]
+        }
+        try context.save()
+    }
+
     /// A store as the version 1 app left it: one Pill Type with a Prescription.
     private func writeV1Store(at url: URL, pillTypeID: UUID, createdAt: Date) throws {
         let schema = Schema(versionedSchema: PillsSchemaV1.self)

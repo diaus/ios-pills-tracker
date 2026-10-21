@@ -9,9 +9,3 @@ public enum PillsSchemaV2: VersionedSchema {
         [PillTypeModel.self, BlisterModel.self, PrescriptionModel.self, IntakeModel.self]
     }
 }
-
-/// Current-version aliases used by the rest of the Data package.
-public typealias PillTypeModel = PillsSchemaV2.PillTypeModel
-public typealias BlisterModel = PillsSchemaV2.BlisterModel
-public typealias PrescriptionModel = PillsSchemaV2.PrescriptionModel
-public typealias IntakeModel = PillsSchemaV2.IntakeModel
