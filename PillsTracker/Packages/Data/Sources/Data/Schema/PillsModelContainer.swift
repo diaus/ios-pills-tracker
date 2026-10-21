@@ -15,6 +15,12 @@ public enum PillsModelContainer {
         try make(configuration: ModelConfiguration(schema: schema, url: url))
     }
 
+    /// The store at `url` opened read-only, or nil when there is none, in which case nothing is created.
+    static func makeReader(existingStoreAt url: URL) throws -> ModelContainer? {
+        guard FileManager.default.fileExists(atPath: url.path(percentEncoded: false)) else { return nil }
+        return try make(configuration: ModelConfiguration(schema: schema, url: url, allowsSave: false))
+    }
+
     static func make(configuration: ModelConfiguration) throws -> ModelContainer {
         try ModelContainer(for: schema, migrationPlan: PillsMigrationPlan.self, configurations: [configuration])
     }
