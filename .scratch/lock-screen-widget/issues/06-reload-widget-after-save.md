@@ -6,7 +6,8 @@
 
 **Status:** ready-for-agent
 
-- [ ] `WidgetCenter.shared.reloadAllTimelines()` runs after every successful repository save, in the same place the `ChangeNotifier` signal fires, not in each screen
-- [ ] Domain and Data stay free of WidgetKit; the reload is injected or attached at the app's DI layer
+- [x] `WidgetCenter.shared.reloadAllTimelines()` runs after every successful repository save, in the same place the `ChangeNotifier` signal fires, not in each screen
+- [x] Domain and Data stay free of WidgetKit; the reload is injected or attached at the app's DI layer
 - [ ] Checked on iPhone 16 (iOS 18.5): Consume, Undo, pausing and resuming the Prescription, and editing the Abbreviation each show up on the Lock Screen widget
 - [ ] `scripts/check.sh` passes and `build_sim` builds with zero warnings
+  - `scripts/check.sh` passes; `build_sim` is left to the merger. `Container+AutoRegister.swift` type-checks with no warnings under the app's settings (Swift 6, MainActor default isolation, approachable concurrency) against the iOS 18 simulator SDK.
