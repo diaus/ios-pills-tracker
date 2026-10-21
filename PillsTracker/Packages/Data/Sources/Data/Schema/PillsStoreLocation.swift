@@ -30,11 +30,11 @@ public enum PillsStoreLocation {
 
     /// Moves the store at `oldURL`, with its `-wal` and `-shm` files, to `newURL`. Does nothing when there is
     /// no store at `oldURL`, or already one at `newURL`: then the store at `newURL` wins and the old one is left alone.
+    /// `newURL`'s folder must exist.
     static func moveStore(from oldURL: URL, to newURL: URL) throws {
         let fileManager = FileManager.default
         guard fileManager.fileExists(atPath: oldURL.path(percentEncoded: false)),
               !fileManager.fileExists(atPath: newURL.path(percentEncoded: false)) else { return }
-        try fileManager.createDirectory(at: newURL.deletingLastPathComponent(), withIntermediateDirectories: true)
         // The store goes last: if a move is cut short, the App Group still has no store, and the next launch finishes it.
         for suffix in ["-wal", "-shm", ""] {
             let oldFile = file(oldURL, suffix)
@@ -43,7 +43,8 @@ public enum PillsStoreLocation {
         }
     }
 
-    private static func file(_ store: URL, _ suffix: String) -> URL {
+    /// The file next to `store` whose name adds `suffix`, such as its `-wal` file.
+    static func file(_ store: URL, _ suffix: String) -> URL {
         store.deletingLastPathComponent().appending(path: store.lastPathComponent + suffix)
     }
 }
