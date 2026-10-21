@@ -1,30 +1,6 @@
 import Foundation
 import SwiftData
 
-public extension PillsModelContainer {
-    /// The on-disk container the app and the widget extension share: the store in the App Group container (ADR 0003).
-    /// A store an earlier build left in Application Support is moved there first, so its data carries over.
-    static func makeInAppGroup() throws -> ModelContainer {
-        let storeURL = try PillsStoreLocation.appGroupStoreURL()
-        try FileManager.default.createDirectory(at: storeURL.deletingLastPathComponent(), withIntermediateDirectories: true)
-        try PillsStoreLocation.moveStore(from: PillsStoreLocation.applicationSupportStoreURL, to: storeURL)
-        return try make(url: storeURL)
-    }
-
-    /// The App Group store opened read-only, for the widget extension, or nil while the app hasn't created it.
-    /// Only the app creates the store: an empty one a reader created first would win over the store the app
-    /// still has to move out of Application Support. The widget's own sandbox has no old store to move.
-    static func makeReaderInAppGroup() throws -> ModelContainer? {
-        try makeReader(existingStoreAt: PillsStoreLocation.appGroupStoreURL())
-    }
-
-    /// The store at `url` opened read-only, or nil when there is none, in which case nothing is created.
-    internal static func makeReader(existingStoreAt url: URL) throws -> ModelContainer? {
-        guard FileManager.default.fileExists(atPath: url.path(percentEncoded: false)) else { return nil }
-        return try make(configuration: ModelConfiguration(schema: schema, url: url, allowsSave: false))
-    }
-}
-
 /// Where the on-disk store lives: the App Group container the app and the widget extension share (ADR 0003).
 public enum PillsStoreLocation {
     /// The App Group the app and the widget extension share. Each target's `.entitlements` file lists this same identifier.
