@@ -23,6 +23,31 @@ struct PillTypeRepositoryLiveTests {
         #expect(fetched == aggregate)
     }
 
+    @Test func abbreviationRoundTrips() async throws {
+        let (repository, _) = try makeRepository()
+        let aggregate = try PillTypeAggregate.new(name: "Aspirin", abbreviation: "ASA", rows: 1, columns: 1, createdAt: Date(timeIntervalSince1970: 1_000))
+
+        try await repository.create(aggregate)
+        let fetched = try #require(try await repository.fetch(id: aggregate.id))
+
+        #expect(fetched.pillType.abbreviation == "ASA")
+    }
+
+    @Test func updateStoresAndClearsTheAbbreviation() async throws {
+        let (repository, _) = try makeRepository()
+        var aggregate = try PillTypeAggregate.new(name: "Aspirin", rows: 1, columns: 1, createdAt: Date(timeIntervalSince1970: 1_000))
+        try await repository.create(aggregate)
+
+        aggregate.setAbbreviation("ASA")
+        try await repository.update(aggregate)
+        #expect(try await repository.fetch(id: aggregate.id)?.pillType.abbreviation == "ASA")
+
+        aggregate.setAbbreviation("")
+        try await repository.update(aggregate)
+        let fetched = try #require(try await repository.fetch(id: aggregate.id))
+        #expect(fetched.pillType.abbreviation == nil)
+    }
+
     @Test func eachBlisterKeepsItsOwnShape() async throws {
         let (repository, _) = try makeRepository()
         var aggregate = try PillTypeAggregate.new(name: "Aspirin", rows: 2, columns: 5, createdAt: Date(timeIntervalSince1970: 1_000))
