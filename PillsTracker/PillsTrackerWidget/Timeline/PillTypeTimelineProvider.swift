@@ -6,12 +6,12 @@ import WidgetKit
 /// with the Pill Type's progress for what Today is at that moment (ADR 0004).
 nonisolated struct PillTypeTimelineProvider: AppIntentTimelineProvider {
     func placeholder(in context: Context) -> PillTypeWidgetEntry {
-        PillTypeWidgetEntry(date: .now, content: .sample)
+        PillTypeWidgetEntry(date: .now, pillTypeID: nil, content: .sample)
     }
 
     func snapshot(for configuration: PillTypeWidgetIntent, in context: Context) async -> PillTypeWidgetEntry {
         if context.isPreview, configuration.pillType == nil {
-            return PillTypeWidgetEntry(date: .now, content: .sample)
+            return PillTypeWidgetEntry(date: .now, pillTypeID: nil, content: .sample)
         }
         return await entries(for: configuration.pillType?.id, at: [.now])[0]
     }
@@ -31,7 +31,7 @@ nonisolated struct PillTypeTimelineProvider: AppIntentTimelineProvider {
             if let pillTypeID {
                 progress = try? await self.progress(of: pillTypeID, on: Day.current(at: date, calendar: .current))
             }
-            entries.append(PillTypeWidgetEntry(date: date, content: PillTypeWidgetContent(progress: progress)))
+            entries.append(PillTypeWidgetEntry(date: date, pillTypeID: pillTypeID, content: PillTypeWidgetContent(progress: progress)))
         }
         return entries
     }

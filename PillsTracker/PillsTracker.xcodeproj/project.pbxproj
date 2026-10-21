@@ -52,6 +52,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		AA00000000000000000005E1 /* Exceptions for "PillsTracker" folder in "PillsTracker" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 4987D443306BC13A0079A444 /* PillsTracker */;
+		};
 		AA00000000000000000000E3 /* Exceptions for "PillsTrackerWidget" folder in "PillsTrackerWidget" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -71,6 +78,7 @@
 			membershipExceptions = (
 				Configuration/PillTypeChoices.swift,
 				Timeline/PillTypeWidgetContent.swift,
+				Timeline/PillTypeWidgetEntry.swift,
 			);
 			target = 4987D452306BC13C0079A444 /* PillsTrackerTests */;
 		};
@@ -80,6 +88,7 @@
 		4987D446306BC13A0079A444 /* PillsTracker */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
+				AA00000000000000000005E1 /* Exceptions for "PillsTracker" folder in "PillsTracker" target */,
 				AA00000000000000000000E4 /* Exceptions for "PillsTracker" folder in "PillsTrackerWidget" target */,
 			);
 			path = PillsTracker;
@@ -528,6 +537,7 @@
 				DEVELOPMENT_TEAM = CP7QJ3G8V3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PillsTracker/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -561,6 +571,7 @@
 				DEVELOPMENT_TEAM = CP7QJ3G8V3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PillsTracker/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

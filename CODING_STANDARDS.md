@@ -12,7 +12,7 @@ Judgement calls for reviewing a diff. Tooling already enforces the mechanical ru
     - `ValueObjects/`: a value without an ID, equal by its fields (`Day`, `GridShape`, `Slot`).
     - `Aggregates/`: the cluster that enforces the rules over its entities; repositories load and store it as one unit.
     - `ReadModels/`: computed from aggregates for a screen, never stored (`PillTypeProgress`).
-  - Data: `Repositories/` (the concrete repositories only), `Infrastructure/` (generic SwiftData helpers the repositories share), `Mapping/` (model ↔ domain), `Schema/V<n>/`, `DI/`, `Errors/`.
+  - Data: `Repositories/` (the concrete repositories only), `Infrastructure/` (generic SwiftData helpers the repositories share), `Mapping/` (model ↔ domain), `Schema/V<n>/`, `DI/`, `Errors/`, `WidgetTap/` (the URLs the widget opens the app with: shared by both, and not domain language).
   - Utils: one folder per topic, e.g. `Concurrency/`.
   - App: `App/`, `Composition/`, `Features/<Feature>/` (a view and its view model), `Shared/{Components,Extensions,Modifiers}/`.
   Mixed folders get split. Repositories and helper infrastructure don't share a folder.
