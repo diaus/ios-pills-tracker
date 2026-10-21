@@ -6,15 +6,25 @@
 
 **Status:** ready-for-agent
 
-- [ ] New widget extension target sharing the App Group, deployment target iOS 18, linking Domain and Data
-- [ ] `AppIntentConfiguration` with a Pill Type parameter backed by an `AppEntity` and `EntityQuery`. Suggested results are Pill Types with an Active Prescription, in Home order.
+- [x] New widget extension target sharing the App Group, deployment target iOS 18, linking Domain and Data
+- [x] `AppIntentConfiguration` with a Pill Type parameter backed by an `AppEntity` and `EntityQuery`. Suggested results are Pill Types with an Active Prescription, in Home order.
 - [ ] `EntityQuery.defaultResult()` returns the first Active Pill Type not already configured in a placed widget (`WidgetCenter.shared.currentConfigurations()`), or nil if none is left. If it turns out not to save as a real configuration on iOS 18, an unconfigured widget shows the empty state; note the finding in Comments.
-- [ ] Timeline: an entry for now and one at the next 03:00, computed with `Day.current` logic for that moment; progress built from the store with `PillTypeProgress`
+- [x] Timeline: an entry for now and one at the next 03:00, computed with `Day.current` logic for that moment; progress built from the store with `PillTypeProgress`
 - [ ] Shows a Pill Type: small dimmed `pill` symbol at the top right; Abbreviation (or first two characters of the name) in the middle, scaled to the largest size that fits, at most 2 lines, then truncated; a row of circles at the bottom, one per prescribed Slot, filled when Done
 - [ ] Completed: every circle filled, plus a checkmark of the same size at the end of the row
 - [ ] Paused or removed Prescription: "-/-/-" instead of the circles, whole widget dimmed (checks `hasPrescription`/`prescriptionState` before `isCompleted`)
 - [ ] Pill Type deleted, or unconfigured: large `pills` symbol, no small `pill` symbol
 - [ ] Renders in tinted and full-color Lock Screen modes (`AccessoryWidgetBackground`)
-- [ ] Xcode previews for each state
+- [x] Xcode previews for each state
 - [ ] Checked on iPhone 16 (iOS 18.5): add the widget to the Lock Screen, it auto-configures, the picker lists only Active Pill Types, and Consume in the app then fills a circle
-- [ ] `scripts/check.sh` passes and `build_sim` builds both targets with zero warnings
+- [x] `scripts/check.sh` passes and `build_sim` builds both targets with zero warnings
+
+## Comments
+
+- Built on `t04-widget-extension`. `build_sim` builds the app and the `PillsTrackerWidget` extension from a clean build with zero warnings (the only line the log calls a warning is the app target's pre-existing "AppIntents metadata extraction skipped"). `test_sim` passes 17/17, `scripts/check.sh` passes. On the simulator `pluginkit` lists `com.andrew.PillsTracker.Widget`, and the app still loads its data from the App Group store.
+- **Not checked on the Lock Screen: for the user.** Adding the widget, its auto-configuration, the picker, how each state looks (tinted and full-color), and Consume filling a circle all need the Lock Screen, which is left to the user. So the `defaultResult()` box and the appearance boxes stay unticked. Their state mapping is unit-tested (below), and the previews compile, but nobody has seen them rendered: the preview renderer returns a blank image for accessory widgets.
+- **`defaultResult()` is unverified.** It returns the first Active Pill Type, in Home order, that no placed widget of this kind is configured with (`WidgetCenter.shared.currentConfigurations()`), or nil. Two things are unknown on iOS 18: whether the default is saved as a real configuration, and whether it is asked again for later widgets. A forum report (thread 766959, FB15592256) says it is evaluated once and then reused. Either way, an unconfigured widget (`pillType == nil`) shows the empty state.
+- **Store access is read-only and never creates the store.** This replaces ticket 03's note that the widget opens the store through `makeInAppGroup()`. The widget's sandbox has no old store, so that call would create an empty App Group store, which would then win over the app's store that hasn't moved yet. Instead, `PillsModelContainer.makeReaderInAppGroup()` (Data, next to `PillsStoreLocation`) returns nil while the App Group has no store, and otherwise opens it with `allowsSave: false`. `StoreReaderTests` covers both cases. The widget builds a fresh container and repository for every timeline, snapshot and query call (`WidgetStore.repository()`), so a long-lived widget process reads the latest save. `PillTypeRepositoryLive.init` now defaults `notifier`, so the widget doesn't link Utils.
+- **Today and the rollover.** Domain `Day.current(at:calendar:)` and `Day.nextRollover(after:calendar:)` hold the 03:00 rule, and `DailyProgressModel` uses `nextRollover` too. Both have `DayTests` in UTC, so daylight saving doesn't enter the tests (ADR 0004). The timeline has `[now, next 03:00]` with `.atEnd`, and each entry's progress is read for `Day.current(at:)` of its own date.
+- **Pure rules are tested in the app's test target.** `Timeline/PillTypeWidgetContent.swift` (progress to face, checking the Prescription's state before `isCompleted`) and `Configuration/PillTypeChoices.swift` (Active in Home order, first unplaced) are also members of `PillsTrackerTests`, through a synchronized-folder membership exception, so `test_sim` runs `PillTypeWidgetContentTests` and `PillTypeChoicesTests`. `entities(for:)` resolves any stored Pill Type, not only Active ones, so a Paused or removed Prescription keeps its configuration and shows "-/-/-".
+- **Strings.** The app's `Localizable.xcstrings` is also a member of the widget target, so the widget uses the generated `.widgetTitle` and `.widgetDescription` (added with `scripts/xcstrings.py`; `widget` was added to the `catalog_key_literal` prefixes). App Intents metadata (the intent's `title`, `@Parameter(title:)`, `typeDisplayRepresentation`) must be a string literal, and the metadata processor rejects catalog symbols, so those three say "Pill Type" literally. The widget target has `SWIFT_EMIT_LOC_STRINGS = NO`, like the app.
