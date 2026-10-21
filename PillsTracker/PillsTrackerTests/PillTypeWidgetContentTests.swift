@@ -6,13 +6,17 @@ import Testing
 @MainActor
 struct PillTypeWidgetContentTests {
     @Test func showsTheAbbreviationAndEachPrescribedSlotDoneOrOpen() {
-        #expect(PillTypeWidgetContent(progress: .previewVitaminD) == .withActivePrescription(abbreviation: "Vi", slotsDone: [true, false], isCompleted: false))
+        let content = PillTypeWidgetContent(progress: .previewVitaminD)
+
+        #expect(content == .withActivePrescription(abbreviation: "Vi", slotsDone: [true, false]))
+        #expect(!content.isCompleted)
     }
 
     @Test func isCompletedOnceEverySlotIsDone() {
-        let progress = PillTypeProgress.preview(.previewVitaminD, done: [.morning, .evening])
+        let content = PillTypeWidgetContent(progress: .preview(.previewVitaminD, done: [.morning, .evening]))
 
-        #expect(PillTypeWidgetContent(progress: progress) == .withActivePrescription(abbreviation: "Vi", slotsDone: [true, true], isCompleted: true))
+        #expect(content == .withActivePrescription(abbreviation: "Vi", slotsDone: [true, true]))
+        #expect(content.isCompleted)
     }
 
     @Test func aPausedPrescriptionIsDimmedEvenWithEverySlotDone() {
@@ -22,7 +26,10 @@ struct PillTypeWidgetContentTests {
     }
 
     @Test func aPillTypeWithoutAPrescriptionIsDimmedRatherThanCompleted() {
-        #expect(PillTypeWidgetContent(progress: .previewIbuprofen) == .withoutActivePrescription(abbreviation: "Ib"))
+        let content = PillTypeWidgetContent(progress: .previewIbuprofen)
+
+        #expect(content == .withoutActivePrescription(abbreviation: "Ib"))
+        #expect(!content.isCompleted)
     }
 
     @Test func aDeletedPillTypeShowsTheEmptyState() {
