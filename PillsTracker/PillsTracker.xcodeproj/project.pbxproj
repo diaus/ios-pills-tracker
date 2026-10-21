@@ -66,6 +66,14 @@
 			);
 			target = AA00000000000000000000E5 /* PillsTrackerWidget */;
 		};
+		AA00000000000000000000F7 /* Exceptions for "PillsTrackerWidget" folder in "PillsTrackerTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Configuration/PillTypeChoices.swift,
+				Timeline/PillTypeWidgetContent.swift,
+			);
+			target = 4987D452306BC13C0079A444 /* PillsTrackerTests */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -86,6 +94,7 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				AA00000000000000000000E3 /* Exceptions for "PillsTrackerWidget" folder in "PillsTrackerWidget" target */,
+				AA00000000000000000000F7 /* Exceptions for "PillsTrackerWidget" folder in "PillsTrackerTests" target */,
 			);
 			path = PillsTrackerWidget;
 			sourceTree = "<group>";
