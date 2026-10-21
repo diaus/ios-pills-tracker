@@ -5,11 +5,11 @@ import SwiftData
 /// Upgrades stores written by earlier app versions to the current schema.
 public enum PillsMigrationPlan: SchemaMigrationPlan {
     public static var schemas: [any VersionedSchema.Type] {
-        [PillsSchemaV1.self, PillsSchemaV2.self]
+        [PillsSchemaV1.self, PillsSchemaV2.self, PillsSchemaV3.self]
     }
 
     public static var stages: [MigrationStage] {
-        [v1ToV2]
+        [v1ToV2, v2ToV3]
     }
 
     /// Adds Prescription Start Day and End Day. A Prescription from V1 never recorded when it was
@@ -27,4 +27,7 @@ public enum PillsMigrationPlan: SchemaMigrationPlan {
             try context.save()
         }
     )
+
+    /// Adds the optional Pill Type Abbreviation; every Pill Type stored before it has none.
+    static let v2ToV3 = MigrationStage.lightweight(fromVersion: PillsSchemaV2.self, toVersion: PillsSchemaV3.self)
 }

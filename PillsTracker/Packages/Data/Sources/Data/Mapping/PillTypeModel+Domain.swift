@@ -6,6 +6,7 @@ extension PillTypeModel {
         self.init(
             id: aggregate.pillType.id,
             name: aggregate.pillType.name,
+            abbreviation: aggregate.pillType.abbreviation,
             rows: aggregate.pillType.shape.rows,
             columns: aggregate.pillType.shape.columns,
             createdAt: aggregate.pillType.createdAt
@@ -17,7 +18,7 @@ extension PillTypeModel {
     func toDomain() throws(DataError) -> PillTypeAggregate {
         let shape = try DataError.record { () throws(DomainError) in try GridShape(rows: rows, columns: columns) }
         let pillType = try DataError.record { () throws(DomainError) in
-            try PillType(id: id, name: name, shape: shape, createdAt: createdAt)
+            try PillType(id: id, name: name, abbreviation: abbreviation, shape: shape, createdAt: createdAt)
         }
         return PillTypeAggregate(
             pillType: pillType,
@@ -30,6 +31,7 @@ extension PillTypeModel {
     /// Blisters and adds new ones. No Domain operation removes a Blister, so none is deleted here.
     func apply(_ aggregate: PillTypeAggregate) {
         name = aggregate.pillType.name
+        abbreviation = aggregate.pillType.abbreviation
         rows = aggregate.pillType.shape.rows
         columns = aggregate.pillType.shape.columns
         createdAt = aggregate.pillType.createdAt

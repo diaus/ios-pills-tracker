@@ -1,8 +1,8 @@
 import Domain
 import SwiftUI
 
-/// Sheet for creating a Pill Type: name, grid shape and an optional Prescription's Slots, with its Start Day
-/// and End Day once a Slot is chosen. Errors show inline under each field.
+/// Sheet for creating a Pill Type: name, optional Abbreviation, grid shape and an optional Prescription's
+/// Slots, with its Start Day and End Day once a Slot is chosen. Errors show inline under each field.
 struct AddPillTypeSheet: View {
     @Environment(\.dismiss) private var dismiss
     @State private var model: AddPillTypeViewModel
@@ -16,6 +16,7 @@ struct AddPillTypeSheet: View {
             Form {
                 PillTypeFormFields(
                     name: $model.name,
+                    abbreviation: $model.abbreviation,
                     rows: $model.rows,
                     columns: $model.columns,
                     error: model.validationError,

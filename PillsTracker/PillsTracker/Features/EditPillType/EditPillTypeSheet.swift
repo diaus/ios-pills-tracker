@@ -1,8 +1,8 @@
 import Domain
 import SwiftUI
 
-/// Sheet opened from the Blister toolbar. Renames the Pill Type, changes its grid shape while the
-/// Current Blister is empty, or deletes it (with confirmation).
+/// Sheet opened from the Blister toolbar. Renames the Pill Type, sets or clears its Abbreviation, changes
+/// its grid shape while the Current Blister is empty, or deletes it (with confirmation).
 struct EditPillTypeSheet: View {
     @Environment(\.dismiss) private var dismiss
     @State private var model: EditPillTypeViewModel
@@ -20,6 +20,7 @@ struct EditPillTypeSheet: View {
             Form {
                 PillTypeFormFields(
                     name: $model.name,
+                    abbreviation: $model.abbreviation,
                     rows: $model.rows,
                     columns: $model.columns,
                     error: model.validationError,
