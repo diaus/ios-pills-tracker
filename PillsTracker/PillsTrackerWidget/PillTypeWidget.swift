@@ -3,8 +3,10 @@ import WidgetKit
 
 /// The Lock Screen widget: one Pill Type's Slots for Today, Done or Open.
 struct PillTypeWidget: Widget {
+    nonisolated static let kind = "PillTypeWidget"
+
     var body: some WidgetConfiguration {
-        AppIntentConfiguration(kind: "PillTypeWidget", intent: PillTypeWidgetIntent.self, provider: PillTypeTimelineProvider()) { entry in
+        AppIntentConfiguration(kind: Self.kind, intent: PillTypeWidgetIntent.self, provider: PillTypeTimelineProvider()) { entry in
             PillTypeWidgetView(content: entry.content)
                 .containerBackground(for: .widget) { AccessoryWidgetBackground() }
         }
