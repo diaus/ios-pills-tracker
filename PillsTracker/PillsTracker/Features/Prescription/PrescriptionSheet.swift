@@ -86,9 +86,9 @@ struct PrescriptionSheet: View {
 }
 
 #Preview("New") {
-    PrescriptionSheet(aggregate: .previewIbuprofen, today: Day(date: .now))
+    PrescriptionSheet(aggregate: .previewIbuprofen, today: Day.current)
 }
 
 #Preview("Edit") {
-    PrescriptionSheet(aggregate: .previewVitaminD, today: Day(date: .now))
+    PrescriptionSheet(aggregate: .previewVitaminD, today: Day.current)
 }
