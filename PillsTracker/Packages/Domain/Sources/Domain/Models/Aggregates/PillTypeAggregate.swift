@@ -23,9 +23,16 @@ public struct PillTypeAggregate: Identifiable, Hashable, Sendable {
     }
 
     /// Creates a new Pill Type with a Current Blister where every Position is Present.
-    public static func new(name: String, rows: Int, columns: Int, id: UUID = UUID(), createdAt: Date) throws(DomainError) -> PillTypeAggregate {
+    public static func new(
+        name: String,
+        abbreviation: String? = nil,
+        rows: Int,
+        columns: Int,
+        id: UUID = UUID(),
+        createdAt: Date
+    ) throws(DomainError) -> PillTypeAggregate {
         let shape = try GridShape(rows: rows, columns: columns)
-        let pillType = try PillType(id: id, name: name, shape: shape, createdAt: createdAt)
+        let pillType = try PillType(id: id, name: name, abbreviation: abbreviation, shape: shape, createdAt: createdAt)
         return PillTypeAggregate(pillType: pillType, blisters: [.fresh(pillTypeID: pillType.id, shape: shape)])
     }
 
@@ -34,6 +41,11 @@ public struct PillTypeAggregate: Identifiable, Hashable, Sendable {
     /// Renames the Pill Type; the trimmed name must be non-empty.
     public mutating func rename(_ name: String) throws(DomainError) {
         try pillType.rename(name)
+    }
+
+    /// Sets the Abbreviation; blank after trimming clears it.
+    public mutating func setAbbreviation(_ abbreviation: String?) {
+        pillType.setAbbreviation(abbreviation)
     }
 
     /// Changes the grid shape used by the next Start New Blister. Allowed only while the Current Blister
