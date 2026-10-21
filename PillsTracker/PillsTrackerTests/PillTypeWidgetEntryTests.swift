@@ -20,6 +20,12 @@ struct PillTypeWidgetEntryTests {
         #expect(entry.tap == .blister(pillTypeID: pillTypeID))
     }
 
+    @Test func tappingAPillTypeTheStoreCouldNotBeReadForStillOpensItsBlisterScreen() {
+        let entry = PillTypeWidgetEntry(date: .now, pillTypeID: pillTypeID, content: .unreadable)
+
+        #expect(entry.tap == .blister(pillTypeID: pillTypeID))
+    }
+
     @Test func tappingTheEmptyStateOfADeletedPillTypeExplainsHowToConfigure() {
         let entry = PillTypeWidgetEntry(date: .now, pillTypeID: pillTypeID, content: .noPillType)
 

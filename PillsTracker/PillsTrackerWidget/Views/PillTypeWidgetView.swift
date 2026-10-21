@@ -7,7 +7,7 @@ struct PillTypeWidgetView: View {
 
     var body: some View {
         switch content {
-        case .noPillType:
+        case .noPillType, .unreadable:
             Image(systemName: "pills")
                 .font(.system(size: 30))
         case .withoutActivePrescription(let abbreviation):

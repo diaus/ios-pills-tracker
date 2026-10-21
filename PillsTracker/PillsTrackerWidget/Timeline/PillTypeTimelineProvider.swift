@@ -19,19 +19,34 @@ nonisolated struct PillTypeTimelineProvider: AppIntentTimelineProvider {
     func timeline(for configuration: PillTypeWidgetIntent, in context: Context) async -> Timeline<PillTypeWidgetEntry> {
         let now = Date.now
         let dates = [now] + [Day.nextRollover(after: now, calendar: .current)].compactMap(\.self)
-        // At the rollover entry WidgetKit asks again, so the timeline always reaches the next one.
-        return Timeline(entries: await entries(for: configuration.pillType?.id, at: dates), policy: .atEnd)
+        let entries = await entries(for: configuration.pillType?.id, at: dates)
+        // At the rollover entry WidgetKit asks again, so the timeline always reaches the next one. A store
+        // that couldn't be read is tried again soon instead.
+        let policy: TimelineReloadPolicy = entries.contains { $0.content == .unreadable }
+            ? .after(now.addingTimeInterval(Self.retryDelay))
+            : .atEnd
+        return Timeline(entries: entries, policy: policy)
     }
 
-    /// One entry per date, for the Pill Type `pillTypeID`; the empty state when it's nil, deleted or unreadable.
+    /// How long a widget whose store couldn't be read waits before WidgetKit asks again.
+    private static let retryDelay: TimeInterval = 15 * 60
+
+    /// One entry per date, for the Pill Type `pillTypeID`: no Pill Type when it's nil or deleted, and
+    /// unreadable when the store can't be read.
     private func entries(for pillTypeID: UUID?, at dates: [Date]) async -> [PillTypeWidgetEntry] {
         var entries: [PillTypeWidgetEntry] = []
         for date in dates {
-            var progress: PillTypeProgress?
+            let content: PillTypeWidgetContent
             if let pillTypeID {
-                progress = try? await self.progress(of: pillTypeID, on: Day.current(at: date, calendar: .current))
+                do {
+                    content = PillTypeWidgetContent(progress: try await progress(of: pillTypeID, on: Day.current(at: date, calendar: .current)))
+                } catch {
+                    content = .unreadable
+                }
+            } else {
+                content = .noPillType
             }
-            entries.append(PillTypeWidgetEntry(date: date, pillTypeID: pillTypeID, content: PillTypeWidgetContent(progress: progress)))
+            entries.append(PillTypeWidgetEntry(date: date, pillTypeID: pillTypeID, content: content))
         }
         return entries
     }

@@ -5,6 +5,9 @@ import Foundation
 nonisolated enum PillTypeWidgetContent: Hashable {
     /// Unconfigured, the Pill Type deleted, or the store not there yet: the large `pills` symbol.
     case noPillType
+    /// The configured Pill Type couldn't be read from the store: the same `pills` symbol, but the widget
+    /// still belongs to its Pill Type, and the timeline tries again soon.
+    case unreadable
     /// The Prescription is Paused or removed: "-/-/-" in place of the Slots, the whole widget dimmed.
     case withoutActivePrescription(abbreviation: String)
     /// An Active Prescription: one entry per prescribed Slot, in Morning/Day/Evening order, true when Done.
