@@ -6,11 +6,11 @@
 
 **Status:** ready-for-agent
 
-- [ ] Domain: `PillType` has an optional `abbreviation`. Blank after trimming whitespace is stored as not set. No length limit.
-- [ ] Domain: one place that answers "the text to show in short form": the Abbreviation when set, otherwise the first two characters of the name
-- [ ] Domain tests: blank or whitespace-only Abbreviation is not set; the fallback uses the first two characters of the name (and the whole name when it's shorter)
-- [ ] Data: schema V3 adds the optional field, with a lightweight migration from V2; existing Pill Types have no Abbreviation
-- [ ] Data tests: the Abbreviation round-trips; a V2 store migrates with every Abbreviation not set
-- [ ] Add Pill Type and Edit Pill Type screens have an optional Abbreviation text field; new strings added with `scripts/xcstrings.py`
+- [x] Domain: `PillType` has an optional `abbreviation`. Blank after trimming whitespace is stored as not set. No length limit.
+- [x] Domain: one place that answers "the text to show in short form": the Abbreviation when set, otherwise the first two characters of the name
+- [x] Domain tests: blank or whitespace-only Abbreviation is not set; the fallback uses the first two characters of the name (and the whole name when it's shorter)
+- [x] Data: schema V3 adds the optional field, with a lightweight migration from V2; existing Pill Types have no Abbreviation
+- [x] Data tests: the Abbreviation round-trips; a V2 store migrates with every Abbreviation not set
+- [x] Add Pill Type and Edit Pill Type screens have an optional Abbreviation text field; new strings added with `scripts/xcstrings.py`
 - [ ] UI checked on iPhone 16 (iOS 18.5): add a Pill Type with and without an Abbreviation, edit it, clear it
 - [ ] `scripts/check.sh` passes and `build_sim` builds with zero warnings
