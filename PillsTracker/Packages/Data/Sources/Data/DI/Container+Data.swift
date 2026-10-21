@@ -21,8 +21,20 @@ public extension Container {
         self { ChangeNotifier() }.singleton
     }
 
+    /// Runs after every successful repository save, in another process's interest: the app registers a reload
+    /// of the widget's timelines here before anything resolves, so Data never imports WidgetKit (ADR 0003).
+    var afterStoreSave: Factory<@Sendable () -> Void> {
+        self { {} }
+    }
+
     var pillTypeRepository: Factory<any PillTypeRepository> {
-        self { PillTypeRepositoryLive(modelContainer: self.modelContainer(), notifier: self.dataChangeNotifier()) }
-            .singleton
+        self {
+            PillTypeRepositoryLive(
+                modelContainer: self.modelContainer(),
+                notifier: self.dataChangeNotifier(),
+                afterSave: self.afterStoreSave()
+            )
+        }
+        .singleton
     }
 }
