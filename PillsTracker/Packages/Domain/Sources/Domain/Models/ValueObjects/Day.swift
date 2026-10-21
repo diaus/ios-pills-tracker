@@ -28,10 +28,20 @@ public struct Day: Hashable, Comparable, Sendable, Codable {
     /// Today: the calendar Day it is now on the device, or the previous one before `rolloverHour`.
     /// Use cases never read it; they take the Day as a parameter (ADR 0004).
     public static var current: Day {
-        let calendar = Calendar.current
-        let now = Date.now
-        guard calendar.component(.hour, from: now) < rolloverHour else { return Day(date: now, calendar: calendar) }
-        return Day(date: calendar.date(byAdding: .day, value: -1, to: now)!, calendar: calendar)
+        current(at: .now, calendar: .current)
+    }
+
+    /// What Today is at `date` in `calendar`: its calendar Day, or the previous one before `rolloverHour`.
+    /// For a moment ahead of now, such as a widget timeline entry at the next rollover.
+    public static func current(at date: Date, calendar: Calendar) -> Day {
+        guard calendar.component(.hour, from: date) < rolloverHour else { return Day(date: date, calendar: calendar) }
+        return Day(date: calendar.date(byAdding: .day, value: -1, to: date)!, calendar: calendar)
+    }
+
+    /// The first moment after `date` at which Today rolls over: the next `rolloverHour` o'clock in `calendar`.
+    public static func nextRollover(after date: Date, calendar: Calendar) -> Date? {
+        let rollover = DateComponents(hour: rolloverHour, minute: 0, second: 0)
+        return calendar.nextDate(after: date, matching: rollover, matchingPolicy: .nextTime)
     }
 
     /// Whole calendar days from `earlier` to this Day; negative when `earlier` is in fact later.
