@@ -12,4 +12,4 @@
 - [x] App: `DailyProgressModel` schedules a refresh of Today at the next 03:00 and reschedules it after each one. Scene-active and significant-time-change refreshes stay.
 - [x] Selected Day still defaults to Today and can't move past Today
 - [x] Existing Intakes aren't migrated
-- [ ] `scripts/check.sh` passes and `build_sim` builds with zero warnings
+- [x] `scripts/check.sh` passes and `build_sim` builds with zero warnings
