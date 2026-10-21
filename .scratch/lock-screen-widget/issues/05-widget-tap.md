@@ -6,9 +6,19 @@
 
 **Status:** ready-for-agent
 
-- [ ] The URLs (Blister screen for a Pill Type id, and the "configure" URL) are built and parsed in one place shared by the app and the widget
-- [ ] The app registers its URL scheme and handles the URL with `onOpenURL`: the Blister URL resets the navigation path to `[.blister(pillTypeID:)]`; an unknown or deleted Pill Type id opens Home
-- [ ] The configure URL opens Home and shows an alert: "To choose a Pill Type for this widget, touch and hold the Lock Screen, tap Customize, then tap the widget." with one OK button; strings added with `scripts/xcstrings.py`
-- [ ] The widget sets the Blister URL whenever it shows a Pill Type (including the dimmed state) and the configure URL in the empty state
+- [x] The URLs (Blister screen for a Pill Type id, and the "configure" URL) are built and parsed in one place shared by the app and the widget
+- [x] The app registers its URL scheme and handles the URL with `onOpenURL`: the Blister URL resets the navigation path to `[.blister(pillTypeID:)]`; an unknown or deleted Pill Type id opens Home
+- [x] The configure URL opens Home and shows an alert: "To choose a Pill Type for this widget, touch and hold the Lock Screen, tap Customize, then tap the widget." with one OK button; strings added with `scripts/xcstrings.py`
+- [x] The widget sets the Blister URL whenever it shows a Pill Type (including the dimmed state) and the configure URL in the empty state
 - [ ] Checked on iPhone 16 (iOS 18.5): tapping a configured widget opens its Blister screen on Today; tapping the empty state shows the alert on Home
-- [ ] `scripts/check.sh` passes and `build_sim` builds with zero warnings
+- [x] `scripts/check.sh` passes and `build_sim` builds with zero warnings
+
+## Comments
+
+- **The URLs live in Data, as `WidgetTap`** (`Packages/Data/Sources/Data/WidgetTap/WidgetTap.swift`): `.blister(pillTypeID:)` is `pillstracker://blister/<id>`, `.configure` is `pillstracker://configure`, with `url` and `init?(url:)`. Not Domain: a URL is the app's wiring with the system, not domain language, and Domain holds only business rules. Not Utils: it's project-independent, and the widget doesn't link it. Data already holds what the app and the widget must agree on outside the domain (`PillsStoreLocation`'s App Group), and both link it. `CODING_STANDARDS.md` lists the new `WidgetTap/` folder. `WidgetTapTests` covers the round-trip of both URLs, the literal `pillstracker://` form the Info.plist registers, and that other URLs are ignored.
+- **The widget:** `PillTypeWidgetEntry` now carries the configured `pillTypeID` and computes `tap`: the Blister URL whenever a Pill Type is shown (dimmed too), the configure URL for `.empty` (unconfigured or deleted). `.widgetURL(entry.tap.url)` sits on the root view in `PillTypeWidget`. `PillTypeWidgetEntryTests` (app test target; the entry file joins the existing membership exception) covers the four cases.
+- **URL scheme:** `CFBundleURLTypes` has no `INFOPLIST_KEY_` build setting (checked in Xcode's `CoreBuildSystem.xcspec`), so the app gets `PillsTracker/Info.plist` with only `CFBundleURLTypes`, merged through `INFOPLIST_FILE` next to `GENERATE_INFOPLIST_FILE = YES`, and a new exception set (`…05E1`) keeps it out of the app's resources. The built app's Info.plist has the scheme and the generated keys.
+- **The app:** `HomeViewModel` now owns the navigation path. `.onOpenURL` on Home hands the URL to `open(_:)`. A Blister tap waits until Today's progress has loaded (a cold launch delivers the URL first), then sets the path to `[.blister(pillTypeID:)]`, or `[]` when the Pill Type is unknown or deleted, or the load failed. A counter used as the Blister view's `.id` makes each tap open it afresh on Today, even when it's already on top with another Selected Day. The configure tap clears the path and shows the alert (`home.widgetHelp`, one `common.ok` button). Home's own Add Pill Type sheet is left alone, as in TinyReminder.
+- **Checked on iPhone 16 (iOS 18.5) with `xcrun simctl openurl`**, each confirmed with `snapshot_ui` (first launch shows iOS's "Open in PillsTracker?" prompt, which confirms the scheme is registered): from Pill Types > Magnesium's Blister on Yesterday, the Vitamin D URL opened Vitamin D's Blister on Today with Home as the back button; the same URL again with that Blister moved to Yesterday reset it to Today; an unknown id opened Home; the configure URL from a Blister screen showed the alert on Home with one OK button. From a cold launch, a Blister URL for a Pill Type without a Prescription opened its Blister on Today, and the configure URL showed the alert.
+- **Left for the user:** tapping the real widget on the Lock Screen (configured, and in the empty state). Adding a widget means driving the Lock Screen's Customize flow, which agents don't do here, so that box stays unticked.
+- `scripts/check.sh` passes; `build_sim` builds with zero warnings; `test_sim` passes 21/21.
