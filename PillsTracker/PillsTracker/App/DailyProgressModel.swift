@@ -36,6 +36,8 @@ final class DailyProgressModel {
     private(set) var today = Day.current
     /// Set by `preview`: `state` is fixed and `observeProgress(on:)` serves it instead of loading.
     private var isFixed = false
+    /// The wait for the next 03:00, which `refreshToday()` restarts.
+    @ObservationIgnored private var rolloverWait: Task<Void, any Error>?
 
     /// The loaded progress, or nil while loading or after a failure.
     var progress: [PillTypeProgress]? {
@@ -68,8 +70,10 @@ final class DailyProgressModel {
         }
     }
 
-    /// Re-evaluates Today and reloads when the Day rolled over or the last load failed.
+    /// Re-evaluates Today and reloads when the Day rolled over or the last load failed. Also restarts the
+    /// wait for the next 03:00: a time zone or clock change moves it, and the wait would keep the old instant.
     func refreshToday() async {
+        rolloverWait?.cancel()
         let current = Day.current
         guard current != today || state.isFailed else { return }
         today = current
@@ -89,12 +93,17 @@ final class DailyProgressModel {
     /// Refreshes Today at each next 03:00 while the app stays open, until the calling task is cancelled.
     /// The significant-time-change notification fires at midnight, not at the rollover (ADR 0004).
     private func refreshingTodayAtRollovers() async {
-        // Recomputed after every wake-up: one that a clock or time zone change put before 03:00 waits again.
+        // Recomputed after every wake-up and every restart: one that a clock or time zone change put before
+        // 03:00 waits again.
         while let next = Day.nextRollover(after: .now, calendar: .current) {
+            let wait = Task { try await Task.sleep(for: .seconds(next.timeIntervalSinceNow)) }
+            rolloverWait = wait
             do {
-                try await Task.sleep(for: .seconds(next.timeIntervalSinceNow))
+                try await withTaskCancellationHandler { try await wait.value } onCancel: { wait.cancel() }
             } catch {
-                return
+                // Cancelled with the calling task: stop. Restarted by `refreshToday()`: wait for the new 03:00.
+                if Task.isCancelled { return }
+                continue
             }
             await refreshToday()
         }
