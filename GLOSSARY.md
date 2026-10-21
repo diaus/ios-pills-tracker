@@ -10,6 +10,10 @@ Helps a person see which pills they still have to take today and keep the app's 
 A kind of medication the user takes, identified by its name. Defines the grid shape of its blisters.
 _Avoid_: Medication, drug, medicine, pill kind
 
+**Abbreviation**:
+An optional short form of a Pill Type's name, used where the full name doesn't fit. When it isn't set, the first two characters of the name stand in for it.
+_Avoid_: Short name, shortcut, code, initials
+
 **Blister**:
 A physical strip of pills of one Pill Type, laid out as a rectangular grid. A Pill Type has exactly one Current Blister at a time.
 _Avoid_: Strip, pack, sheet
@@ -79,8 +83,12 @@ The Intakes of one Pill Type laid out by Day, across the Current Blister and eve
 _Avoid_: Prescription history, log, calendar
 
 **Day**:
-A local calendar day. Progress ("taken today", "left today") is computed per Day and rolls over at local midnight.
+A local calendar day. Progress ("taken today", "left today") is computed per Day.
 _Avoid_: Date, today (as a stored value)
+
+**Today**:
+The Day it is now, except that it rolls over at 03:00 local time, not at midnight: before 03:00 Today is still the previous Day, so a pill taken at 01:30 counts for that Day.
+_Avoid_: Current day, calendar today
 
 **Open Slot / Done Slot**:
 For an Active Prescription on a given Day, a Slot is Done when an Intake exists for it and Open otherwise.

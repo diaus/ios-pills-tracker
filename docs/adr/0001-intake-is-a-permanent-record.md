@@ -27,3 +27,7 @@ Undo was first limited to today's Intakes. It now accepts any Intake on the Curr
 The Blister screen can move its Selected Day to any earlier Day and Consume for that Day's Open Slots. There is no lower bound, not even the Pill Type's creation: someone who has been on a Prescription for a while before installing the app can backfill those Intakes. With no Prescription history, a past Day shows the current Prescription's Slots.
 
 `Consume` accepts any `Day`, including a future one. That is deliberate: the Selected Day never moves past today, and keeping the check out of Domain avoids passing "today" into the use case only to guard it.
+
+## Amendment: Today is computed in Domain
+
+`Day.current` in Domain now decides what Today is (it rolls over at 03:00), so the app and the Lock Screen widget agree. Use cases still take `Day` as a parameter. See ADR 0004.
