@@ -16,9 +16,9 @@ struct PillTypeWidgetView: View {
                     .font(.system(size: 9, weight: .semibold))
             }
             .opacity(0.5)
-        case .withActivePrescription(let abbreviation, let slotsDone, let isCompleted):
+        case .withActivePrescription(let abbreviation, let slotsDone):
             PillTypeFace(abbreviation: abbreviation) {
-                SlotDotsRow(slotsDone: slotsDone, isCompleted: isCompleted)
+                SlotDotsRow(slotsDone: slotsDone, isCompleted: content.isCompleted)
             }
         }
     }

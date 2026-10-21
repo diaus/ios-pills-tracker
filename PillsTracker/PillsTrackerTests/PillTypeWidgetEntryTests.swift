@@ -9,7 +9,7 @@ struct PillTypeWidgetEntryTests {
     private let pillTypeID = UUID()
 
     @Test func tappingAPillTypeOpensItsBlisterScreen() {
-        let entry = PillTypeWidgetEntry(date: .now, pillTypeID: pillTypeID, content: .withActivePrescription(abbreviation: "Vi", slotsDone: [false], isCompleted: false))
+        let entry = PillTypeWidgetEntry(date: .now, pillTypeID: pillTypeID, content: .withActivePrescription(abbreviation: "Vi", slotsDone: [false]))
 
         #expect(entry.tap == .blister(pillTypeID: pillTypeID))
     }

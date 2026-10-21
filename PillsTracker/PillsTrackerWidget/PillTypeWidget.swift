@@ -21,19 +21,19 @@ struct PillTypeWidget: Widget {
 #Preview("Open and Done Slots", as: .accessoryCircular) {
     PillTypeWidget()
 } timeline: {
-    PillTypeWidgetEntry(date: .now, pillTypeID: UUID(), content: .withActivePrescription(abbreviation: "VD", slotsDone: [true, false, false], isCompleted: false))
+    PillTypeWidgetEntry(date: .now, pillTypeID: UUID(), content: .withActivePrescription(abbreviation: "VD", slotsDone: [true, false, false]))
 }
 
 #Preview("Completed", as: .accessoryCircular) {
     PillTypeWidget()
 } timeline: {
-    PillTypeWidgetEntry(date: .now, pillTypeID: UUID(), content: .withActivePrescription(abbreviation: "Mg", slotsDone: [true, true], isCompleted: true))
+    PillTypeWidgetEntry(date: .now, pillTypeID: UUID(), content: .withActivePrescription(abbreviation: "Mg", slotsDone: [true, true]))
 }
 
 #Preview("Long Abbreviation", as: .accessoryCircular) {
     PillTypeWidget()
 } timeline: {
-    PillTypeWidgetEntry(date: .now, pillTypeID: UUID(), content: .withActivePrescription(abbreviation: "Omega 3 Fish Oil", slotsDone: [false], isCompleted: false))
+    PillTypeWidgetEntry(date: .now, pillTypeID: UUID(), content: .withActivePrescription(abbreviation: "Omega 3 Fish Oil", slotsDone: [false]))
 }
 
 #Preview("Paused or removed Prescription", as: .accessoryCircular) {
