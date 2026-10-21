@@ -3,7 +3,6 @@ import SwiftUI
 
 struct HomeView: View {
     @State private var model: HomeViewModel
-    @State private var path: [AppRoute] = []
     @State private var isAddingPillType = false
 
     init(dailyProgress: DailyProgressModel) {
@@ -11,7 +10,7 @@ struct HomeView: View {
     }
 
     var body: some View {
-        NavigationStack(path: $path) {
+        NavigationStack(path: $model.path) {
             Group {
                 switch model.dailyProgress.state {
                 case .loading:
@@ -70,7 +69,8 @@ struct HomeView: View {
                 case .pillTypes:
                     PillTypesListView(dailyProgress: model.dailyProgress)
                 case .blister(let pillTypeID):
-                    BlisterView(pillTypeID: pillTypeID, dailyProgress: model.dailyProgress) { path.removeAll() }
+                    BlisterView(pillTypeID: pillTypeID, dailyProgress: model.dailyProgress) { model.path.removeAll() }
+                        .id(model.widgetTapCount)
                 }
             }
             .toolbar {
@@ -85,6 +85,12 @@ struct HomeView: View {
             AddPillTypeSheet(today: model.dailyProgress.today)
         }
         .errorAlert(message: $model.errorMessage)
+        .alert(Text(.homeWidgetHelp), isPresented: $model.isShowingWidgetHelp) {
+            Button(.commonOk) {}
+        }
+        .onOpenURL { model.open($0) }
+        // A widget tap that launched the app arrives before Today's progress has loaded.
+        .onChange(of: model.isLoading) { model.openRequestedBlister() }
     }
 
     private func pausedRow(_ aggregate: PillTypeAggregate) -> some View {
