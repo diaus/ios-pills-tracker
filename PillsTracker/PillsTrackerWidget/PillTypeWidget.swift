@@ -1,3 +1,4 @@
+import Data
 import SwiftUI
 import WidgetKit
 
@@ -9,6 +10,7 @@ struct PillTypeWidget: Widget {
         AppIntentConfiguration(kind: Self.kind, intent: PillTypeWidgetIntent.self, provider: PillTypeTimelineProvider()) { entry in
             PillTypeWidgetView(content: entry.content)
                 .containerBackground(for: .widget) { AccessoryWidgetBackground() }
+                .widgetURL(entry.tap.url)
         }
         .configurationDisplayName(Text(.widgetTitle))
         .description(Text(.widgetDescription))
@@ -19,29 +21,29 @@ struct PillTypeWidget: Widget {
 #Preview("Open and Done Slots", as: .accessoryCircular) {
     PillTypeWidget()
 } timeline: {
-    PillTypeWidgetEntry(date: .now, content: .active(abbreviation: "VD", slotsDone: [true, false, false], isCompleted: false))
+    PillTypeWidgetEntry(date: .now, pillTypeID: UUID(), content: .active(abbreviation: "VD", slotsDone: [true, false, false], isCompleted: false))
 }
 
 #Preview("Completed", as: .accessoryCircular) {
     PillTypeWidget()
 } timeline: {
-    PillTypeWidgetEntry(date: .now, content: .active(abbreviation: "Mg", slotsDone: [true, true], isCompleted: true))
+    PillTypeWidgetEntry(date: .now, pillTypeID: UUID(), content: .active(abbreviation: "Mg", slotsDone: [true, true], isCompleted: true))
 }
 
 #Preview("Long Abbreviation", as: .accessoryCircular) {
     PillTypeWidget()
 } timeline: {
-    PillTypeWidgetEntry(date: .now, content: .active(abbreviation: "Omega 3 Fish Oil", slotsDone: [false], isCompleted: false))
+    PillTypeWidgetEntry(date: .now, pillTypeID: UUID(), content: .active(abbreviation: "Omega 3 Fish Oil", slotsDone: [false], isCompleted: false))
 }
 
 #Preview("Paused or removed Prescription", as: .accessoryCircular) {
     PillTypeWidget()
 } timeline: {
-    PillTypeWidgetEntry(date: .now, content: .inactive(abbreviation: "VD"))
+    PillTypeWidgetEntry(date: .now, pillTypeID: UUID(), content: .inactive(abbreviation: "VD"))
 }
 
 #Preview("Empty", as: .accessoryCircular) {
     PillTypeWidget()
 } timeline: {
-    PillTypeWidgetEntry(date: .now, content: .empty)
+    PillTypeWidgetEntry(date: .now, pillTypeID: nil, content: .empty)
 }
