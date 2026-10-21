@@ -82,9 +82,8 @@ final class DailyProgressModel {
     /// Refreshes Today at each next 03:00 while the app stays open, until the calling task is cancelled.
     /// The significant-time-change notification fires at midnight, not at the rollover (ADR 0004).
     private func refreshingTodayAtRollovers() async {
-        let rollover = DateComponents(hour: Day.rolloverHour, minute: 0, second: 0)
         // Recomputed after every wake-up: one that a clock or time zone change put before 03:00 waits again.
-        while let next = Calendar.current.nextDate(after: .now, matching: rollover, matchingPolicy: .nextTime) {
+        while let next = Day.nextRollover(after: .now, calendar: .current) {
             do {
                 try await Task.sleep(for: .seconds(next.timeIntervalSinceNow))
             } catch {
