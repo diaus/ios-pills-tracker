@@ -1,5 +1,6 @@
 import Foundation
 import SwiftData
+import Synchronization
 import Testing
 import Domain
 @testable import Data
@@ -141,5 +142,48 @@ struct PillTypeRepositoryLiveTests {
 
         try await repository.delete(id: aggregate.id)
         #expect(await iterator.next() != nil)
+    }
+
+    @Test func everySuccessfulWriteRunsTheAfterSaveHookOnce() async throws {
+        let saves = Mutex(0)
+        let repository = PillTypeRepositoryLive(
+            modelContainer: try PillsModelContainer.make(inMemory: true),
+            afterSave: { saves.withLock { $0 += 1 } }
+        )
+        var aggregate = try PillTypeAggregate.new(name: "Aspirin", rows: 1, columns: 2, createdAt: Date(timeIntervalSince1970: 1_000))
+        try aggregate.setPrescription(slots: [.morning], startDay: Day(year: 2026, month: 1, day: 1), endDay: nil)
+
+        try await repository.create(aggregate)
+        #expect(saves.withLock { $0 } == 1)
+
+        try aggregate.pausePrescription()
+        try await repository.update(aggregate)
+        #expect(saves.withLock { $0 } == 2)
+
+        try aggregate.resumePrescription()
+        let day = Day(year: 2026, month: 10, day: 6)
+        let intake = try aggregate.consume(Position(row: 0, column: 0), slot: .morning, doneSlots: [], day: day, instant: Date(timeIntervalSince1970: 2_000))
+        try await repository.update(aggregate, recording: intake)
+        #expect(saves.withLock { $0 } == 3)
+
+        try aggregate.undo(intake, blisterIntakes: [intake])
+        try await repository.update(aggregate, removing: intake)
+        #expect(saves.withLock { $0 } == 4)
+
+        try await repository.delete(id: aggregate.id)
+        #expect(saves.withLock { $0 } == 5)
+    }
+
+    @Test func aFailedWriteDoesNotRunTheAfterSaveHook() async throws {
+        let saves = Mutex(0)
+        let repository = PillTypeRepositoryLive(
+            modelContainer: try PillsModelContainer.make(inMemory: true),
+            afterSave: { saves.withLock { $0 += 1 } }
+        )
+        let neverStored = try PillTypeAggregate.new(name: "Aspirin", rows: 1, columns: 1, createdAt: Date(timeIntervalSince1970: 1_000))
+
+        await #expect(throws: DataError.notFound) { try await repository.update(neverStored) }
+
+        #expect(saves.withLock { $0 } == 0)
     }
 }
