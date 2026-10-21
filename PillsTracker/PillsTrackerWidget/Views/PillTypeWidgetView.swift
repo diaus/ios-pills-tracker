@@ -7,16 +7,16 @@ struct PillTypeWidgetView: View {
 
     var body: some View {
         switch content {
-        case .empty:
+        case .noPillType:
             Image(systemName: "pills")
                 .font(.system(size: 30))
-        case .inactive(let abbreviation):
+        case .withoutActivePrescription(let abbreviation):
             PillTypeFace(abbreviation: abbreviation) {
                 Text(verbatim: "-/-/-")
                     .font(.system(size: 9, weight: .semibold))
             }
             .opacity(0.5)
-        case .active(let abbreviation, let slotsDone, let isCompleted):
+        case .withActivePrescription(let abbreviation, let slotsDone, let isCompleted):
             PillTypeFace(abbreviation: abbreviation) {
                 SlotDotsRow(slotsDone: slotsDone, isCompleted: isCompleted)
             }
