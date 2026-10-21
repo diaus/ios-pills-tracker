@@ -45,7 +45,7 @@ final class HomeViewModel {
     }
 
     var isLoading: Bool {
-        if case .loading = dailyProgress.state { true } else { false }
+        dailyProgress.state.isLoading
     }
 
     /// Follows a tap on the Lock Screen widget: its Pill Type's Blister screen on Today, or Home with how to

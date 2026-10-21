@@ -19,6 +19,14 @@ final class DailyProgressModel {
         case loaded([PillTypeProgress])
         /// The last load failed; screens show the message instead of an empty or not-found state.
         case failed(LocalizedStringResource)
+
+        var isLoading: Bool {
+            if case .loading = self { true } else { false }
+        }
+
+        var isFailed: Bool {
+            if case .failed = self { true } else { false }
+        }
     }
 
     @ObservationIgnored @Injected(\.dailyProgress) private var dailyProgress
@@ -63,8 +71,7 @@ final class DailyProgressModel {
     /// Re-evaluates Today and reloads when the Day rolled over or the last load failed.
     func refreshToday() async {
         let current = Day.current
-        let hasFailed = if case .failed = state { true } else { false }
-        guard current != today || hasFailed else { return }
+        guard current != today || state.isFailed else { return }
         today = current
         await loadToday()
     }
