@@ -11,5 +11,6 @@ cat >&2 <<'EOF'
 Raw xcodebuild builds and tests are blocked in this repo. Use the MobileBuildMCP tools instead:
 - app target: build_sim, test_sim, build_run_sim (defaults: docs/agents/build-setup.md)
 - local packages: scripts/check.sh
+- in a worktree: session_set_defaults projectPath to its .xcodeproj, without persist
 EOF
 exit 2
