@@ -4,7 +4,7 @@
 
 **Blocked by:** 04 Lock Screen widget extension
 
-**Status:** ready-for-human
+**Status:** resolved
 
 - [x] The URLs (Blister screen for a Pill Type id, and the "configure" URL) are built and parsed in one place shared by the app and the widget
 - [x] The app registers its URL scheme and handles the URL with `onOpenURL`: the Blister URL resets the navigation path to `[.blister(pillTypeID:)]`; an unknown or deleted Pill Type id opens Home
