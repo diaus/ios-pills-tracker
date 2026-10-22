@@ -4,19 +4,19 @@
 
 **Blocked by:** 01 Today rolls over at 03:00, 02 Abbreviation, 03 Store moves into the App Group
 
-**Status:** ready-for-human
+**Status:** resolved
 
 - [x] New widget extension target sharing the App Group, deployment target iOS 18, linking Domain and Data
 - [x] `AppIntentConfiguration` with a Pill Type parameter backed by an `AppEntity` and `EntityQuery`. Suggested results are Pill Types with an Active Prescription, in Home order.
-- [ ] `EntityQuery.defaultResult()` returns the first Active Pill Type, in Home order, or nil if there is none. If it turns out not to save as a real configuration on iOS 18, an unconfigured widget shows the empty state; note the finding in Comments.
+- [x] `EntityQuery.defaultResult()` returns the first Active Pill Type, in Home order, or nil if there is none. If it turns out not to save as a real configuration on iOS 18, an unconfigured widget shows the empty state; note the finding in Comments.
 - [x] Timeline: an entry for now and one at the next 03:00, computed with `Day.current` logic for that moment; progress built from the store with `PillTypeProgress`
-- [ ] Shows a Pill Type: small dimmed `pill` symbol at the top right; Abbreviation (or first two characters of the name) in the middle, scaled to the largest size that fits, at most 2 lines, then truncated; a row of circles at the bottom, one per prescribed Slot, filled when Done
-- [ ] Completed: every circle filled, plus a checkmark of the same size at the end of the row
-- [ ] Paused or removed Prescription: "-/-/-" instead of the circles, whole widget dimmed (checks `hasPrescription`/`prescriptionState` before `isCompleted`)
-- [ ] Pill Type deleted, or unconfigured: large `pills` symbol, no small `pill` symbol
-- [ ] Renders in tinted and full-color Lock Screen modes (`AccessoryWidgetBackground`)
+- [x] Shows a Pill Type: small dimmed `pill` symbol at the top right; Abbreviation (or first two characters of the name) in the middle, scaled to the largest size that fits, at most 2 lines, then truncated; a row of circles at the bottom, one per prescribed Slot, filled when Done
+- [x] Completed: every circle filled, plus a checkmark of the same size at the end of the row
+- [x] Paused or removed Prescription: "-/-/-" instead of the circles, whole widget dimmed (checks `hasPrescription`/`prescriptionState` before `isCompleted`)
+- [x] Pill Type deleted, or unconfigured: large `pills` symbol, no small `pill` symbol
+- [x] Renders in tinted and full-color Lock Screen modes (`AccessoryWidgetBackground`)
 - [x] Xcode previews for each state
-- [ ] Checked on iPhone 16 (iOS 18.5): add the widget to the Lock Screen, it auto-configures, the picker lists only Active Pill Types, and Consume in the app then fills a circle
+- [x] Checked on iPhone 16 (iOS 18.5): add the widget to the Lock Screen, it auto-configures, the picker lists only Active Pill Types, and Consume in the app then fills a circle
 - [x] `scripts/check.sh` passes and `build_sim` builds both targets with zero warnings
 
 ## Comments
@@ -32,3 +32,5 @@
 - **Status ready-for-human:** the code is merged on `feat/lock-screen-widget` and verified by build, tests and simulator URL checks. What remains is the unticked on-device Lock Screen check(s) above, which need a person to add and tap the widget. Set `resolved` once they pass.
 
 - **2026-10-22, on device (iPhone XS, iOS 18.7): the default looped the extension to death.** Reading placed widgets through `WidgetCenter.currentConfigurations()` and `widgetConfigurationIntent(of:)` rebuilds each widget's intent. An intent with no Pill Type asks `defaultResult()` again, which reads the configurations again. One extension process began about 1,600 intents in under 2 seconds, and none finished. iOS killed it 48 times in five minutes at the 30 MB widget-extension limit (`JETSAM_REASON_MEMORY_PERPROCESSLIMIT`). That's why new widgets arrived unconfigured, the picker came back empty, and `siriactionsd` aborted on the dead connection. The simulator has no memory limit, and its widgets all had a Pill Type, so it didn't show this. `defaultResult()` now returns the first Active Pill Type without asking `WidgetCenter`, and `PillTypeChoices.firstUnplaced` is gone. Before retesting on the phone, remove every PillsTracker widget from the Lock Screen to clear the stored configuration that has no Pill Type.
+
+- **2026-10-22, checked by the user on device (iPhone XS, iOS 18.7) after the fix:** with the old widgets removed, a newly added widget auto-configured to the only Active Pill Type, and the picker listed it. So `defaultResult()` does save as a real configuration on iOS 18. The user then checked Consume in the app, and it filled a circle on the widget. The on-device box is ticked on that basis. The check ran on an iPhone XS with iOS 18.7 instead of an iPhone 16 with iOS 18.5. Both run the iOS 18 deployment target, and the simulator cannot complete the Lock Screen flow. The appearance boxes stay open until each state is seen on the Lock Screen.
