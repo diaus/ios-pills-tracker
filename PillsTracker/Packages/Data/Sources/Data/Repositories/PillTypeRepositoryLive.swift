@@ -4,7 +4,7 @@ import SwiftData
 import Utils
 
 /// SwiftData-backed `PillTypeRepository`. All model access happens on this actor, in one `ModelContext`,
-/// and every write is one save followed by one change notification and one run of `afterSave`.
+/// and every write is one save followed by one change notification and one run of `afterStoreSave`.
 ///
 /// The `ModelActor` conformance is written out rather than taken from `@ModelActor`, whose synthesised
 /// `init(modelContainer:)` would leave the notifier without a value.
@@ -12,20 +12,20 @@ public actor PillTypeRepositoryLive: PillTypeRepository, ModelActor {
     public nonisolated let modelContainer: ModelContainer
     public nonisolated let modelExecutor: any ModelExecutor
     private let notifier: ChangeNotifier
-    private let afterSave: @Sendable () -> Void
+    private let afterStoreSave: @Sendable () -> Void
 
     /// A repository whose writes nobody observes, such as the widget extension's reader, leaves out `notifier`.
-    /// `afterSave` runs on this actor after each successful save, never after a failed one; the app uses it
+    /// `afterStoreSave` runs on this actor after each successful save, never after a failed one; the app uses it
     /// to tell other processes, such as the widget, that the store changed.
     public init(
         modelContainer: ModelContainer,
         notifier: ChangeNotifier = ChangeNotifier(),
-        afterSave: @escaping @Sendable () -> Void = {}
+        afterStoreSave: @escaping @Sendable () -> Void = {}
     ) {
         self.modelContainer = modelContainer
         modelExecutor = DefaultSerialModelExecutor(modelContext: ModelContext(modelContainer))
         self.notifier = notifier
-        self.afterSave = afterSave
+        self.afterStoreSave = afterStoreSave
     }
 
     public func fetchAll() throws -> [PillTypeAggregate] {
@@ -122,7 +122,7 @@ public actor PillTypeRepositoryLive: PillTypeRepository, ModelActor {
             throw error
         }
         notifier.notify()
-        afterSave()
+        afterStoreSave()
     }
 
     private func pillTypeModel(for id: UUID) throws -> PillTypeModel? {

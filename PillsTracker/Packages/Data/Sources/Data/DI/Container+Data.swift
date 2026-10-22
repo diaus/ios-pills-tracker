@@ -32,7 +32,7 @@ public extension Container {
             PillTypeRepositoryLive(
                 modelContainer: self.modelContainer(),
                 notifier: self.dataChangeNotifier(),
-                afterSave: self.afterStoreSave()
+                afterStoreSave: self.afterStoreSave()
             )
         }
         .singleton
