@@ -19,11 +19,8 @@ struct EditPillTypeSheet: View {
         NavigationStack {
             Form {
                 PillTypeFormFields(
-                    name: $model.name,
-                    abbreviation: $model.abbreviation,
-                    rows: $model.rows,
-                    columns: $model.columns,
-                    error: model.validationError,
+                    form: $model.form,
+                    error: model.submission.validationError,
                     shapeFooter: model.isShapeLocked ? .pillTypeShapeLocked : .pillTypeShapeFooter,
                     isShapeLocked: model.isShapeLocked
                 )
@@ -34,7 +31,7 @@ struct EditPillTypeSheet: View {
                     }
                 }
             }
-            .disabled(model.isSaving)
+            .disabled(model.submission.isSaving)
             .navigationTitle(.pillTypeTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -62,7 +59,7 @@ struct EditPillTypeSheet: View {
             } message: {
                 Text(.pillTypeDeleteConfirmMessage)
             }
-            .errorAlert(message: $model.errorMessage)
+            .errorAlert(message: Bindable(model.submission).errorMessage)
         }
     }
 }

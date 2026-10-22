@@ -14,10 +14,8 @@ final class PrescriptionViewModel {
     private(set) var aggregate: PillTypeAggregate
     var selectedSlots: Set<Slot>
     var selectedDays: PrescriptionDaysSelection
-    /// The rule the change broke, shown under the Slots.
-    private(set) var validationError: DomainError?
-    var errorMessage: LocalizedStringResource?
-    private(set) var isSaving = false
+    /// Its validation error is shown under the Slots.
+    let submission = FormSubmission()
 
     /// A new Prescription starts on `today` unless the user picks another Day.
     init(aggregate: PillTypeAggregate, today: Day) {
@@ -56,18 +54,8 @@ final class PrescriptionViewModel {
     }
 
     private func update(_ change: @escaping @Sendable (inout PillTypeAggregate) throws(DomainError) -> Void) async -> Bool {
-        validationError = nil
-        isSaving = true
-        defer { isSaving = false }
-        do {
+        await submission.run {
             aggregate = try await updatePillType(pillTypeID: aggregate.id, change)
-            return true
-        } catch let error as DomainError {
-            validationError = error
-            return false
-        } catch {
-            errorMessage = error.userMessage
-            return false
         }
     }
 }

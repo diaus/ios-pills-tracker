@@ -15,22 +15,12 @@ final class EditPillTypeViewModel {
 
     /// The Pill Type as the sheet opened on; the form starts from it.
     let aggregate: PillTypeAggregate
-    var name: String
-    /// Empty means not set.
-    var abbreviation: String
-    var rows: Int
-    var columns: Int
-    /// The rule the form broke; `PillTypeFormFields` shows it under its field.
-    private(set) var validationError: DomainError?
-    var errorMessage: LocalizedStringResource?
-    private(set) var isSaving = false
+    var form: PillTypeForm
+    let submission = FormSubmission()
 
     init(aggregate: PillTypeAggregate) {
         self.aggregate = aggregate
-        name = aggregate.pillType.name
-        abbreviation = aggregate.pillType.abbreviation ?? ""
-        rows = aggregate.pillType.shape.rows
-        columns = aggregate.pillType.shape.columns
+        form = PillTypeForm(aggregate)
     }
 
     var isShapeLocked: Bool { !aggregate.canChangeShape }
@@ -38,37 +28,16 @@ final class EditPillTypeViewModel {
     /// Applies the rename, the Abbreviation and, when it changed, the new shape. Returns true on success so
     /// the sheet can dismiss.
     func save() async -> Bool {
-        validationError = nil
-        let name = name, abbreviation = abbreviation, rows = rows, columns = columns
-        return await persist {
-            try await updatePillType(pillTypeID: aggregate.id) { aggregate throws(DomainError) in
-                try aggregate.rename(name)
-                aggregate.setAbbreviation(abbreviation)
-                let shape = try GridShape(rows: rows, columns: columns)
-                if shape != aggregate.pillType.shape {
-                    try aggregate.changeShape(shape)
-                }
+        let form = form
+        return await submission.run {
+            _ = try await updatePillType(pillTypeID: aggregate.id) { aggregate throws(DomainError) in
+                try form.apply(to: &aggregate)
             }
         }
     }
 
     /// Deletes the Pill Type; the Data layer cascades its Prescription, Blisters and Intakes.
     func delete() async -> Bool {
-        await persist { try await repository.delete(id: aggregate.id) }
-    }
-
-    private func persist(_ write: () async throws -> Void) async -> Bool {
-        isSaving = true
-        defer { isSaving = false }
-        do {
-            try await write()
-            return true
-        } catch let error as DomainError {
-            validationError = error
-            return false
-        } catch {
-            errorMessage = error.userMessage
-            return false
-        }
+        await submission.run { try await repository.delete(id: aggregate.id) }
     }
 }

@@ -17,7 +17,7 @@ struct PrescriptionSheet: View {
             Form {
                 Section {
                     SlotToggles(selection: $model.selectedSlots)
-                    if let validationError = model.validationError {
+                    if let validationError = model.submission.validationError {
                         Text(validationError.message)
                             .font(.footnote)
                             .foregroundStyle(.red)
@@ -55,7 +55,7 @@ struct PrescriptionSheet: View {
                     }
                 }
             }
-            .disabled(model.isSaving)
+            .disabled(model.submission.isSaving)
             .navigationTitle(model.hasPrescription ? .prescriptionTitleEdit : .prescriptionTitleNew)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -80,7 +80,7 @@ struct PrescriptionSheet: View {
             } message: {
                 Text(.prescriptionDeleteConfirmMessage)
             }
-            .errorAlert(message: $model.errorMessage)
+            .errorAlert(message: Bindable(model.submission).errorMessage)
         }
     }
 }
