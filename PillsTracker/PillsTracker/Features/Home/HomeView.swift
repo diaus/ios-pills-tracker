@@ -110,5 +110,7 @@ struct HomeView: View {
 }
 
 #Preview {
-    HomeView(dailyProgress: .preview(.loaded(PillTypeProgress.previewAll)))
+    @Previewable @State var dailyProgress = DailyProgressModel.preview(PreviewPillTypeRepository(PillTypeProgress.previewAll))
+    HomeView(dailyProgress: dailyProgress)
+        .task { await dailyProgress.run() }
 }

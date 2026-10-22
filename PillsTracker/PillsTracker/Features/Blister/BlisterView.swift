@@ -189,22 +189,25 @@ struct BlisterView: View {
 }
 
 #Preview {
+    @Previewable @State var dailyProgress = DailyProgressModel.preview(PreviewPillTypeRepository([.previewVitaminD]))
     NavigationStack {
-        BlisterView(
-            pillTypeID: PillTypeProgress.previewVitaminD.id,
-            dailyProgress: .preview(.loaded([.previewVitaminD]))
-        ) {}
+        BlisterView(pillTypeID: PillTypeProgress.previewVitaminD.id, dailyProgress: dailyProgress) {}
     }
+    .task { await dailyProgress.run() }
 }
 
 #Preview("Loading") {
+    @Previewable @State var dailyProgress = DailyProgressModel.preview(.neverLoads)
     NavigationStack {
-        BlisterView(pillTypeID: UUID(), dailyProgress: .preview(.loading)) {}
+        BlisterView(pillTypeID: UUID(), dailyProgress: dailyProgress) {}
     }
+    .task { await dailyProgress.run() }
 }
 
 #Preview("Failed") {
+    @Previewable @State var dailyProgress = DailyProgressModel.preview(.fails)
     NavigationStack {
-        BlisterView(pillTypeID: UUID(), dailyProgress: .preview(.failed(.commonErrorUnknown))) {}
+        BlisterView(pillTypeID: UUID(), dailyProgress: dailyProgress) {}
     }
+    .task { await dailyProgress.run() }
 }

@@ -35,13 +35,17 @@ struct PillTypesListView: View {
 }
 
 #Preview {
+    @Previewable @State var dailyProgress = DailyProgressModel.preview(PreviewPillTypeRepository(PillTypeProgress.previewAll))
     NavigationStack {
-        PillTypesListView(dailyProgress: .preview(.loaded(PillTypeProgress.previewAll)))
+        PillTypesListView(dailyProgress: dailyProgress)
     }
+    .task { await dailyProgress.run() }
 }
 
 #Preview("Empty") {
+    @Previewable @State var dailyProgress = DailyProgressModel.preview(PreviewPillTypeRepository())
     NavigationStack {
-        PillTypesListView(dailyProgress: .preview(.loaded([])))
+        PillTypesListView(dailyProgress: dailyProgress)
     }
+    .task { await dailyProgress.run() }
 }

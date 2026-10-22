@@ -34,8 +34,6 @@ final class DailyProgressModel {
 
     private(set) var state = State.loading
     private(set) var today = Day.current
-    /// Set by `preview`: `state` is fixed and `observeProgress(on:)` serves it instead of loading.
-    private var isFixed = false
     /// The wait for the next 03:00, which `refreshToday()` restarts.
     @ObservationIgnored private var rolloverWait: Task<Void, any Error>?
 
@@ -58,10 +56,6 @@ final class DailyProgressModel {
         on day: Day,
         _ deliver: @MainActor (Result<[PillTypeProgress], any Error>) -> Void
     ) async {
-        if isFixed {
-            deliver(.success(progress ?? []))
-            return
-        }
         await reloadingAfterWrites {
             let result = await Result { try await self.dailyProgress(day: day) }
             // A load the caller stopped waiting for mid-flight would otherwise land on its next Day.
@@ -115,15 +109,5 @@ final class DailyProgressModel {
         } catch {
             state = .failed(error.userMessage)
         }
-    }
-}
-
-extension DailyProgressModel {
-    /// A model already in `state`, for previews; it never loads.
-    static func preview(_ state: State) -> DailyProgressModel {
-        let model = DailyProgressModel()
-        model.state = state
-        model.isFixed = true
-        return model
     }
 }
