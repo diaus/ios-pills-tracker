@@ -1,10 +1,10 @@
-import Domain
 import Foundation
 import WidgetKit
 
-/// Builds the widget's entries from the App Group store: one for now and one at the next rollover, each
-/// with the Pill Type's progress for what Today is at that moment (ADR 0004).
+/// Hands WidgetKit the entries `PillTypeWidgetTimeline` builds from the App Group store for the configured Pill Type.
 nonisolated struct PillTypeTimelineProvider: AppIntentTimelineProvider {
+    private let timeline = PillTypeWidgetTimeline(openStore: WidgetStore.repository)
+
     func placeholder(in context: Context) -> PillTypeWidgetEntry {
         PillTypeWidgetEntry(date: .now, pillTypeID: nil, content: .sample)
     }
@@ -13,50 +13,10 @@ nonisolated struct PillTypeTimelineProvider: AppIntentTimelineProvider {
         if context.isPreview, configuration.pillType == nil {
             return PillTypeWidgetEntry(date: .now, pillTypeID: nil, content: .sample)
         }
-        return await entries(for: configuration.pillType?.id, at: [.now])[0]
+        return await timeline.entries(for: configuration.pillType?.id, at: [.now])[0]
     }
 
     func timeline(for configuration: PillTypeWidgetIntent, in context: Context) async -> Timeline<PillTypeWidgetEntry> {
-        let now = Date.now
-        let dates = [now] + [Day.nextRollover(after: now, calendar: .current)].compactMap(\.self)
-        let entries = await entries(for: configuration.pillType?.id, at: dates)
-        // At the rollover entry WidgetKit asks again, so the timeline always reaches the next one. A store
-        // that couldn't be read is tried again soon instead.
-        let policy: TimelineReloadPolicy = entries.contains { $0.content == .unreadable }
-            ? .after(now.addingTimeInterval(Self.retryDelay))
-            : .atEnd
-        return Timeline(entries: entries, policy: policy)
-    }
-
-    /// How long a widget whose store couldn't be read waits before WidgetKit asks again.
-    private static let retryDelay: TimeInterval = 15 * 60
-
-    /// One entry per date, for the Pill Type `pillTypeID`: no Pill Type when it's nil or deleted, and
-    /// unreadable when the store can't be read.
-    private func entries(for pillTypeID: UUID?, at dates: [Date]) async -> [PillTypeWidgetEntry] {
-        guard let pillTypeID else {
-            return dates.map { PillTypeWidgetEntry(date: $0, pillTypeID: nil, content: .noPillType) }
-        }
-        // One fresh read of the store for all of this call's entries.
-        let repository = Result { try WidgetStore.repository() }
-        var entries: [PillTypeWidgetEntry] = []
-        for date in dates {
-            let content: PillTypeWidgetContent
-            do {
-                let day = Day.current(at: date, calendar: .current)
-                content = PillTypeWidgetContent(progress: try await progress(of: pillTypeID, on: day, in: repository.get()))
-            } catch {
-                content = .unreadable
-            }
-            entries.append(PillTypeWidgetEntry(date: date, pillTypeID: pillTypeID, content: content))
-        }
-        return entries
-    }
-
-    /// The Pill Type's progress on `day`; nil when there's no such Pill Type, or no store yet.
-    private func progress(of pillTypeID: UUID, on day: Day, in repository: (any PillTypeRepository)?) async throws -> PillTypeProgress? {
-        guard let repository, let aggregate = try await repository.fetch(id: pillTypeID) else { return nil }
-        let intakes = try await repository.intakes(on: day, pillTypeID: pillTypeID)
-        return PillTypeProgress(aggregate: aggregate, day: day, intakes: intakes)
+        await timeline.timeline(for: configuration.pillType?.id, now: .now)
     }
 }
