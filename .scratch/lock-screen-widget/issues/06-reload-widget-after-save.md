@@ -4,10 +4,14 @@
 
 **Blocked by:** 04 Lock Screen widget extension
 
-**Status:** ready-for-agent
+**Status:** ready-for-human
 
 - [x] `WidgetCenter.shared.reloadAllTimelines()` runs after every successful repository save, in the same place the `ChangeNotifier` signal fires, not in each screen
 - [x] Domain and Data stay free of WidgetKit; the reload is injected or attached at the app's DI layer
 - [ ] Checked on iPhone 16 (iOS 18.5): Consume, Undo, pausing and resuming the Prescription, and editing the Abbreviation each show up on the Lock Screen widget
 - [x] `scripts/check.sh` passes and `build_sim` builds with zero warnings
   - Verified by the merger on `feat/lock-screen-widget` after merging ticket 05: `build_sim` compiles `Container+AutoRegister.swift` with zero warnings, `test_sim` passes 21 tests. On iPhone 16 (iOS 18.5), Consuming a Position on the Blister screen saves (10 → 9 pills left) and the app keeps running; the Lock Screen widget itself was not checked.
+
+## Comments
+
+- **Status ready-for-human:** the code is merged on `feat/lock-screen-widget` and verified by build, tests and simulator URL checks. What remains is the unticked on-device Lock Screen check(s) above, which need a person to add and tap the widget. Set `resolved` once they pass.

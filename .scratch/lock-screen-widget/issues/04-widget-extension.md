@@ -4,7 +4,7 @@
 
 **Blocked by:** 01 Today rolls over at 03:00, 02 Abbreviation, 03 Store moves into the App Group
 
-**Status:** ready-for-agent
+**Status:** ready-for-human
 
 - [x] New widget extension target sharing the App Group, deployment target iOS 18, linking Domain and Data
 - [x] `AppIntentConfiguration` with a Pill Type parameter backed by an `AppEntity` and `EntityQuery`. Suggested results are Pill Types with an Active Prescription, in Home order.
@@ -28,3 +28,5 @@
 - **Today and the rollover.** Domain `Day.current(at:calendar:)` and `Day.nextRollover(after:calendar:)` hold the 03:00 rule, and `DailyProgressModel` uses `nextRollover` too. Both have `DayTests` in UTC, so daylight saving doesn't enter the tests (ADR 0004). The timeline has `[now, next 03:00]` with `.atEnd`, and each entry's progress is read for `Day.current(at:)` of its own date.
 - **Pure rules are tested in the app's test target.** `Timeline/PillTypeWidgetContent.swift` (progress to face, checking the Prescription's state before `isCompleted`) and `Configuration/PillTypeChoices.swift` (Active in Home order, first unplaced) are also members of `PillsTrackerTests`, through a synchronized-folder membership exception, so `test_sim` runs `PillTypeWidgetContentTests` and `PillTypeChoicesTests`. `entities(for:)` resolves any stored Pill Type, not only Active ones, so a Paused or removed Prescription keeps its configuration and shows "-/-/-".
 - **Strings.** The app's `Localizable.xcstrings` is also a member of the widget target, so the widget uses the generated `.widgetTitle` and `.widgetDescription` (added with `scripts/xcstrings.py`; `widget` was added to the `catalog_key_literal` prefixes). App Intents metadata (the intent's `title`, `@Parameter(title:)`, `typeDisplayRepresentation`) must be a string literal, and the metadata processor rejects catalog symbols, so those three say "Pill Type" literally. The widget target has `SWIFT_EMIT_LOC_STRINGS = NO`, like the app.
+
+- **Status ready-for-human:** the code is merged on `feat/lock-screen-widget` and verified by build, tests and simulator URL checks. What remains is the unticked on-device Lock Screen check(s) above, which need a person to add and tap the widget. Set `resolved` once they pass.

@@ -4,7 +4,7 @@
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 - [x] Domain: `PillType` has an optional `abbreviation`. Blank after trimming whitespace is stored as not set. No length limit.
 - [x] Domain: one place that answers "the text to show in short form": the Abbreviation when set, otherwise the first two characters of the name
