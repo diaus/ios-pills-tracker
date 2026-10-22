@@ -35,6 +35,6 @@ nonisolated enum PillTypeWidgetContent: Hashable {
 }
 
 extension PillTypeWidgetContent {
-    /// Stands in for a real Pill Type in the widget gallery and while the widget loads.
+    /// Stands in for a real Pill Type in the widget gallery.
     nonisolated static let sample = PillTypeWidgetContent.withActivePrescription(abbreviation: "D3", slotsDone: [true, false])
 }

@@ -5,8 +5,10 @@ import WidgetKit
 nonisolated struct PillTypeTimelineProvider: AppIntentTimelineProvider {
     private let timeline = PillTypeWidgetTimeline(openStore: WidgetStore.repository)
 
+    /// The empty state, not `.sample`: iOS keeps showing the placeholder while it has no configuration for a new
+    /// widget, and a sample Pill Type there would read as real Slots.
     func placeholder(in context: Context) -> PillTypeWidgetEntry {
-        PillTypeWidgetEntry(date: .now, pillTypeID: nil, content: .sample)
+        PillTypeWidgetEntry(date: .now, pillTypeID: nil, content: .noPillType)
     }
 
     func snapshot(for configuration: PillTypeWidgetIntent, in context: Context) async -> PillTypeWidgetEntry {
