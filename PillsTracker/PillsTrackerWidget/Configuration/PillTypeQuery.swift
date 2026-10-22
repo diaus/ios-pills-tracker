@@ -1,10 +1,9 @@
 import AppIntents
 import Domain
 import Foundation
-import WidgetKit
 
 /// The Pill Types the widget can be configured with: the picker suggests those with an Active Prescription,
-/// in Home order, and a new widget picks the first one no placed widget shows yet.
+/// in Home order, and a new widget picks the first of them.
 nonisolated struct PillTypeQuery: EntityQuery {
     /// Any stored Pill Type, Active or not, so a widget whose Prescription is Paused or removed keeps its
     /// configuration. A deleted Pill Type isn't found, and the widget shows the empty state.
@@ -18,15 +17,13 @@ nonisolated struct PillTypeQuery: EntityQuery {
         PillTypeChoices.active(in: try await storedPillTypes()).map(PillTypeEntity.init)
     }
 
-    /// The first Active Pill Type not already configured in a placed widget, or nil when none is left.
-    /// Best effort: iOS is reported to reuse the first answer for later widgets (FB15592256).
+    /// The first Active Pill Type, or nil when there is none.
+    /// It doesn't skip Pill Types that placed widgets already show: reading their configurations through
+    /// `WidgetCenter` rebuilds each intent, and an intent without a Pill Type asks for this default again. That
+    /// loop got the extension killed for memory on device.
     func defaultResult() async -> PillTypeEntity? {
-        let widgets = (try? await WidgetCenter.shared.currentConfigurations()) ?? []
-        let placed = Set(widgets.filter { $0.kind == PillTypeWidget.kind }.compactMap {
-            $0.widgetConfigurationIntent(of: PillTypeWidgetIntent.self)?.pillType?.id
-        })
         guard let aggregates = try? await storedPillTypes() else { return nil }
-        return PillTypeChoices.firstUnplaced(in: PillTypeChoices.active(in: aggregates), placed: placed).map(PillTypeEntity.init)
+        return PillTypeChoices.active(in: aggregates).first.map(PillTypeEntity.init)
     }
 
     /// Every stored Pill Type in Home order; none while the app hasn't created the store.
