@@ -79,6 +79,7 @@
 				Configuration/PillTypeChoices.swift,
 				Timeline/PillTypeWidgetContent.swift,
 				Timeline/PillTypeWidgetEntry.swift,
+				Timeline/PillTypeWidgetTimeline.swift,
 			);
 			target = 4987D452306BC13C0079A444 /* PillsTrackerTests */;
 		};
