@@ -16,6 +16,7 @@ Judgement calls for reviewing a diff. Tooling already enforces the mechanical ru
   - Utils: one folder per topic, e.g. `Concurrency/`.
   - App: `App/`, `Composition/`, `Features/<Feature>/` (a view and its view model), `Shared/{Components,Extensions,Modifiers}/`.
   Mixed folders get split. Repositories and helper infrastructure don't share a folder.
+- **A use case composes repository calls.** One exists only where a read or write needs more than one: Consume, Undo and Sync Edit load the Intakes the aggregate needs and pair the save; `UpdatePillType` fetches, applies a change, then stores; Daily Progress and Intake History compose queries. A single repository call, such as create or delete, is made directly, and a change that only needs the aggregate goes through `UpdatePillType` with a closure, never a use case of its own.
 - **No speculative abstraction.** Add a protocol, wrapper or injection point only for a need the current spec has. Use cases take `Day` as a parameter; there is no clock or `DateProvider` (ADR 0001). A two-case enum that only means yes/no is a `Bool`.
 
 ## Naming

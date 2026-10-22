@@ -10,9 +10,9 @@ import SwiftUI
 @MainActor @Observable
 final class BlisterViewModel {
     @ObservationIgnored @Injected(\.syncPosition) private var syncPosition
-    @ObservationIgnored @Injected(\.startNewBlister) private var startNewBlister
     @ObservationIgnored @Injected(\.consume) private var consume
     @ObservationIgnored @Injected(\.undo) private var undo
+    @ObservationIgnored @Injected(\.updatePillType) private var updatePillType
 
     let pillTypeID: UUID
     let dailyProgress: DailyProgressModel
@@ -95,8 +95,11 @@ final class BlisterViewModel {
         await perform { try await syncPosition(pillTypeID: pillTypeID, position: position, isPresent: isPresent) }
     }
 
+    /// Start New Blister: retires the empty Current Blister and starts a full one.
     func startNewBlister() async {
-        await perform { try await startNewBlister(pillTypeID: pillTypeID) }
+        await perform {
+            try await updatePillType(pillTypeID: pillTypeID) { aggregate throws(DomainError) in try aggregate.startNewBlister() }
+        }
     }
 
     /// Moves the Selected Day; its progress is gone until `run` loads the new Day's.

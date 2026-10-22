@@ -105,7 +105,7 @@ struct IntakePersistenceTests {
         }
         try await repository.update(aggregate)
 
-        try await StartNewBlister(repository: repository)(pillTypeID: aggregate.id)
+        try await UpdatePillType(repository: repository)(pillTypeID: aggregate.id) { aggregate throws(DomainError) in try aggregate.startNewBlister() }
 
         let fetched = try #require(try await repository.intake(id: intake.id))
         #expect(fetched == intake)

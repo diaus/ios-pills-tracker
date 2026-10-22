@@ -32,6 +32,48 @@ struct PillTypeAggregateTests {
         #expect(aggregate.currentBlister?.state == .current)
     }
 
+    // MARK: Start New Blister
+
+    @Test func startNewBlisterRefusesWhileAnyPositionIsPresent() throws {
+        var aggregate = try PillTypeAggregate.new(name: "Aspirin", rows: 2, columns: 2, createdAt: Date(timeIntervalSince1970: 0))
+        try aggregate.syncCurrentBlister(present: [Position(row: 1, column: 1)])
+        let before = aggregate
+
+        #expect(throws: DomainError.currentBlisterNotEmpty) { try aggregate.startNewBlister() }
+        #expect(aggregate == before)
+    }
+
+    @Test func startNewBlisterRetiresTheEmptyCurrentBlisterAndStartsAFullOne() throws {
+        var aggregate = try PillTypeAggregate.new(name: "Aspirin", rows: 2, columns: 2, createdAt: Date(timeIntervalSince1970: 0))
+        try aggregate.syncCurrentBlister(present: [])
+        let oldBlister = try #require(aggregate.currentBlister)
+
+        try aggregate.startNewBlister()
+
+        #expect(aggregate.blisters.count == 2)
+        let retired = try #require(aggregate.blisters.first { $0.id == oldBlister.id })
+        #expect(retired.state == .retired)
+        #expect(retired.presentPositions.isEmpty)
+        let current = try #require(aggregate.currentBlister)
+        #expect(current.id != oldBlister.id)
+        #expect(current.pillTypeID == aggregate.id)
+        #expect(current.presentPositions == Set(aggregate.pillType.shape.allPositions))
+        #expect(current.presentPositions.count == 4)
+    }
+
+    @Test func aRetiredBlisterKeepsItsFinalGridWhenAnotherIsRetiredLater() throws {
+        var aggregate = try PillTypeAggregate.new(name: "Aspirin", rows: 2, columns: 2, createdAt: Date(timeIntervalSince1970: 0))
+        let earlier = Blister(pillTypeID: aggregate.id, shape: aggregate.pillType.shape, state: .retired, presentPositions: [Position(row: 0, column: 0)])
+        aggregate = aggregate.inserting(earlier)
+        try aggregate.syncCurrentBlister(present: [])
+
+        try aggregate.startNewBlister()
+
+        #expect(aggregate.blisters.first { $0.id == earlier.id } == earlier)
+        #expect(aggregate.blisters.filter { $0.state == .current }.count == 1)
+        #expect(aggregate.blisters.count == 3)
+    }
+
     // MARK: Undo
 
     private let position = Position(row: 0, column: 1)
