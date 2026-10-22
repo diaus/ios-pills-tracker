@@ -8,10 +8,6 @@ extension Container {
         self { SyncPosition(repository: self.pillTypeRepository()) }
     }
 
-    nonisolated var startNewBlister: Factory<StartNewBlister> {
-        self { StartNewBlister(repository: self.pillTypeRepository()) }
-    }
-
     nonisolated var consume: Factory<Consume> {
         self { Consume(repository: self.pillTypeRepository()) }
     }

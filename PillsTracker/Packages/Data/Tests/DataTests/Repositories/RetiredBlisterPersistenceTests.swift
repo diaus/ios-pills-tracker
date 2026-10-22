@@ -16,7 +16,7 @@ struct RetiredBlisterPersistenceTests {
         let oldID = try #require(aggregate.currentBlister?.id)
         try await repository.create(aggregate)
 
-        try await StartNewBlister(repository: repository)(pillTypeID: aggregate.id)
+        try await UpdatePillType(repository: repository)(pillTypeID: aggregate.id) { aggregate throws(DomainError) in try aggregate.startNewBlister() }
 
         let fetched = try #require(try await repository.fetch(id: aggregate.id))
         #expect(fetched.blisters.count == 2)

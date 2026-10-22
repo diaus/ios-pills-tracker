@@ -68,7 +68,7 @@ struct EditPillTypeTests {
         #expect(stored.currentBlister?.shape == oldShape)
         #expect(stored.pillType.shape == newShape)
 
-        try await StartNewBlister(repository: repository)(pillTypeID: aggregate.id)
+        try await UpdatePillType(repository: repository)(pillTypeID: aggregate.id) { aggregate throws(DomainError) in try aggregate.startNewBlister() }
 
         let after = try #require(await repository.fetch(id: aggregate.id))
         let retired = try #require(after.blisters.first { $0.id == emptyCurrent.id })
