@@ -144,11 +144,11 @@ struct PillTypeRepositoryLiveTests {
         #expect(await iterator.next() != nil)
     }
 
-    @Test func everySuccessfulWriteRunsTheAfterSaveHookOnce() async throws {
+    @Test func everySuccessfulWriteRunsTheAfterStoreSaveHookOnce() async throws {
         let saves = Mutex(0)
         let repository = PillTypeRepositoryLive(
             modelContainer: try PillsModelContainer.make(inMemory: true),
-            afterSave: { saves.withLock { $0 += 1 } }
+            afterStoreSave: { saves.withLock { $0 += 1 } }
         )
         var aggregate = try PillTypeAggregate.new(name: "Aspirin", rows: 1, columns: 2, createdAt: Date(timeIntervalSince1970: 1_000))
         try aggregate.setPrescription(slots: [.morning], startDay: Day(year: 2026, month: 1, day: 1), endDay: nil)
@@ -174,11 +174,11 @@ struct PillTypeRepositoryLiveTests {
         #expect(saves.withLock { $0 } == 5)
     }
 
-    @Test func aFailedWriteDoesNotRunTheAfterSaveHook() async throws {
+    @Test func aFailedWriteDoesNotRunTheAfterStoreSaveHook() async throws {
         let saves = Mutex(0)
         let repository = PillTypeRepositoryLive(
             modelContainer: try PillsModelContainer.make(inMemory: true),
-            afterSave: { saves.withLock { $0 += 1 } }
+            afterStoreSave: { saves.withLock { $0 += 1 } }
         )
         let neverStored = try PillTypeAggregate.new(name: "Aspirin", rows: 1, columns: 1, createdAt: Date(timeIntervalSince1970: 1_000))
 

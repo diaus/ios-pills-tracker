@@ -3,14 +3,16 @@ import SwiftUI
 
 struct HomeView: View {
     @State private var model: HomeViewModel
+    @State private var widgetTaps: WidgetTapRouter
     @State private var isAddingPillType = false
 
     init(dailyProgress: DailyProgressModel) {
         _model = State(initialValue: HomeViewModel(dailyProgress: dailyProgress))
+        _widgetTaps = State(initialValue: WidgetTapRouter(dailyProgress: dailyProgress))
     }
 
     var body: some View {
-        NavigationStack(path: $model.path) {
+        NavigationStack(path: $widgetTaps.path) {
             Group {
                 switch model.dailyProgress.state {
                 case .loading:
@@ -69,8 +71,8 @@ struct HomeView: View {
                 case .pillTypes:
                     PillTypesListView(dailyProgress: model.dailyProgress)
                 case .blister(let pillTypeID):
-                    BlisterView(pillTypeID: pillTypeID, dailyProgress: model.dailyProgress) { model.path.removeAll() }
-                        .id(model.widgetTapCount)
+                    BlisterView(pillTypeID: pillTypeID, dailyProgress: model.dailyProgress) { widgetTaps.path.removeAll() }
+                        .id(widgetTaps.blisterIdentity(of: pillTypeID))
                 }
             }
             .toolbar {
@@ -85,12 +87,12 @@ struct HomeView: View {
             AddPillTypeSheet(today: model.dailyProgress.today)
         }
         .errorAlert(message: $model.errorMessage)
-        .alert(Text(.homeWidgetHelp), isPresented: $model.isShowingWidgetHelp) {
+        .alert(Text(.homeWidgetHelp), isPresented: $widgetTaps.isShowingWidgetHelp) {
             Button(.commonOk) {}
         }
-        .onOpenURL { model.open($0) }
+        .onOpenURL { widgetTaps.open($0) }
         // A widget tap that launched the app arrives before Today's progress has loaded.
-        .onChange(of: model.isLoading) { model.openRequestedBlister() }
+        .onChange(of: model.dailyProgress.state.isLoading) { widgetTaps.openRequestedBlister() }
     }
 
     private func pausedRow(_ aggregate: PillTypeAggregate) -> some View {
