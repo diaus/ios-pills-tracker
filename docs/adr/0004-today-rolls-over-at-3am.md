@@ -17,4 +17,4 @@ An evening pill is often taken after midnight, and it should count for the eveni
 
 - Intakes stored before this change between 00:00 and 03:00 keep the calendar Day they were recorded on. They aren't migrated (ADR 0001: the Day the user experienced is the truth).
 - `significantTimeChangeNotification` fires at midnight, not 03:00, so the app also schedules a refresh of Today at the next 03:00. The widget's timeline has an entry there as well.
-- On daylight-saving nights the rollover can be up to an hour off. That's accepted, so `Day.current` has no test.
+- On daylight-saving nights the rollover can be up to an hour off. That's accepted, so daylight-saving nights stay untested, and the clock-reading `Day.current` has no test. The pure variants that take the moment, `Day.current(at:calendar:)` and `Day.nextRollover(after:calendar:)`, are tested at fixed moments away from a daylight-saving change.
