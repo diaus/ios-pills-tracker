@@ -35,7 +35,7 @@ private struct PillTypeFace<Footer: View>: View {
     var body: some View {
         VStack(spacing: 1) {
             Text(abbreviation)
-                .font(.system(size: 26, weight: .semibold, design: .rounded))
+                .font(.system(size: 32, weight: .semibold, design: .rounded))
                 .lineLimit(2)
                 .minimumScaleFactor(0.4)
                 .multilineTextAlignment(.center)
@@ -43,16 +43,16 @@ private struct PillTypeFace<Footer: View>: View {
             footer
                 .frame(height: 9)
         }
-        .padding(.horizontal, 9)
-        .padding(.top, 13)
-        .padding(.bottom, 8)
+        .padding(.top, 10)
+        .padding(.bottom, 2)
         .overlay(alignment: .topTrailing) {
             Image(systemName: "pill")
                 .font(.system(size: 9))
                 .foregroundStyle(.secondary)
-                // Inside the circle's edge at the top right.
-                .padding(.top, 9)
-                .padding(.trailing, 13)
+                // In the face's top right corner. The face is a square (58 pt on an iPhone 16) whose corners the
+                // Lock Screen clips by about 6 pt, so a small inset keeps the symbol whole.
+                .padding(.top, 2)
+                .padding(.trailing, 2)
         }
     }
 }
@@ -62,7 +62,7 @@ private struct SlotDotsRow: View {
     let slotsDone: [Bool]
     let isCompleted: Bool
 
-    private let size: CGFloat = 6
+    private let size: CGFloat = 9
 
     var body: some View {
         HStack(spacing: 3) {
