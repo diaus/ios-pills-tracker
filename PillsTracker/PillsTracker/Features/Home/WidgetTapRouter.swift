@@ -12,7 +12,7 @@ final class WidgetTapRouter {
     var isShowingWidgetHelp = false
     /// Counts widget taps that open a Blister screen, so each one opens it afresh, on Today, even when
     /// the same Pill Type's Blister screen is already on top with another Selected Day.
-    private(set) var blisterTapCount = 0
+    private var blisterTapCount = 0
     /// The Pill Type a widget tap asked for, held until Today's progress has loaded to tell whether it exists.
     private var pillTypeIDToOpen: UUID?
 
@@ -20,6 +20,19 @@ final class WidgetTapRouter {
 
     init(dailyProgress: DailyProgressModel) {
         self.dailyProgress = dailyProgress
+    }
+
+    /// The identity of `pillTypeID`'s Blister screen: new on every widget tap that opens it, and never shared
+    /// with another Pill Type's. A tap bumps the count before the navigation path reaches its destination, so
+    /// the destination is first rebuilt with the Pill Type it showed; keyed on the count alone, the tapped
+    /// Pill Type's screen would then inherit that one's state and keep showing it.
+    func blisterIdentity(of pillTypeID: UUID) -> some Hashable {
+        BlisterIdentity(pillTypeID: pillTypeID, tapCount: blisterTapCount)
+    }
+
+    private struct BlisterIdentity: Hashable {
+        let pillTypeID: UUID
+        let tapCount: Int
     }
 
     /// Follows a widget tap's URL. Any other URL is ignored.
