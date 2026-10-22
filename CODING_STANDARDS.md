@@ -42,7 +42,7 @@ Judgement calls for reviewing a diff. Tooling already enforces the mechanical ru
 
 ## Blast radius
 
-Run `graft build . --no-ignore && graft blast --base <fixed-point> --no-owners` once per review (the build takes under a second and makes a fresh clone work). It lists the code that depends on the changed lines, and marks each changed area `✗` when no test reaches it. Without the `graft` CLI, report this step as skipped.
+Run `graft build . --no-ignore && graft blast --base <fixed-point> --no-owners` once per review (the build takes under a second and makes a fresh clone work). For uncommitted work omit `--base`, which compares the merge base with HEAD and so sees nothing; without it, blast diffs the working tree against HEAD. It lists the code that depends on the changed lines, and marks each changed area `✗` when no test reaches it. Without the `graft` CLI, report this step as skipped.
 
 - **Every listed dependent still fits the change.** Read each one against the new behaviour: a caller that passes old arguments, a screen that shows a changed view, a use case that relies on an old rule.
 - **A `✗` area that holds logic gets a test,** in the package's tests where the logic lives. A view with no logic of its own needs none.

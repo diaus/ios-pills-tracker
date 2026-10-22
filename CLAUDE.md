@@ -12,9 +12,13 @@ Default canonical labels (`needs-triage`, `needs-info`, `ready-for-agent`, `read
 
 Single-context: one `GLOSSARY.md` and `docs/adr/` at the repo root. See `docs/agents/domain.md`.
 
+## Layout
+
+`PillsTracker/PillsTracker.xcodeproj`, with beside it the app `PillsTracker/PillsTracker/`, the widget `PillsTracker/PillsTrackerWidget/`, the app tests `PillsTracker/PillsTrackerTests/` and the local packages `PillsTracker/Packages/{Domain,Data,Utils}`.
+
 ## Building
 
-Build, test and run through the MobileBuildMCP tools (`build_sim`, `test_sim`, `build_run_sim`). Empty session defaults: see `docs/agents/build-setup.md`.
+Build, test and run through the MobileBuildMCP tools (`build_sim`, `test_sim`, `build_run_sim`). Empty session defaults, previews, Release builds, worktrees and screenshots: see `docs/agents/build-setup.md`.
 
 `test_sim` runs only the app target's tests. Before reporting done, run `scripts/check.sh`: it lints the packages, checks the String Catalog format, and runs every local package's tests on the Mac.
 
