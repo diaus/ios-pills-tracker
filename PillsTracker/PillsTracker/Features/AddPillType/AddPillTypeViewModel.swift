@@ -10,20 +10,12 @@ import SwiftUI
 final class AddPillTypeViewModel {
     @ObservationIgnored @Injected(\.pillTypeRepository) private var repository
 
-    var name = ""
-    /// Empty means not set.
-    var abbreviation = ""
-    var rows = 2
-    var columns = 5
+    var form = PillTypeForm()
     /// Slots of the Prescription to create with the Pill Type; none means no Prescription.
     var selectedSlots: Set<Slot> = []
     /// Start Day and End Day of that Prescription; it starts today unless the user picks another Day.
     var selectedDays: PrescriptionDaysSelection
-
-    /// The rule the form broke; `PillTypeFormFields` shows it under its field.
-    private(set) var validationError: DomainError?
-    var errorMessage: LocalizedStringResource?
-    private(set) var isSaving = false
+    let submission = FormSubmission()
 
     init(today: Day) {
         selectedDays = PrescriptionDaysSelection(startDay: today, endDay: nil)
@@ -31,26 +23,12 @@ final class AddPillTypeViewModel {
 
     /// Validates, persists and returns true on success so the sheet can dismiss.
     func save() async -> Bool {
-        validationError = nil
-        var aggregate: PillTypeAggregate
-        do {
-            aggregate = try PillTypeAggregate.new(name: name, abbreviation: abbreviation, rows: rows, columns: columns, createdAt: Date())
+        await submission.run {
+            var aggregate = try form.makeAggregate(createdAt: Date())
             if !selectedSlots.isEmpty {
                 try aggregate.setPrescription(slots: selectedSlots, startDay: selectedDays.startDay, endDay: selectedDays.endDay)
             }
-        } catch {
-            validationError = error
-            return false
-        }
-
-        isSaving = true
-        defer { isSaving = false }
-        do {
             try await repository.create(aggregate)
-            return true
-        } catch {
-            errorMessage = error.userMessage
-            return false
         }
     }
 }

@@ -15,11 +15,8 @@ struct AddPillTypeSheet: View {
         NavigationStack {
             Form {
                 PillTypeFormFields(
-                    name: $model.name,
-                    abbreviation: $model.abbreviation,
-                    rows: $model.rows,
-                    columns: $model.columns,
-                    error: model.validationError,
+                    form: $model.form,
+                    error: model.submission.validationError,
                     shapeFooter: .addPillTypeShapeFooter
                 )
 
@@ -47,10 +44,10 @@ struct AddPillTypeSheet: View {
                             if await model.save() { dismiss() }
                         }
                     }
-                    .disabled(model.isSaving)
+                    .disabled(model.submission.isSaving)
                 }
             }
-            .errorAlert(message: $model.errorMessage)
+            .errorAlert(message: Bindable(model.submission).errorMessage)
         }
     }
 }
