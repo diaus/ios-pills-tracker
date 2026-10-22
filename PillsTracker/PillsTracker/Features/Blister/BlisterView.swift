@@ -70,8 +70,6 @@ struct BlisterView: View {
         .positionActionSheet(
             for: $tappedPosition,
             title: consumeTitle,
-            consumableSlots: { model.progress?.consumableSlots(at: $0) ?? [] },
-            canSetPresent: { model.progress?.canSetPresent($0) ?? false },
             onConsume: { position, slot in
                 Task { await model.consume(position, slot: slot) }
             },
@@ -110,11 +108,13 @@ struct BlisterView: View {
                         daySlots: progress.daySlotsByPosition,
                         undoablePositions: progress.undoablePositions
                     ) { position in
-                        // An Empty Position with an Intake is only ever undone; any other one opens the sheet.
-                        if let intake = progress.undoableIntake(at: position) {
+                        switch progress.actions(at: position) {
+                        case .undo(let intake):
                             undoCandidate = intake
-                        } else {
-                            tappedPosition = TappedPosition(position: position, isPresent: blister.isPresent(position))
+                        case .nothing:
+                            break
+                        case let actions:
+                            tappedPosition = TappedPosition(position: position, actions: actions)
                         }
                     }
                     Text(.blisterPillsLeft(count: progress.presentCount))
@@ -164,7 +164,7 @@ struct BlisterView: View {
 
     /// Names the Selected Day a Present Position would be consumed for, when it isn't today.
     private var consumeTitle: Text? {
-        guard tappedPosition?.isPresent == true, !model.isOnToday else { return nil }
+        guard case .consume = tappedPosition?.actions, !model.isOnToday else { return nil }
         return Text(.blisterPositionTitleForDay(day: model.name(of: model.selectedDay)))
     }
 
