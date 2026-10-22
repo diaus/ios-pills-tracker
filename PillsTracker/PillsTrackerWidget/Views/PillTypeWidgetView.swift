@@ -10,6 +10,8 @@ struct PillTypeWidgetView: View {
         case .noPillType, .unreadable:
             Image(systemName: "pills")
                 .font(.system(size: 30))
+                // Also the placeholder's face, which iOS redacts; the symbol shows no data, so it stays visible.
+                .unredacted()
         case .withoutActivePrescription(let abbreviation):
             PillTypeFace(abbreviation: abbreviation) {
                 Text(verbatim: "-/-/-")
