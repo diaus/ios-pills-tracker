@@ -72,7 +72,7 @@ struct HomeView: View {
                     PillTypesListView(dailyProgress: model.dailyProgress)
                 case .blister(let pillTypeID):
                     BlisterView(pillTypeID: pillTypeID, dailyProgress: model.dailyProgress) { widgetTaps.path.removeAll() }
-                        .id(widgetTaps.blisterTapCount)
+                        .id(widgetTaps.blisterIdentity(of: pillTypeID))
                 }
             }
             .toolbar {
