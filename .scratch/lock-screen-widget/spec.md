@@ -1,6 +1,6 @@
 # Lock Screen widget
 
-Status: ready-for-agent
+Status: implemented on feat/lock-screen-widget (awaiting the on-device Lock Screen checks in 04–06, then merge to main)
 
 ## Problem Statement
 

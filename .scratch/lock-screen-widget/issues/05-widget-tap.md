@@ -4,7 +4,7 @@
 
 **Blocked by:** 04 Lock Screen widget extension
 
-**Status:** ready-for-agent
+**Status:** ready-for-human
 
 - [x] The URLs (Blister screen for a Pill Type id, and the "configure" URL) are built and parsed in one place shared by the app and the widget
 - [x] The app registers its URL scheme and handles the URL with `onOpenURL`: the Blister URL resets the navigation path to `[.blister(pillTypeID:)]`; an unknown or deleted Pill Type id opens Home
@@ -23,3 +23,5 @@
 - **Correction (review fixes):** with a Blister screen on top, a URL for another Pill Type did not open it: the screen stayed on the old Pill Type until a second identical URL. The note above is wrong about that case, and the same pass checked the other cases again on iPhone 16 (iOS 18.5). The tap counter changed before the new path reached the destination. SwiftUI first rebuilt the destination with the old Pill Type under the new `.id`, and the tapped Pill Type's screen then took that same `.id` and kept the old screen's state. The routing now lives in `WidgetTapRouter`, and the Blister view's `.id` is `blisterIdentity(of:)`, which joins the Pill Type to the counter. Rechecked with `simctl openurl`: Magnesium → Vitamin D and Vitamin D → Magnesium open the tapped Blister on Today with one URL, each twice. The same Pill Type's URL from Yesterday resets it to Today. An unknown id opens Home. The configure URL from a Blister screen shows the alert on Home. From a cold launch, a Blister URL opens its Blister on Today, and the configure URL shows the alert. There's no unit test: the bug lives in SwiftUI's view identity, which no test outside the UI can reach.
 - **Left for the user:** tapping the real widget on the Lock Screen (configured, and in the empty state). Adding a widget means driving the Lock Screen's Customize flow, which agents don't do here, so that box stays unticked.
 - `scripts/check.sh` passes; `build_sim` builds with zero warnings; `test_sim` passes 21/21.
+
+- **Status ready-for-human:** the code is merged on `feat/lock-screen-widget` and verified by build, tests and simulator URL checks. What remains is the unticked on-device Lock Screen check(s) above, which need a person to add and tap the widget. Set `resolved` once they pass.

@@ -4,7 +4,7 @@
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 - [x] An App Group (e.g. `group.com.andrew.PillsTracker`) is added to the app target's entitlements, with `CODE_SIGN_ENTITLEMENTS` set
 - [x] Data: `PillsModelContainer` opens the store at a URL in the App Group container, and the group identifier is defined once in the Data package

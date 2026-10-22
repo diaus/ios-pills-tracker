@@ -4,7 +4,7 @@
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 - [x] Domain: `Day.current` (static), the calendar Day of `.now` in `.current`, or the previous calendar Day when the local hour is before 3. The 3-hour offset is one named constant. No test (ADR 0004).
 - [x] Domain: `Day`'s doc comment no longer says it rolls over at midnight
