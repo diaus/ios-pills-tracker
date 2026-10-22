@@ -16,7 +16,7 @@ A 1×1 Lock Screen widget (`accessoryCircular`), configured with one Pill Type t
 
 - Only the `accessoryCircular` family.
 - The configuration parameter is a **Pill Type**. The picker lists only Pill Types with an Active Prescription, in Home order.
-- When a widget is added, it auto-configures through `EntityQuery.defaultResult()`. It picks the first Active Pill Type, in Home order, that no placed widget is already configured for. If none is left, it stays unconfigured.
+- When a widget is added, it auto-configures through `EntityQuery.defaultResult()`. It picks the first Active Pill Type, in Home order, even when a placed widget already shows it. With no Active Pill Type, it stays unconfigured. (Skipping placed Pill Types meant reading placed widgets' configurations through `WidgetCenter`, which looped back into `defaultResult()` and got the extension killed for memory on device.)
 - If `defaultResult()` turns out not to save as a real configuration on iOS 18, an unconfigured widget shows the empty state.
 
 ### Appearance

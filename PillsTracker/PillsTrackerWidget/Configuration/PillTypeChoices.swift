@@ -7,9 +7,4 @@ nonisolated enum PillTypeChoices {
     static func active(in aggregates: [PillTypeAggregate]) -> [PillType] {
         aggregates.filter { $0.prescription?.state == .active }.map(\.pillType)
     }
-
-    /// The first of `active` that no placed widget shows, or nil when every one is placed.
-    static func firstUnplaced(in active: [PillType], placed: Set<UUID>) -> PillType? {
-        active.first { !placed.contains($0.id) }
-    }
 }
